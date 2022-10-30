@@ -1,0 +1,38 @@
+version: "3.8"
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 80:8080
+    volumes:
+      - ./:/app
+    networks:
+      - se214
+    depends_on:
+      - db
+      - adminer
+  db:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: se214
+    networks:
+      - se214
+    volumes:
+      - se214-mysql-db:/var/lib/mysql
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - se214
+    depends_on:
+      - db
+networks:
+  se214:
+volumes:
+  se214-mysql-db:

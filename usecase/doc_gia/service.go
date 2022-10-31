@@ -40,9 +40,9 @@ func (service *DocGiaService) getDocGia(maDocGia *entity.ID) (*entity.DocGia, er
 	return docGia, err
 }
 
-func (service *DocGiaService) createDocGia(hoTen string, loaiDocGia entity.ID, ngaySinh time.Time, diaChi string, email string, ngayLapThe time.Time) (*entity.DocGia, error) {
+func (service *DocGiaService) createDocGia(hoTen string, loaiDocGia *entity.ID, ngaySinh *time.Time, diaChi string, email string, ngayLapThe *time.Time) (*entity.DocGia, error) {
 
-	loaiDocGiaRs, err := service.loaiDocGiaRepo.GetLoaiDocGia(&loaiDocGia)
+	loaiDocGiaRs, err := service.loaiDocGiaRepo.GetLoaiDocGia(loaiDocGia)
 	if err != nil {
 		return nil, err
 	}
@@ -51,10 +51,19 @@ func (service *DocGiaService) createDocGia(hoTen string, loaiDocGia entity.ID, n
 		return nil, businessError.NewBusinessError("loai doc gia not found")
 	}
 
+	// Get tham so
+
 	thoiHanThe := service.thamSoRepo.GetThoiHanThe()
+	tuoiToiThieu := service.thamSoRepo.GetTuoiToiThieu()
+	tuoiToiDa := service.thamSoRepo.GetTuoiToiDa()
+
 	ngayHetHan := ngayLapThe.AddDate(0, 0, int(thoiHanThe))
 
-	docGia := entity.NewDocGia(hoTen, loaiDocGia, ngaySinh, diaChi, email, ngayLapThe, ngayHetHan)
+	docGia := entity.NewDocGia(hoTen, loaiDocGia, ngaySinh, diaChi, email, ngayLapThe, &ngayHetHan)
+
+	if isValid, err := docGia.IsValid(tuoiToiDa, tuoiToiThieu, thoiHanThe); isValid {
+		return nil, err
+	}
 
 	docGiaRs, err := service.docGiaRepo.CreateDocGia(docGia)
 
@@ -92,12 +101,12 @@ func (service *DocGiaService) updateDocGia(maDocGia entity.ID, hoTen *string, lo
 		return nil, businessError.NewBusinessError("loai doc gia not found")
 	}
 
-	docGia.MaLoaiDocGia = *loaiDocGia
+	docGia.MaLoaiDocGia = loaiDocGia
 
 	// Update ngay sinh
 
 	if ngaySinh != nil {
-		docGia.NgaySinh = *ngaySinh
+		docGia.NgaySinh = ngaySinh
 	}
 
 	// Update dia chi
@@ -110,6 +119,17 @@ func (service *DocGiaService) updateDocGia(maDocGia entity.ID, hoTen *string, lo
 
 	if email != nil {
 		docGia.Email = *email
+	}
+	// Get tham so
+
+	thoiHanThe := service.thamSoRepo.GetThoiHanThe()
+	tuoiToiThieu := service.thamSoRepo.GetTuoiToiThieu()
+	tuoiToiDa := service.thamSoRepo.GetTuoiToiDa()
+
+	// Validate
+
+	if isValid, err := docGia.IsValid(tuoiToiDa, tuoiToiThieu, thoiHanThe); isValid {
+		return nil, err
 	}
 
 	// Update doc gia

@@ -10,7 +10,7 @@ type LoaiDocGiaService struct {
 	loaiDocGiaRepo repository.LoaiDocGiaRepository
 }
 
-func (service *LoaiDocGiaService) getDanhSachLoaiDocGia() ([]*entity.LoaiDocGia, error) {
+func (service *LoaiDocGiaService) GetDanhSachLoaiDocGia() ([]*entity.LoaiDocGia, error) {
 	danhSachDocGia, err := service.loaiDocGiaRepo.GetDanhSachLoaiDocGia()
 
 	if err != nil {
@@ -20,7 +20,7 @@ func (service *LoaiDocGiaService) getDanhSachLoaiDocGia() ([]*entity.LoaiDocGia,
 	return danhSachDocGia, nil
 }
 
-func (service *LoaiDocGiaService) getLoaiDocGia(maLoaiDocGia *entity.ID) (*entity.LoaiDocGia, error) {
+func (service *LoaiDocGiaService) GetLoaiDocGia(maLoaiDocGia *entity.ID) (*entity.LoaiDocGia, error) {
 	docGia, err := service.loaiDocGiaRepo.GetLoaiDocGia(maLoaiDocGia)
 
 	if err != nil {
@@ -34,7 +34,7 @@ func (service *LoaiDocGiaService) getLoaiDocGia(maLoaiDocGia *entity.ID) (*entit
 	return docGia, nil
 }
 
-func (service *LoaiDocGiaService) createLoaiDocGia(tenLoaiDocGia string) (*entity.LoaiDocGia, error) {
+func (service *LoaiDocGiaService) CreateLoaiDocGia(tenLoaiDocGia string) (*entity.LoaiDocGia, error) {
 	loaiDocGia := entity.NewLoaiDocGia(tenLoaiDocGia)
 	_, err := service.loaiDocGiaRepo.CreateLoaiDocGia(loaiDocGia)
 	if err != nil {
@@ -44,7 +44,7 @@ func (service *LoaiDocGiaService) createLoaiDocGia(tenLoaiDocGia string) (*entit
 	return loaiDocGia, err
 }
 
-func (service *LoaiDocGiaService) updateLoaiDocGia(maLoaiDocGia *entity.ID, tenLoaiDocGia string) (*entity.LoaiDocGia, error) {
+func (service *LoaiDocGiaService) UpdateLoaiDocGia(maLoaiDocGia *entity.ID, tenLoaiDocGia string) (*entity.LoaiDocGia, error) {
 	loaiDocGia, err := service.loaiDocGiaRepo.GetLoaiDocGia(maLoaiDocGia)
 
 	if err != nil {
@@ -66,7 +66,7 @@ func (service *LoaiDocGiaService) updateLoaiDocGia(maLoaiDocGia *entity.ID, tenL
 	return loaiDocGia, nil
 }
 
-func (service *LoaiDocGiaService) deleteLoaiDocGia(maLoaiDocGia *entity.ID) error {
+func (service *LoaiDocGiaService) DeleteLoaiDocGia(maLoaiDocGia *entity.ID) error {
 	err := service.loaiDocGiaRepo.RemoveLoaiDocGia(maLoaiDocGia)
 	return err
 }

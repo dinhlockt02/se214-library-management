@@ -19,7 +19,7 @@ func NewDocGiaService(docGiaRepo repository.DocGiaRepository) *DocGiaService {
 		docGiaRepo: docGiaRepo,
 	}
 }
-func (service *DocGiaService) getDanhSachDocGia() ([]*entity.DocGia, error) {
+func (service *DocGiaService) GetDanhSachDocGia() ([]*entity.DocGia, error) {
 	danhSachDocGia, err := service.docGiaRepo.GetDanhSachDocGia()
 	if err != nil {
 		return nil, err
@@ -27,7 +27,7 @@ func (service *DocGiaService) getDanhSachDocGia() ([]*entity.DocGia, error) {
 	return danhSachDocGia, err
 }
 
-func (service *DocGiaService) getDocGia(maDocGia *entity.ID) (*entity.DocGia, error) {
+func (service *DocGiaService) GetDocGia(maDocGia *entity.ID) (*entity.DocGia, error) {
 	docGia, err := service.docGiaRepo.GetDocGia(maDocGia)
 	if err != nil {
 		return nil, err
@@ -40,7 +40,7 @@ func (service *DocGiaService) getDocGia(maDocGia *entity.ID) (*entity.DocGia, er
 	return docGia, err
 }
 
-func (service *DocGiaService) createDocGia(hoTen string, loaiDocGia *entity.ID, ngaySinh *time.Time, diaChi string, email string, ngayLapThe *time.Time) (*entity.DocGia, error) {
+func (service *DocGiaService) CreateDocGia(hoTen string, loaiDocGia *entity.ID, ngaySinh *time.Time, diaChi string, email string, ngayLapThe *time.Time) (*entity.DocGia, error) {
 
 	loaiDocGiaRs, err := service.loaiDocGiaRepo.GetLoaiDocGia(loaiDocGia)
 	if err != nil {
@@ -74,7 +74,7 @@ func (service *DocGiaService) createDocGia(hoTen string, loaiDocGia *entity.ID, 
 	return docGiaRs, nil
 }
 
-func (service *DocGiaService) updateDocGia(maDocGia entity.ID, hoTen *string, loaiDocGia *entity.ID, ngaySinh *time.Time, diaChi *string, email *string) (*entity.DocGia, error) {
+func (service *DocGiaService) UpdateDocGia(maDocGia entity.ID, hoTen *string, loaiDocGia *entity.ID, ngaySinh *time.Time, diaChi *string, email *string) (*entity.DocGia, error) {
 	docGia, err := service.docGiaRepo.GetDocGia(&maDocGia)
 	if err != nil {
 		return nil, err
@@ -143,7 +143,7 @@ func (service *DocGiaService) updateDocGia(maDocGia entity.ID, hoTen *string, lo
 	return updatedDocGia, nil
 }
 
-func (service *DocGiaService) removeDocGia(maDocGia *entity.ID) error {
+func (service *DocGiaService) RemoveDocGia(maDocGia *entity.ID) error {
 	err := service.docGiaRepo.RemoveDocGia(maDocGia)
 	return err
 }

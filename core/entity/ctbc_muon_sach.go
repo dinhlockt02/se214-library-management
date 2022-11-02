@@ -1,9 +1,8 @@
 package entity
 
 type CtbcMuonSach struct {
-	MaCTBCMS         ID
-	MaBaoCaoMuonSach ID
-	MaTheLoai        ID
-	TongSoLuotMuon   uint
-	TiLe             float32
+	MaCTBCMS       *ID
+	TheLoai        *TheLoai
+	TongSoLuotMuon uint
+	TiLe           float32
 }

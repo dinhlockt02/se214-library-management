@@ -6,12 +6,13 @@ import (
 	"daijoubuteam.xyz/se214-library-management/core/entity"
 	businessError "daijoubuteam.xyz/se214-library-management/core/error"
 	"daijoubuteam.xyz/se214-library-management/core/repository"
+	loaidocgia "daijoubuteam.xyz/se214-library-management/usecase/loai_doc_gia"
 )
 
 type DocGiaService struct {
-	loaiDocGiaRepo repository.LoaiDocGiaRepository
-	docGiaRepo     repository.DocGiaRepository
-	thamSoRepo     repository.ThamSoRepository
+	loaiDocGiaUsecase loaidocgia.LoaiDocGiaUsecase
+	docGiaRepo        repository.DocGiaRepository
+	thamSoRepo        repository.ThamSoRepository
 }
 
 func NewDocGiaService(docGiaRepo repository.DocGiaRepository) *DocGiaService {
@@ -40,15 +41,11 @@ func (service *DocGiaService) GetDocGia(maDocGia *entity.ID) (*entity.DocGia, er
 	return docGia, err
 }
 
-func (service *DocGiaService) CreateDocGia(hoTen string, loaiDocGia *entity.ID, ngaySinh *time.Time, diaChi string, email string, ngayLapThe *time.Time) (*entity.DocGia, error) {
+func (service *DocGiaService) CreateDocGia(hoTen string, maLoaiDocGia *entity.ID, ngaySinh *time.Time, diaChi string, email string, ngayLapThe *time.Time) (*entity.DocGia, error) {
 
-	loaiDocGiaRs, err := service.loaiDocGiaRepo.GetLoaiDocGia(loaiDocGia)
+	loaiDocGia, err := service.loaiDocGiaUsecase.GetLoaiDocGia(maLoaiDocGia)
 	if err != nil {
 		return nil, err
-	}
-
-	if loaiDocGiaRs == nil {
-		return nil, businessError.NewBusinessError("loai doc gia not found")
 	}
 
 	// Get tham so
@@ -74,8 +71,8 @@ func (service *DocGiaService) CreateDocGia(hoTen string, loaiDocGia *entity.ID, 
 	return docGiaRs, nil
 }
 
-func (service *DocGiaService) UpdateDocGia(maDocGia entity.ID, hoTen *string, loaiDocGia *entity.ID, ngaySinh *time.Time, diaChi *string, email *string) (*entity.DocGia, error) {
-	docGia, err := service.docGiaRepo.GetDocGia(&maDocGia)
+func (service *DocGiaService) UpdateDocGia(maDocGia *entity.ID, hoTen string, maLoaiDocGia *entity.ID, ngaySinh *time.Time, diaChi string, email string) (*entity.DocGia, error) {
+	docGia, err := service.docGiaRepo.GetDocGia(maDocGia)
 	if err != nil {
 		return nil, err
 	}
@@ -86,22 +83,16 @@ func (service *DocGiaService) UpdateDocGia(maDocGia entity.ID, hoTen *string, lo
 
 	// Update hoten
 
-	if hoTen != nil {
-		docGia.HoTen = *hoTen
-	}
+	docGia.HoTen = hoTen
 
 	// Update loai doc gia
 
-	loaiDocGiaRs, err := service.loaiDocGiaRepo.GetLoaiDocGia(loaiDocGia)
+	loaiDocGia, err := service.loaiDocGiaUsecase.GetLoaiDocGia(maLoaiDocGia)
 	if err != nil {
 		return nil, err
 	}
 
-	if loaiDocGiaRs == nil {
-		return nil, businessError.NewBusinessError("loai doc gia not found")
-	}
-
-	docGia.MaLoaiDocGia = loaiDocGia
+	docGia.LoaiDocGia = loaiDocGia
 
 	// Update ngay sinh
 
@@ -111,15 +102,11 @@ func (service *DocGiaService) UpdateDocGia(maDocGia entity.ID, hoTen *string, lo
 
 	// Update dia chi
 
-	if diaChi != nil {
-		docGia.DiaChi = *diaChi
-	}
+	docGia.DiaChi = diaChi
 
 	// Update email
 
-	if email != nil {
-		docGia.Email = *email
-	}
+	docGia.Email = email
 	// Get tham so
 
 	thoiHanThe := service.thamSoRepo.GetThoiHanThe()

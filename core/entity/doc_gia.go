@@ -8,29 +8,29 @@ import (
 )
 
 type DocGia struct {
-	MaDocGia     *ID
-	HoTen        string
-	MaLoaiDocGia *ID
-	NgaySinh     *time.Time
-	DiaChi       string
-	Email        string
-	NgayLapThe   *time.Time
-	NgayHetHan   *time.Time
-	TongNo       uint
+	MaDocGia   *ID
+	HoTen      string
+	LoaiDocGia *LoaiDocGia
+	NgaySinh   *time.Time
+	DiaChi     string
+	Email      string
+	NgayLapThe *time.Time
+	NgayHetHan *time.Time
+	TongNo     uint
 }
 
-func NewDocGia(hoTen string, loaiDocGia *ID, ngaySinh *time.Time, diaChi string, email string, ngayLapThe *time.Time, ngayHetHan *time.Time) *DocGia {
+func NewDocGia(hoTen string, loaiDocGia *LoaiDocGia, ngaySinh *time.Time, diaChi string, email string, ngayLapThe *time.Time, ngayHetHan *time.Time) *DocGia {
 	newId := NewID()
 	return &DocGia{
-		MaDocGia:     &newId,
-		HoTen:        hoTen,
-		MaLoaiDocGia: loaiDocGia,
-		NgaySinh:     ngaySinh,
-		DiaChi:       diaChi,
-		Email:        email,
-		NgayLapThe:   ngayLapThe,
-		NgayHetHan:   ngayHetHan,
-		TongNo:       0,
+		MaDocGia:   &newId,
+		HoTen:      hoTen,
+		LoaiDocGia: loaiDocGia,
+		NgaySinh:   ngaySinh,
+		DiaChi:     diaChi,
+		Email:      email,
+		NgayLapThe: ngayLapThe,
+		NgayHetHan: ngayHetHan,
+		TongNo:     0,
 	}
 }
 
@@ -38,8 +38,8 @@ func (docGia *DocGia) IsValid(tuoiToiDa uint, tuoiToiThieu uint, thoiHanTheMonth
 	if docGia.MaDocGia == nil {
 		return false, businessError.NewBusinessError("ma doc gia is nil")
 	}
-	if docGia.MaLoaiDocGia == nil {
-		return false, businessError.NewBusinessError("ma loai doc gia is nil")
+	if docGia.LoaiDocGia == nil {
+		return false, businessError.NewBusinessError("loai doc gia is nil")
 	}
 	tuoi := time.Now().Year() - docGia.NgaySinh.Year()
 	if tuoi < 0 {

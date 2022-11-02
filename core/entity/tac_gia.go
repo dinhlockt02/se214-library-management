@@ -1,7 +1,7 @@
 package entity
 
 type TacGia struct {
-	MaTacGia  ID
+	MaTacGia  *ID
 	TenTacGia string
 }
 

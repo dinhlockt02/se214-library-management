@@ -1,7 +1,7 @@
 package entity
 
 type TheLoai struct {
-	MaTheLoai  ID
+	MaTheLoai  *ID
 	TenTheLoai string
 }
 

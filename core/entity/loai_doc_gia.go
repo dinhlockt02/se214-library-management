@@ -1,13 +1,14 @@
 package entity
 
 type LoaiDocGia struct {
-	MaLoaiDocGia  ID
+	MaLoaiDocGia  *ID
 	TenLoaiDocGia string
 }
 
 func NewLoaiDocGia(tenLoaiDocGia string) *LoaiDocGia {
+	newId := NewID()
 	return &LoaiDocGia{
-		MaLoaiDocGia:  NewID(),
+		MaLoaiDocGia:  &newId,
 		TenLoaiDocGia: tenLoaiDocGia,
 	}
 }

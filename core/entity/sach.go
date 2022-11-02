@@ -2,20 +2,20 @@ package entity
 
 type Sach struct {
 	MaSach     *ID
-	MaDauSach  *ID
+	DauSach    *DauSach
 	NhaXuatBan string
 	SoLuong    uint
 	TriGia     uint
 	NamXuatBan uint
 }
 
-func NewSach(maDauSach *ID, nhaXuatBan string, soLuong uint, triGia uint, namXuatBan uint) *Sach {
+func NewSach(dauSach *DauSach, nhaXuatBan string, soLuong uint, triGia uint, namXuatBan uint) *Sach {
 
 	newId := NewID()
 
 	return &Sach{
 		MaSach:     &newId,
-		MaDauSach:  maDauSach,
+		DauSach:    dauSach,
 		NhaXuatBan: nhaXuatBan,
 		SoLuong:    soLuong,
 		TriGia:     triGia,

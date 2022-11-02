@@ -36,12 +36,12 @@ func (service *SachService) GetSach(maSach *entity.ID) (*entity.Sach, error) {
 }
 
 func (service *SachService) CreateSach(maDauSach *entity.ID, nhaXuatBan string, soLuong uint, triGia uint, namXuatBan uint) (*entity.Sach, error) {
-	_, err := service.dauSachUsecase.GetDauSach(maDauSach)
+	dauSach, err := service.dauSachUsecase.GetDauSach(maDauSach)
 	if err != nil {
 		return nil, err
 	}
 
-	newSach := entity.NewSach(maDauSach, nhaXuatBan, soLuong, triGia, namXuatBan)
+	newSach := entity.NewSach(dauSach, nhaXuatBan, soLuong, triGia, namXuatBan)
 
 	if !newSach.IsValid() {
 		return nil, businessError.NewBusinessError("Invalid sach")
@@ -58,7 +58,7 @@ func (service *SachService) CreateSach(maDauSach *entity.ID, nhaXuatBan string, 
 }
 
 func (service *SachService) UpdateSach(maSach *entity.ID, maDauSach *entity.ID, nhaXuatBan string, soLuong uint, triGia uint, namXuatBan uint) (*entity.Sach, error) {
-	_, err := service.dauSachUsecase.GetDauSach(maDauSach)
+	dauSach, err := service.dauSachUsecase.GetDauSach(maDauSach)
 
 	if err != nil {
 		return nil, err
@@ -73,7 +73,7 @@ func (service *SachService) UpdateSach(maSach *entity.ID, maDauSach *entity.ID, 
 		return nil, businessError.NewBusinessError("Sach not found")
 	}
 
-	sach.MaDauSach = maDauSach
+	sach.DauSach = dauSach
 	sach.NhaXuatBan = nhaXuatBan
 	sach.SoLuong = soLuong
 	sach.TriGia = triGia

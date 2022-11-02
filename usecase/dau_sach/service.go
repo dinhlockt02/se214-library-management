@@ -38,20 +38,23 @@ func (service *DauSachService) GetDauSach(maDauSach *entity.ID) (*entity.DauSach
 }
 
 func (service *DauSachService) CreateDauSach(tenDauSach string, maTheLoai *entity.ID, maTacGia []*entity.ID) (*entity.DauSach, error) {
+	tacGia := make([]*entity.TacGia, len(maTacGia))
+
 	for _, mtg := range maTacGia {
-		_, err := service.tacGiaUsecase.GetTacGia(mtg)
+		tg, err := service.tacGiaUsecase.GetTacGia(mtg)
 		if err != nil {
 			return nil, err
 		}
+		tacGia = append(tacGia, tg)
 	}
 
-	_, err := service.theLoaiUsecase.GetTheLoai(maTheLoai)
+	theLoai, err := service.theLoaiUsecase.GetTheLoai(maTheLoai)
 
 	if err != nil {
 		return nil, err
 	}
 
-	dauSach := entity.NewDauSach(maTheLoai, tenDauSach, maTacGia)
+	dauSach := entity.NewDauSach(theLoai, tenDauSach, tacGia)
 
 	dauSach, err = service.dauSachRepo.CreateDauSach(dauSach)
 
@@ -63,14 +66,18 @@ func (service *DauSachService) CreateDauSach(tenDauSach string, maTheLoai *entit
 }
 
 func (service *DauSachService) UpdateDauSach(maDauSach *entity.ID, tenDauSach string, maTheLoai *entity.ID, maTacGia []*entity.ID) (*entity.DauSach, error) {
+
+	tacGia := make([]*entity.TacGia, len(maTacGia))
+
 	for _, mtg := range maTacGia {
-		_, err := service.tacGiaUsecase.GetTacGia(mtg)
+		tg, err := service.tacGiaUsecase.GetTacGia(mtg)
 		if err != nil {
 			return nil, err
 		}
+		tacGia = append(tacGia, tg)
 	}
 
-	_, err := service.theLoaiUsecase.GetTheLoai(maTheLoai)
+	theLoai, err := service.theLoaiUsecase.GetTheLoai(maTheLoai)
 
 	if err != nil {
 		return nil, err
@@ -83,8 +90,8 @@ func (service *DauSachService) UpdateDauSach(maDauSach *entity.ID, tenDauSach st
 	}
 
 	dauSach.TenDauSach = tenDauSach
-	dauSach.MaTacGia = maTacGia
-	dauSach.MaTheLoai = maTheLoai
+	dauSach.TacGia = tacGia
+	dauSach.TheLoai = theLoai
 
 	dauSach, err = service.dauSachRepo.UpdateDauSach(dauSach)
 

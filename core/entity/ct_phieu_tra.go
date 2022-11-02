@@ -1,10 +1,10 @@
 package entity
 
 type CtPhieuTra struct {
-	MaChiTietPhieuTra ID
-	MaPhieuTraSach    ID
-	MaCuonSach        ID
-	MaPhieuMuon       ID
+	MaChiTietPhieuTra *ID
+	PhieuTra          *PhieuTra
+	CuonSach          *CuonSach
+	PhieuMuon         *PhieuMuon
 	SoNgayMuon        uint
 	TienPhat          uint
 }

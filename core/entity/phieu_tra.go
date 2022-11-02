@@ -3,8 +3,8 @@ package entity
 import "time"
 
 type PhieuTra struct {
-	MaPhieuTraSach ID
-	MaDocGia       ID
-	NgayTra        time.Time
+	MaPhieuTraSach *ID
+	DocGia         *DocGia
+	NgayTra        *time.Time
 	TienPhatKyNay  uint
 }

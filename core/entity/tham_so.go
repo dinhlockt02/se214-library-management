@@ -8,4 +8,5 @@ type ThamSo struct {
 	SoNgayMuonMax   uint
 	SoSachMuonMax   uint
 	MucThuTienPhat  uint
+	DefaultPassword string
 }

@@ -13,6 +13,18 @@ type AuthService struct {
 	jwtTokenService coreservice.JwtTokenService
 }
 
+func NewAuthService(
+	thuThuUsecase thuthu.ThuThuUsecase,
+	passwordHasher coreservice.PasswordHasher,
+	jwtTokenService coreservice.JwtTokenService,
+) *AuthService {
+	return &AuthService{
+		thuThuUsecase:   thuThuUsecase,
+		passwordHasher:  passwordHasher,
+		jwtTokenService: jwtTokenService,
+	}
+}
+
 func (service *AuthService) Login(email string, password string) (*string, error) {
 
 	dsThuThu, err := service.thuThuUsecase.GetDanhSachThuThu(&email, nil)

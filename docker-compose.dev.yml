@@ -6,6 +6,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - 80:8080
+    volumes:
+      - ./:/app
     networks:
       - se214
     depends_on:

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	businessError "daijoubuteam.xyz/se214-library-management/core/error"
+	"daijoubuteam.xyz/se214-library-management/utils"
 )
 
 type DocGia struct {
@@ -41,6 +42,11 @@ func (docGia *DocGia) IsValid(tuoiToiDa uint, tuoiToiThieu uint, thoiHanTheMonth
 	if docGia.LoaiDocGia == nil {
 		return false, businessError.NewBusinessError("loai doc gia is nil")
 	}
+
+	if docGia.NgaySinh == nil {
+		return false, businessError.NewBusinessError("ngay sinh is nil")
+	}
+
 	tuoi := time.Now().Year() - docGia.NgaySinh.Year()
 	if tuoi < 0 {
 		return false, businessError.NewBusinessError(fmt.Sprintf("tuoi(%v) must be positive", tuoi))
@@ -49,26 +55,8 @@ func (docGia *DocGia) IsValid(tuoiToiDa uint, tuoiToiThieu uint, thoiHanTheMonth
 		return false, businessError.NewBusinessError(fmt.Sprintf("tuoi(%v) is not between tuoi toi da(%v) and tuoi toi thieu(%v)", tuoi, tuoiToiThieu, tuoiToiDa))
 	}
 
-	if diffMonths(*docGia.NgayHetHan, *docGia.NgayLapThe) != int(thoiHanTheMonth) {
+	if diffMonths := utils.DiffMonths(*docGia.NgayHetHan, *docGia.NgayLapThe); diffMonths != int(thoiHanTheMonth) {
 		return false, businessError.NewBusinessError("thoi han the is not match")
 	}
 	return true, nil
-}
-
-func diffMonths(now time.Time, then time.Time) int {
-	diffYears := now.Year() - then.Year()
-	if diffYears == 0 {
-		return int(now.Month() - then.Month())
-	}
-
-	if diffYears == 1 {
-		return monthsTillEndOfYear(then) + int(now.Month())
-	}
-
-	yearsInMonths := (now.Year() - then.Year() - 1) * 12
-	return yearsInMonths + monthsTillEndOfYear(then) + int(now.Month())
-}
-
-func monthsTillEndOfYear(then time.Time) int {
-	return int(12 - then.Month())
 }

@@ -1,5 +1,7 @@
 package config
 
+import "time"
+
 type Config struct {
 	DatabaseDriver string
 	User           string
@@ -7,4 +9,12 @@ type Config struct {
 	Host           string
 	DbName         string
 	Port           string
+	JwtConfig      JwtConfig
+}
+
+type JwtConfig struct {
+	Audience    string
+	Secret      []byte
+	Issuer      string
+	ExpDuration time.Duration
 }

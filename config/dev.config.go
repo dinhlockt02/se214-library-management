@@ -1,5 +1,7 @@
 package config
 
+import "time"
+
 var DevConfig = &Config{
 	DbName:         "se214",
 	User:           "root",
@@ -7,4 +9,10 @@ var DevConfig = &Config{
 	Host:           "db",
 	DatabaseDriver: "mysql",
 	Port:           "3306",
+	JwtConfig: JwtConfig{
+		Audience:    "localhost",
+		Secret:      []byte("localhost"),
+		Issuer:      "localhost",
+		ExpDuration: time.Duration(24) * time.Hour,
+	},
 }

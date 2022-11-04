@@ -1,15 +1,15 @@
-package error
+package coreerror
 
 type BusinessError struct {
-	msg string
+	Msg string
 }
 
 func (err *BusinessError) Error() string {
-	return err.msg
+	return err.Msg
 }
 
 func NewBusinessError(msg string) *BusinessError {
 	return &BusinessError{
-		msg: msg,
+		Msg: msg,
 	}
 }

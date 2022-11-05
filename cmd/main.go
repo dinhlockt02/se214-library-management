@@ -3,6 +3,7 @@ package main
 import (
 	"daijoubuteam.xyz/se214-library-management/api"
 	"daijoubuteam.xyz/se214-library-management/cmd/admin"
+	thuthucommand "daijoubuteam.xyz/se214-library-management/cmd/thuthu"
 	"daijoubuteam.xyz/se214-library-management/config"
 	"daijoubuteam.xyz/se214-library-management/utils"
 	"github.com/spf13/cobra"
@@ -16,6 +17,7 @@ func main() {
 	rootCommand := CreateCommand()
 	rootCommand.AddCommand(admin.AdminCommand())
 	rootCommand.AddCommand(api.ServerCommand(db))
+	rootCommand.AddCommand(thuthucommand.ThuThuCommand(db))
 	rootCommand.Execute()
 }
 

@@ -26,7 +26,7 @@ func (r *ThuThuRepository) GetDanhSachThuThu(query *repository.ThuThuSearchQuery
 			tx.Commit()
 		}
 	}()
-	stmt, err := tx.Prepare(`SELECT * FROM ThuThu WHERE email LIKES %?% or phone LIKES %?%`)
+	stmt, err := tx.Prepare(`SELECT * FROM ThuThu WHERE Email LIKE '%?%' or PhoneNumber LIKE '%?%';`)
 	if err != nil {
 		return nil, coreerror.NewInternalServerError("database error: can't not prepare query")
 	}
@@ -48,6 +48,12 @@ func (r *ThuThuRepository) GetDanhSachThuThu(query *repository.ThuThuSearchQuery
 	return danhSachThuThu, nil
 }
 
-func (r *ThuThuRepository) GetThuThu(maThuThu *entity.ID) (*entity.ThuThu, error)
-func (r *ThuThuRepository) CreateThuThu(thuThu *entity.ThuThu) (*entity.ThuThu, error)
-func (r *ThuThuRepository) UpdateThuThu(thuThu *entity.ThuThu) (*entity.ThuThu, error)
+func (r *ThuThuRepository) GetThuThu(maThuThu *entity.ID) (*entity.ThuThu, error) {
+	panic("not implemented")
+}
+func (r *ThuThuRepository) CreateThuThu(thuThu *entity.ThuThu) (*entity.ThuThu, error) {
+	panic("not implemented")
+}
+func (r *ThuThuRepository) UpdateThuThu(thuThu *entity.ThuThu) (*entity.ThuThu, error) {
+	panic("not implemented")
+}

@@ -3,8 +3,8 @@ package repository
 import "daijoubuteam.xyz/se214-library-management/core/entity"
 
 type ThuThuSearchQuery struct {
-	Email       *string
-	PhoneNumber *string
+	Email       string
+	PhoneNumber string
 }
 
 type ThuThuRepository interface {

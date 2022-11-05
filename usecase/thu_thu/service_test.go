@@ -31,18 +31,18 @@ func TestGetDanhSachPhuThu(t *testing.T) {
 		mockEmail := "mock@email.com"
 		mockPhone := "0123456789"
 		thuThuRepo.On("GetDanhSachThuThu", mock.Anything).Return(mockDanhSachThuThu, nil).Once()
-		rs, err := thuThuService.GetDanhSachThuThu(&mockEmail, &mockPhone)
+		rs, err := thuThuService.GetDanhSachThuThu(mockEmail, mockPhone)
 		assert.Nil(t, err)
 		assert.Equal(t, mockDanhSachThuThu, rs)
 		thuThuRepo.AssertCalled(t, "GetDanhSachThuThu", mock.MatchedBy(func(i interface{}) bool {
 			p := i.(*repository.ThuThuSearchQuery)
-			return p.Email == &mockEmail && p.PhoneNumber == &mockPhone
+			return p.Email == mockEmail && p.PhoneNumber == mockPhone
 		}))
 	})
 	t.Run("it should yield an error query from repository failed", func(t *testing.T) {
 		errorMessage := `error-message`
 		thuThuRepo.On("GetDanhSachThuThu", mock.Anything).Return([]*entity.ThuThu(nil), errors.New(errorMessage)).Once()
-		rs, err := thuThuService.GetDanhSachThuThu(nil, nil)
+		rs, err := thuThuService.GetDanhSachThuThu("", "")
 		assert.Nil(t, rs)
 		assert.Error(t, err)
 		assert.Equal(t, errorMessage, err.Error())

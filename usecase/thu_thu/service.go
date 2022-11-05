@@ -28,7 +28,7 @@ func NewThuThuService(
 	}
 }
 
-func (service *ThuThuService) GetDanhSachThuThu(email *string, phoneNumber *string) ([]*entity.ThuThu, error) {
+func (service *ThuThuService) GetDanhSachThuThu(email string, phoneNumber string) ([]*entity.ThuThu, error) {
 	searchQuery := &repository.ThuThuSearchQuery{
 		Email:       email,
 		PhoneNumber: phoneNumber,

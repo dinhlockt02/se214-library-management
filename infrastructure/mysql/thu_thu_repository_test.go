@@ -1,0 +1,19 @@
+package mysql_test
+
+import (
+	"testing"
+
+	"daijoubuteam.xyz/se214-library-management/config"
+	"daijoubuteam.xyz/se214-library-management/infrastructure/mysql"
+	"daijoubuteam.xyz/se214-library-management/utils"
+	"github.com/stretchr/testify/assert"
+)
+
+func TestGetDanhSachThuThu(t *testing.T) {
+	t.Run("it should query danh sach thu thu correctly", func(t *testing.T) {
+		db := utils.ConnectDB(config.TestConfig)
+		repo := mysql.NewThuThuRepository(db)
+		_, err := repo.GetDanhSachThuThu(nil)
+		assert.Nil(t, err)
+	})
+}

@@ -1,8 +1,8 @@
 package repository
 
 type ThamSoRepository interface {
-	GetThoiHanThe() uint
-	GetTuoiToiThieu() uint
-	GetTuoiToiDa() uint
-	GetDefaultPassword() string
+	GetThoiHanThe() (uint, error)
+	GetTuoiToiThieu() (uint, error)
+	GetTuoiToiDa() (uint, error)
+	GetDefaultPassword() (string, error)
 }

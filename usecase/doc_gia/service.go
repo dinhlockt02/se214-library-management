@@ -50,9 +50,18 @@ func (service *DocGiaService) CreateDocGia(hoTen string, maLoaiDocGia *entity.ID
 
 	// Get tham so
 
-	thoiHanThe := service.thamSoRepo.GetThoiHanThe()
-	tuoiToiThieu := service.thamSoRepo.GetTuoiToiThieu()
-	tuoiToiDa := service.thamSoRepo.GetTuoiToiDa()
+	thoiHanThe, err := service.thamSoRepo.GetThoiHanThe()
+	if err != nil {
+		return nil, err
+	}
+	tuoiToiThieu, err := service.thamSoRepo.GetTuoiToiThieu()
+	if err != nil {
+		return nil, err
+	}
+	tuoiToiDa, err := service.thamSoRepo.GetTuoiToiDa()
+	if err != nil {
+		return nil, err
+	}
 
 	ngayHetHan := ngayLapThe.AddDate(0, 0, int(thoiHanThe))
 
@@ -109,9 +118,18 @@ func (service *DocGiaService) UpdateDocGia(maDocGia *entity.ID, hoTen string, ma
 	docGia.Email = email
 	// Get tham so
 
-	thoiHanThe := service.thamSoRepo.GetThoiHanThe()
-	tuoiToiThieu := service.thamSoRepo.GetTuoiToiThieu()
-	tuoiToiDa := service.thamSoRepo.GetTuoiToiDa()
+	thoiHanThe, err := service.thamSoRepo.GetThoiHanThe()
+	if err != nil {
+		return nil, err
+	}
+	tuoiToiThieu, err := service.thamSoRepo.GetTuoiToiThieu()
+	if err != nil {
+		return nil, err
+	}
+	tuoiToiDa, err := service.thamSoRepo.GetTuoiToiDa()
+	if err != nil {
+		return nil, err
+	}
 
 	// Validate
 

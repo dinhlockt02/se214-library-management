@@ -16,6 +16,18 @@ type ThuThuService struct {
 	thamSoRepo     repository.ThamSoRepository
 }
 
+func NewThuThuService(
+	passwordHasher coreservice.PasswordHasher,
+	thuThuRepo repository.ThuThuRepository,
+	thamSoRepo repository.ThamSoRepository,
+) *ThuThuService {
+	return &ThuThuService{
+		passwordHasher: passwordHasher,
+		thuThuRepo:     thuThuRepo,
+		thamSoRepo:     thamSoRepo,
+	}
+}
+
 func (service *ThuThuService) GetDanhSachThuThu(email *string, phoneNumber *string) ([]*entity.ThuThu, error) {
 	searchQuery := &repository.ThuThuSearchQuery{
 		Email:       email,
@@ -45,9 +57,13 @@ func (service *ThuThuService) GetThuThu(maThuThu *entity.ID) (*entity.ThuThu, er
 	return thuThu, nil
 }
 
-func (service *ThuThuService) CreateThuThu(name string, ngaySinh *time.Time, email string, phoneNumber string) (*entity.ThuThu, error) {
+func (service *ThuThuService) CreateThuThu(name string, ngaySinh *time.Time, email string, phoneNumber string, status bool, isAdminRole bool) (*entity.ThuThu, error) {
 
-	password := service.thamSoRepo.GetDefaultPassword()
+	password, err := service.thamSoRepo.GetDefaultPassword()
+
+	if err != nil {
+		return nil, err
+	}
 
 	hashedPassword, err := service.passwordHasher.HashPassword(password)
 
@@ -55,7 +71,7 @@ func (service *ThuThuService) CreateThuThu(name string, ngaySinh *time.Time, ema
 		return nil, err
 	}
 
-	thuThu := entity.NewThuThu(name, ngaySinh, email, phoneNumber, hashedPassword, true, false)
+	thuThu := entity.NewThuThu(name, ngaySinh, email, phoneNumber, hashedPassword, status, isAdminRole)
 
 	thuThu, err = service.thuThuRepo.CreateThuThu(thuThu)
 

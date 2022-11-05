@@ -1,0 +1,1 @@
+docker run -it -v $PWD/db/migration:/migrations --network se214-library-management_se214 migrate/migrate -database "mysql://root:example@tcp(db:3306)/se214?query" -path /migrations force 1

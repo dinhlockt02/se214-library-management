@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS ThuThu (
+  MaThuThu VARCHAR(255) PRIMARY KEY,
+  Name VARCHAR(255),
+  NgaySinh DATE,
+  Email VARCHAR(255),
+  PhoneNumber VARCHAR(255),
+  Password VARCHAR(255),
+  Status BOOLEAN,
+  IsAdminRole BOOLEAN
+);

@@ -1,0 +1,1 @@
+docker run -v $PWD/db/migration:/migrations --network se214-library-management_se214 migrate/migrate create -ext sql -dir /migrations -seq se214_mysql

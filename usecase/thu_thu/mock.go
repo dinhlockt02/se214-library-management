@@ -11,8 +11,8 @@ type MockThuThuUsecase struct {
 	mock.Mock
 }
 
-func (mock *MockThuThuUsecase) GetDanhSachThuThu(email *string, phoneNumber *string) ([]*entity.ThuThu, error) {
-	args := mock.Called(email, phoneNumber)
+func (mock *MockThuThuUsecase) GetDanhSachThuThu() ([]*entity.ThuThu, error) {
+	args := mock.Called()
 	return args.Get(0).([]*entity.ThuThu), args.Error(1)
 }
 

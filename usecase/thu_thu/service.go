@@ -28,13 +28,9 @@ func NewThuThuService(
 	}
 }
 
-func (service *ThuThuService) GetDanhSachThuThu(email string, phoneNumber string) ([]*entity.ThuThu, error) {
-	searchQuery := &repository.ThuThuSearchQuery{
-		Email:       email,
-		PhoneNumber: phoneNumber,
-	}
+func (service *ThuThuService) GetDanhSachThuThu() ([]*entity.ThuThu, error) {
 
-	danhSachThuThu, err := service.thuThuRepo.GetDanhSachThuThu(searchQuery)
+	danhSachThuThu, err := service.thuThuRepo.GetDanhSachThuThu()
 
 	if err != nil {
 		return nil, err
@@ -129,5 +125,16 @@ func (service *ThuThuService) ChangePassword(maThuThu *entity.ID, newPassword st
 		return nil, err
 	}
 
+	return thuThu, nil
+}
+
+func (service *ThuThuService) GetThuThuByEmail(email string) (*entity.ThuThu, error) {
+	thuThu, err := service.thuThuRepo.GetThuThuByEmail(email)
+	if err != nil {
+		return nil, err
+	}
+	if thuThu == nil {
+		return nil, businessError.NewBusinessError("Thu thu not found")
+	}
 	return thuThu, nil
 }

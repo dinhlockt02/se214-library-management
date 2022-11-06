@@ -11,5 +11,7 @@ func ThuThuCommand(db *sqlx.DB) *cobra.Command {
 		Short: `Modify thu thu using admin rights`,
 	}
 	command.AddCommand(LsThuThuCommand(db))
+	command.AddCommand(GetThuThuCommand(db))
+	command.AddCommand(LoginCommand(db))
 	return command
 }

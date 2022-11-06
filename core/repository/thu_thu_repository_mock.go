@@ -9,8 +9,13 @@ type MockThuThuRepository struct {
 	mock.Mock
 }
 
-func (mock *MockThuThuRepository) GetDanhSachThuThu(query *ThuThuSearchQuery) ([]*entity.ThuThu, error) {
-	args := mock.Called(query)
+func (mock *MockThuThuRepository) GetThuThuByEmail(email string) (*entity.ThuThu, error) {
+	args := mock.Called(email)
+	return args.Get(0).(*entity.ThuThu), args.Error(1)
+}
+
+func (mock *MockThuThuRepository) GetDanhSachThuThu() ([]*entity.ThuThu, error) {
+	args := mock.Called()
 	return args.Get(0).([]*entity.ThuThu), args.Error(1)
 }
 

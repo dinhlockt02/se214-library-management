@@ -27,15 +27,10 @@ func NewAuthService(
 
 func (service *AuthService) Login(email string, password string) (*string, error) {
 
-	dsThuThu, err := service.thuThuUsecase.GetDanhSachThuThu(&email, nil)
+	thuThu, err := service.thuThuUsecase.GetThuThuByEmail(email)
 	if err != nil {
 		return nil, err
 	}
-	if len(dsThuThu) == 0 || dsThuThu[0] == nil {
-		return nil, businessError.NewBusinessError("invalid email or password")
-	}
-
-	thuThu := dsThuThu[0]
 
 	isPasswordMatch, err := service.passwordHasher.VerifyPassword(password, thuThu.Password)
 

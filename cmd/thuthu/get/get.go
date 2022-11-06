@@ -1,39 +1,37 @@
-package thuthucommandls
+package thuthucommandget
 
 import (
-	"fmt"
-	"strings"
-
+	"daijoubuteam.xyz/se214-library-management/core/entity"
 	"daijoubuteam.xyz/se214-library-management/infrastructure/mysql"
 	"daijoubuteam.xyz/se214-library-management/infrastructure/service"
 	thuthu "daijoubuteam.xyz/se214-library-management/usecase/thu_thu"
+	"fmt"
 	"github.com/fatih/color"
 	"github.com/jmoiron/sqlx"
 	"github.com/rodaine/table"
 )
 
-func ListThuThu(db *sqlx.DB) {
+func GetThuThu(db *sqlx.DB, maThuThuStr string) {
 	thuThuService := thuthu.NewThuThuService(
 		service.NewBcryptPasswordHasher(),
 		mysql.NewThuThuRepository(db),
 		mysql.NewThamSoRepository(db),
 	)
 
-	danhSachThuThu, err := thuThuService.GetDanhSachThuThu()
+	maThuThu, err := entity.StringToID(maThuThuStr)
 	if err != nil {
-		fmt.Println("error: ls thu thu failed")
+		fmt.Println(err)
 		return
-
 	}
-	table.DefaultHeaderFormatter = func(format string, vals ...interface{}) string {
-		return strings.ToUpper(fmt.Sprintf(format, vals...))
+	thuThu, err := thuThuService.GetThuThu(maThuThu)
+	if err != nil {
+		fmt.Println(err)
+		return
 	}
 	headerFmt := color.New(color.FgGreen, color.Underline).SprintfFunc()
 	columnFmt := color.New(color.FgYellow).SprintfFunc()
 	tbl := table.New("Ma Thu Thu", "Name", "Ngay Sinh", "Email", "Phone")
 	tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt).WithPadding(5)
-	for _, tt := range danhSachThuThu {
-		tbl.AddRow(tt.MaThuThu, tt.Name, tt.NgaySinh, tt.Email, tt.PhoneNumber)
-	}
+	tbl.AddRow(thuThu.MaThuThu, thuThu.Name, thuThu.NgaySinh, thuThu.Email, thuThu.PhoneNumber)
 	tbl.Print()
 }

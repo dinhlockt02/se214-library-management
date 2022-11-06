@@ -6,7 +6,6 @@ import (
 
 	"daijoubuteam.xyz/se214-library-management/core/entity"
 	coreerror "daijoubuteam.xyz/se214-library-management/core/error"
-	"daijoubuteam.xyz/se214-library-management/core/repository"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -21,7 +20,8 @@ func NewThuThuRepository(db *sqlx.DB) *ThuThuRepository {
 	}
 }
 
-func (r *ThuThuRepository) GetDanhSachThuThu(query *repository.ThuThuSearchQuery) (_ []*entity.ThuThu, err error) {
+func (r *ThuThuRepository) GetDanhSachThuThu() (_ []*entity.ThuThu, err error) {
+
 	tx := r.db.MustBegin()
 	defer func() {
 		if err != nil {
@@ -30,9 +30,10 @@ func (r *ThuThuRepository) GetDanhSachThuThu(query *repository.ThuThuSearchQuery
 			tx.Commit()
 		}
 	}()
-	stmt, err := tx.Preparex(
-		`SELECT MaThuThu, Name, NgaySinh, Email, PhoneNumber, Password, Status, IsAdminRole FROM ThuThu`,
-	)
+	stmt, err := tx.Preparex(`
+	SELECT MaThuThu, Name, NgaySinh, Email, PhoneNumber, Password, Status, IsAdminRole
+	from ThuThu
+	`)
 
 	if err != nil {
 		return nil, coreerror.NewInternalServerError("database error: can't not prepare query")
@@ -66,9 +67,41 @@ func (r *ThuThuRepository) GetDanhSachThuThu(query *repository.ThuThuSearchQuery
 	}
 	return danhSachThuThu, nil
 }
+func (r *ThuThuRepository) GetThuThu(maThuThu *entity.ID) (_ *entity.ThuThu, err error) {
+	tx := r.db.MustBegin()
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		} else {
+			tx.Commit()
+		}
+	}()
+	stmt, err := tx.Preparex(`
+		SELECT MaThuThu, Name, NgaySinh, Email, PhoneNumber, Password, Status, IsAdminRole 
+		FROM ThuThu 
+		WHERE MaThuThu = ?
+	`)
 
-func (r *ThuThuRepository) GetThuThu(maThuThu *entity.ID) (*entity.ThuThu, error) {
-	panic("not implemented")
+	if err != nil {
+		return nil, err
+	}
+	row := stmt.QueryRow(maThuThu.String())
+	var maThuThuDB string = ""
+	thuthu := &entity.ThuThu{}
+	s := reflect.ValueOf(thuthu).Elem()
+	numCols := s.NumField()
+	columns := make([]interface{}, numCols)
+	for i := 1; i < numCols; i++ {
+		field := s.Field(i)
+		columns[i] = field.Addr().Interface()
+	}
+	columns[0] = &maThuThuDB
+	err = row.Scan(columns...)
+	if err != nil {
+		return nil, err
+	}
+	thuthu.MaThuThu = maThuThu
+	return thuthu, nil
 }
 func (r *ThuThuRepository) CreateThuThu(thuThu *entity.ThuThu) (_ *entity.ThuThu, err error) {
 	tx := r.db.MustBegin()
@@ -92,4 +125,41 @@ func (r *ThuThuRepository) CreateThuThu(thuThu *entity.ThuThu) (_ *entity.ThuThu
 }
 func (r *ThuThuRepository) UpdateThuThu(thuThu *entity.ThuThu) (*entity.ThuThu, error) {
 	panic("not implemented")
+}
+func (r *ThuThuRepository) GetThuThuByEmail(email string) (_ *entity.ThuThu, err error) {
+	tx := r.db.MustBegin()
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		} else {
+			tx.Commit()
+		}
+	}()
+
+	stmt, err := tx.Preparex(`
+	SELECT MaThuThu, Name, NgaySinh, Email, PhoneNumber, Password, Status, IsAdminRole 
+	FROM ThuThu 
+	WHERE Email = ?
+	`)
+	if err != nil {
+		return nil, err
+	}
+	row := stmt.QueryRow(email)
+	var maThuThu string = ""
+	thuThu := &entity.ThuThu{}
+	s := reflect.ValueOf(thuThu).Elem()
+	numCols := s.NumField()
+	columns := make([]interface{}, numCols)
+	for i := 1; i < numCols; i++ {
+		field := s.Field(i)
+		columns[i] = field.Addr().Interface()
+	}
+	columns[0] = &maThuThu
+	row.Scan(columns...)
+	thuThu.MaThuThu, err = entity.StringToID(maThuThu)
+	if err != nil {
+		return nil, err
+	}
+
+	return thuThu, nil
 }

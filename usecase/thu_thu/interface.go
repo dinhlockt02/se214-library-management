@@ -7,7 +7,7 @@ import (
 )
 
 type ThuThuUsecase interface {
-	GetDanhSachThuThu(email *string, phoneNumber *string) ([]*entity.ThuThu, error)
+	GetDanhSachThuThu() ([]*entity.ThuThu, error)
 	GetThuThu(maThuThu *entity.ID) (*entity.ThuThu, error)
 	GetThuThuByEmail(email string) (*entity.ThuThu, error)
 	CreateThuThu(name string, ngaySinh *time.Time, email string, phoneNumber string, status bool, isAdminRole bool, password string) (*entity.ThuThu, error)

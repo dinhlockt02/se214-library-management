@@ -8,6 +8,8 @@ services:
       - 80:8080
     volumes:
       - ./:/app
+    environment:
+      - CGO_ENABLED=0
     networks:
       - se214
     depends_on:

@@ -15,7 +15,7 @@ func main() {
 	db := utils.ConnectDB(config.DevConfig)
 
 	rootCommand := CreateCommand()
-	rootCommand.AddCommand(admin.AdminCommand())
+	rootCommand.AddCommand(admin.AdminCommand(db))
 	rootCommand.AddCommand(api.ServerCommand(db))
 	rootCommand.AddCommand(thuthucommand.ThuThuCommand(db))
 	rootCommand.Execute()

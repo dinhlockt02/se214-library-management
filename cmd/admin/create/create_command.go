@@ -1,16 +1,20 @@
 package admincreate
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
 
-	"daijoubuteam.xyz/se214-library-management/core/entity"
+	"daijoubuteam.xyz/se214-library-management/infrastructure/mysql"
+	"daijoubuteam.xyz/se214-library-management/infrastructure/service"
+	thuthu "daijoubuteam.xyz/se214-library-management/usecase/thu_thu"
 	"daijoubuteam.xyz/se214-library-management/utils"
+	"github.com/jmoiron/sqlx"
 	"github.com/spf13/cobra"
 )
 
-func CreateAdminCommand() *cobra.Command {
+func CreateAdminCommand(db *sqlx.DB) *cobra.Command {
 
 	var name string
 	var birth string
@@ -23,12 +27,12 @@ func CreateAdminCommand() *cobra.Command {
 		Use:   `create`,
 		Short: `Create new admin`,
 		Run: func(cmd *cobra.Command, args []string) {
-			CreateAdmin(name, birth, email, PhoneNumber, status, password)
+			CreateAdmin(db, name, birth, email, PhoneNumber, status, password)
 		},
 	}
 
 	command.PersistentFlags().StringVarP(&name, "name", "n", "", "Admin's name")
-	command.PersistentFlags().StringVarP(&birth, "birth", "b", "2022/12/31", "Admin's birthday")
+	command.PersistentFlags().StringVarP(&birth, "birth", "b", "2022-12-31", "Admin's birthday")
 	command.PersistentFlags().StringVar(&PhoneNumber, "phone", "", "Admin's phone number")
 	command.PersistentFlags().BoolVar(&status, "enable", false, "Admin's enable status")
 	command.PersistentFlags().StringVarP(&email, "email", "e", "", "Admin's email")
@@ -38,16 +42,20 @@ func CreateAdminCommand() *cobra.Command {
 	return command
 }
 
-func CreateAdmin(name string, birth string, email string, PhoneNumber string, status bool, password string) {
-	admin := &entity.ThuThu{
-		MaThuThu: utils.Ptr(entity.NewID()),
+func CreateAdmin(db *sqlx.DB, name string, birth string, email string, PhoneNumber string, status bool, password string) {
+
+	passwordHasher := service.NewBcryptPasswordHasher()
+	thuThuRepository := mysql.NewThuThuRepository(db)
+	thamSoRepository := mysql.NewThamSoRepository(db)
+
+	thuThuService := thuthu.NewThuThuService(passwordHasher, thuThuRepository, thamSoRepository)
+
+	_, err := thuThuService.CreateThuThu(name, utils.Ptr(StringToDate(birth)), email, PhoneNumber, status, true, password)
+	if err != nil {
+		fmt.Println("Create admin failed")
+		return
 	}
-	admin.Name = name
-	admin.NgaySinh = utils.Ptr(StringToDate(birth))
-	admin.Email = email
-	admin.PhoneNumber = PhoneNumber
-	admin.Status = status
-	admin.Password = password
+	fmt.Println("Create admin successful")
 }
 
 func StringToDate(date string) time.Time {

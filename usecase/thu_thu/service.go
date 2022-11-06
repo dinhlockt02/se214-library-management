@@ -57,9 +57,13 @@ func (service *ThuThuService) GetThuThu(maThuThu *entity.ID) (*entity.ThuThu, er
 	return thuThu, nil
 }
 
-func (service *ThuThuService) CreateThuThu(name string, ngaySinh *time.Time, email string, phoneNumber string, status bool, isAdminRole bool) (*entity.ThuThu, error) {
+func (service *ThuThuService) CreateThuThu(name string, ngaySinh *time.Time, email string, phoneNumber string, status bool, isAdminRole bool, password string) (*entity.ThuThu, error) {
 
-	password, err := service.thamSoRepo.GetDefaultPassword()
+	var err error
+
+	if len(password) == 0 {
+		password, err = service.thamSoRepo.GetDefaultPassword()
+	}
 
 	if err != nil {
 		return nil, err

@@ -125,7 +125,7 @@ func TestCreateThuThu(t *testing.T) {
 		passwordHasher.On("HashPassword", mockDefaultPassword).Return(mockHashedPassword, nil).Once()
 		thuThuRepo.On("CreateThuThu", mock.Anything).Return(mockThuThu, nil).Once()
 
-		rs, err := thuThuService.CreateThuThu(mockName, mockNgaySinh, mockEmail, mockPhoneNumber, mockStatus, mockIsAdmin)
+		rs, err := thuThuService.CreateThuThu(mockName, mockNgaySinh, mockEmail, mockPhoneNumber, mockStatus, mockIsAdmin, "")
 
 		assert.Nil(t, err)
 		assert.Equal(t, mockThuThu, rs)
@@ -144,7 +144,7 @@ func TestCreateThuThu(t *testing.T) {
 
 		thamSoRepo.On("GetDefaultPassword").Return("", errors.New(mockThamSoRepoErrorMessage)).Once()
 
-		rs, err := thuThuService.CreateThuThu(mockName, mockNgaySinh, mockEmail, mockPhoneNumber, mockStatus, mockIsAdmin)
+		rs, err := thuThuService.CreateThuThu(mockName, mockNgaySinh, mockEmail, mockPhoneNumber, mockStatus, mockIsAdmin, "")
 
 		assert.Nil(t, rs)
 		assert.Error(t, err)
@@ -165,7 +165,7 @@ func TestCreateThuThu(t *testing.T) {
 		thamSoRepo.On("GetDefaultPassword").Return(mockDefaultPassword, nil).Once()
 		passwordHasher.On("HashPassword", mockDefaultPassword).Return("", errors.New(hashPasswordErrorMesage)).Once()
 
-		rs, err := thuThuService.CreateThuThu(mockName, mockNgaySinh, mockEmail, mockPhoneNumber, mockStatus, mockIsAdmin)
+		rs, err := thuThuService.CreateThuThu(mockName, mockNgaySinh, mockEmail, mockPhoneNumber, mockStatus, mockIsAdmin, "")
 
 		assert.Empty(t, rs)
 		assert.Error(t, err)
@@ -189,7 +189,7 @@ func TestCreateThuThu(t *testing.T) {
 		passwordHasher.On("HashPassword", mockDefaultPassword).Return(mockHashedPassword, nil).Once()
 		thuThuRepo.On("CreateThuThu", mock.Anything).Return((*entity.ThuThu)(nil), errors.New(mockRepositoryError)).Once()
 
-		rs, err := thuThuService.CreateThuThu(mockName, mockNgaySinh, mockEmail, mockPhoneNumber, mockStatus, mockIsAdmin)
+		rs, err := thuThuService.CreateThuThu(mockName, mockNgaySinh, mockEmail, mockPhoneNumber, mockStatus, mockIsAdmin, "")
 
 		assert.Nil(t, rs)
 		assert.Error(t, err)

@@ -62,5 +62,5 @@ func (service *JwtTokenServiceImpl) Decode(token string) (*entity.ID, error) {
 	if err != nil {
 		return nil, coreerror.NewBadRequestError("Invalid jwt token")
 	}
-	return &id, nil
+	return id, nil
 }

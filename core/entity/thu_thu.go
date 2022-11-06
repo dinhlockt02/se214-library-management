@@ -22,7 +22,9 @@ func NewThuThu(
 	status bool,
 	isAdminRole bool,
 ) *ThuThu {
+	newId := NewID()
 	return &ThuThu{
+		MaThuThu:    &newId,
 		Name:        name,
 		NgaySinh:    ngaySinh,
 		Email:       email,

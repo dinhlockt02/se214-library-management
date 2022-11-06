@@ -16,14 +16,14 @@ func (passwordHasher *BcryptPasswordHasher) HashPassword(password string) (strin
 	bytesPassword := []byte(password)
 	hashedPassword, err := bcrypt.GenerateFromPassword(bytesPassword, bcrypt.DefaultCost)
 	if err != nil {
-		return "", coreerror.NewInternalServerError("hash password failed")
+		return "", coreerror.NewInternalServerError("password hasher: hash password failed", err)
 	}
 	return string(hashedPassword), nil
 }
 func (passwordHasher *BcryptPasswordHasher) VerifyPassword(rawPassword string, hashedPassword string) (bool, error) {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(rawPassword))
 	if err != nil {
-		return false, err
+		return false, coreerror.NewBadRequestError("password not match", err)
 	} else {
 		return true, nil
 	}

@@ -1,10 +1,10 @@
 package docgia
 
 import (
+	coreerror "daijoubuteam.xyz/se214-library-management/core/error"
 	"time"
 
 	"daijoubuteam.xyz/se214-library-management/core/entity"
-	businessError "daijoubuteam.xyz/se214-library-management/core/error"
 	"daijoubuteam.xyz/se214-library-management/core/repository"
 	loaidocgia "daijoubuteam.xyz/se214-library-management/usecase/loai_doc_gia"
 )
@@ -35,7 +35,7 @@ func (service *DocGiaService) GetDocGia(maDocGia *entity.ID) (*entity.DocGia, er
 	}
 
 	if docGia == nil {
-		return nil, businessError.NewBusinessError("doc gia not found")
+		return nil, coreerror.NewNotFoundError("doc gia not found", nil)
 	}
 
 	return docGia, err
@@ -87,7 +87,7 @@ func (service *DocGiaService) UpdateDocGia(maDocGia *entity.ID, hoTen string, ma
 	}
 
 	if docGia == nil {
-		return nil, businessError.NewBusinessError("doc gia not found")
+		return nil, coreerror.NewNotFoundError("doc gia not found", nil)
 	}
 
 	// Update hoten

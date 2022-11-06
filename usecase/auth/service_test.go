@@ -57,7 +57,7 @@ func TestLogin(t *testing.T) {
 		mockPasswordHasher.On("VerifyPassword", mockPassword, mockPassword).Return(false, nil).Once()
 		rs, err := authService.Login(mockEmail, mockPassword)
 		assert.Nil(t, rs)
-		_, ok := err.(*coreerror.BusinessError)
+		_, ok := err.(*coreerror.BadRequestError)
 		assert.Equal(t, true, ok)
 
 	})
@@ -76,7 +76,6 @@ func TestLogin(t *testing.T) {
 		rs, err := authService.Login(mockEmail, mockPassword)
 		assert.Nil(t, rs)
 		assert.Error(t, err)
-		assert.Equal(t, mockPasswordHasherErrorMessage, err.Error())
 	})
 	t.Run("it should return error if could not encode thuThu.MaThuThu", func(t *testing.T) {
 		mockEmail := "mock@email.com"

@@ -1,13 +1,12 @@
 package nhapsach
 
 import (
+	coreerror "daijoubuteam.xyz/se214-library-management/core/error"
 	"time"
 
 	"daijoubuteam.xyz/se214-library-management/core/entity"
 	"daijoubuteam.xyz/se214-library-management/core/repository"
 	"daijoubuteam.xyz/se214-library-management/usecase/sach"
-
-	businessError "daijoubuteam.xyz/se214-library-management/core/error"
 )
 
 type NhapSachService struct {
@@ -40,7 +39,7 @@ func (service *NhapSachService) CreatePhieuNhapSach(ngayLap *time.Time) (*entity
 	phieuNhap := entity.NewPhieuNhap(ngayLap)
 
 	if !phieuNhap.IsValid() {
-		return nil, businessError.NewBusinessError("Invalid phieu nhap")
+		return nil, coreerror.NewBadRequestError("Invalid phieu nhap", nil)
 	}
 
 	phieuNhap, err := service.phieuNhapRepo.CreatePhieuNhap(phieuNhap)
@@ -61,7 +60,7 @@ func (service *NhapSachService) UpdatePhieuNhapSach(maPhieuNhap *entity.ID, ngay
 	phieuNhap.NgayLap = ngayLap
 
 	if !phieuNhap.IsValid() {
-		return nil, businessError.NewBusinessError("Invalid phieu nhap")
+		return nil, coreerror.NewBadRequestError("Invalid phieu nhap", nil)
 
 	}
 	phieuNhap, err = service.phieuNhapRepo.UpdatePhieuNhap(phieuNhap)
@@ -100,7 +99,7 @@ func (service *NhapSachService) AddChiTietPhieuNhapSach(maPhieuNhap *entity.ID, 
 	ctPhieuNhap := entity.NewCtPhieuNhap(phieuNhap, sach, soLuong, donGia)
 
 	if !ctPhieuNhap.IsValid() {
-		return nil, businessError.NewBusinessError("Invalid chi tiet phieu nhap")
+		return nil, coreerror.NewBadRequestError("Invalid chi tiet phieu nhap", nil)
 	}
 
 	phieuNhap, err = service.phieuNhapRepo.AddChiTietPhieuNhap(ctPhieuNhap)
@@ -136,7 +135,7 @@ func (service *NhapSachService) GetChiTietPhieuNhap(maChiTietPhieuNhap *entity.I
 	}
 
 	if ctPhieuNhap == nil {
-		return nil, businessError.NewBusinessError("Chi tiet phieu nhap not found")
+		return nil, coreerror.NewNotFoundError("Chi tiet phieu nhap not found", nil)
 	}
 
 	return ctPhieuNhap, nil

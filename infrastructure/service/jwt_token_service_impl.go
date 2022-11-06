@@ -1,6 +1,7 @@
 package service
 
 import (
+	"golang.org/x/crypto/openpgp/errors"
 	"time"
 
 	"daijoubuteam.xyz/se214-library-management/config"
@@ -22,7 +23,7 @@ func NewJwtTokenServiceImpl(jwtConfig config.JwtConfig) *JwtTokenServiceImpl {
 func (service *JwtTokenServiceImpl) Encode(sub *entity.ID) (string, error) {
 
 	if sub == nil {
-		return "", coreerror.NewInternalServerError("User id is nil")
+		return "", coreerror.NewInternalServerError("jwt token service: id not found", errors.InvalidArgumentError("sub argument must not be nil"))
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{
@@ -42,7 +43,10 @@ func (service *JwtTokenServiceImpl) Encode(sub *entity.ID) (string, error) {
 		},
 	})
 	tokenString, err := token.SignedString(service.jwtConfig.Secret)
-	return tokenString, err
+	if err != nil {
+		return "", coreerror.NewInternalServerError("jwt token service: sign token failed", err)
+	}
+	return tokenString, nil
 }
 func (service *JwtTokenServiceImpl) Decode(token string) (*entity.ID, error) {
 
@@ -51,16 +55,16 @@ func (service *JwtTokenServiceImpl) Decode(token string) (*entity.ID, error) {
 	})
 
 	if err != nil {
-		return nil, coreerror.NewBadRequestError("Invalid jwt token")
+		return nil, coreerror.NewBadRequestError("Invalid jwt token", err)
 	}
 	claims, ok := decodedToken.Claims.(jwt.MapClaims)
 	if !ok {
-		return nil, coreerror.NewBadRequestError("Invalid jwt token")
+		return nil, coreerror.NewBadRequestError("Invalid jwt token", errors.SignatureError("polluted token"))
 	}
 	sub := claims["sub"].(string)
 	id, err := entity.StringToID(sub)
 	if err != nil {
-		return nil, coreerror.NewBadRequestError("Invalid jwt token")
+		return nil, coreerror.NewBadRequestError("Invalid jwt token", errors.SignatureError("invalid id"))
 	}
 	return id, nil
 }

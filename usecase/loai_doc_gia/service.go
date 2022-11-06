@@ -2,7 +2,7 @@ package loaidocgia
 
 import (
 	"daijoubuteam.xyz/se214-library-management/core/entity"
-	businessError "daijoubuteam.xyz/se214-library-management/core/error"
+	coreerror "daijoubuteam.xyz/se214-library-management/core/error"
 	"daijoubuteam.xyz/se214-library-management/core/repository"
 )
 
@@ -28,7 +28,7 @@ func (service *LoaiDocGiaService) GetLoaiDocGia(maLoaiDocGia *entity.ID) (*entit
 	}
 
 	if docGia == nil {
-		return nil, businessError.NewBusinessError("doc gia not found")
+		return nil, coreerror.NewNotFoundError("doc gia not found", nil)
 	}
 
 	return docGia, nil
@@ -52,7 +52,7 @@ func (service *LoaiDocGiaService) UpdateLoaiDocGia(maLoaiDocGia *entity.ID, tenL
 	}
 
 	if loaiDocGia == nil {
-		return nil, businessError.NewBusinessError("loai doc gia not found")
+		return nil, coreerror.NewNotFoundError("loai doc gia not found", nil)
 	}
 
 	loaiDocGia.TenLoaiDocGia = tenLoaiDocGia

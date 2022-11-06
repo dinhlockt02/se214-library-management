@@ -1,7 +1,8 @@
 package mysql
 
 import (
-	"fmt"
+	"daijoubuteam.xyz/se214-library-management/utils"
+	"database/sql"
 	"reflect"
 
 	"daijoubuteam.xyz/se214-library-management/core/entity"
@@ -30,25 +31,25 @@ func (r *ThuThuRepository) GetDanhSachThuThu() (_ []*entity.ThuThu, err error) {
 			tx.Commit()
 		}
 	}()
-	stmt, err := tx.Preparex(`
-	SELECT MaThuThu, Name, NgaySinh, Email, PhoneNumber, Password, Status, IsAdminRole
-	from ThuThu
-	`)
+
+	stmt, err := tx.Prepare(
+		`SELECT MaThuThu, Name, NgaySinh, Email, PhoneNumber, Password, Status, IsAdminRole
+				FROM ThuThu`)
 
 	if err != nil {
-		return nil, coreerror.NewInternalServerError("database error: can't not prepare query")
+		return nil, coreerror.NewInternalServerError("database error: can't not prepare query", err)
 	}
-	rows, err := stmt.Queryx()
+	rows, err := stmt.Query()
 	if err != nil {
-		return nil, coreerror.NewInternalServerError("database error: can't not execute query")
+		return nil, coreerror.NewInternalServerError("database error: can't not execute query", err)
 	}
 	defer rows.Close()
 
 	danhSachThuThu := make([]*entity.ThuThu, 0)
 	for rows.Next() {
 		var maThuThu string = ""
-		thuthu := &entity.ThuThu{}
-		s := reflect.ValueOf(thuthu).Elem()
+		thuThu := &entity.ThuThu{}
+		s := reflect.ValueOf(thuThu).Elem()
 		numCols := s.NumField()
 		columns := make([]interface{}, numCols)
 		for i := 1; i < numCols; i++ {
@@ -57,13 +58,11 @@ func (r *ThuThuRepository) GetDanhSachThuThu() (_ []*entity.ThuThu, err error) {
 		}
 		columns[0] = &maThuThu
 		err = rows.Scan(columns...)
-		thuthu.MaThuThu, err = entity.StringToID(maThuThu)
-		fmt.Println(err)
-		danhSachThuThu = append(danhSachThuThu, thuthu)
-	}
-
-	if err != nil {
-		return danhSachThuThu, coreerror.NewInternalServerError("database error: scan rows failed")
+		thuThu.MaThuThu, err = entity.StringToID(maThuThu)
+		if err != nil {
+			return danhSachThuThu, coreerror.NewInternalServerError("database error: scan rows failed", err)
+		}
+		danhSachThuThu = append(danhSachThuThu, thuThu)
 	}
 	return danhSachThuThu, nil
 }
@@ -76,32 +75,37 @@ func (r *ThuThuRepository) GetThuThu(maThuThu *entity.ID) (_ *entity.ThuThu, err
 			tx.Commit()
 		}
 	}()
-	stmt, err := tx.Preparex(`
-		SELECT MaThuThu, Name, NgaySinh, Email, PhoneNumber, Password, Status, IsAdminRole 
+	stmt, err := tx.Prepare(`
+		SELECT Name, NgaySinh, Email, PhoneNumber, Password, Status, IsAdminRole 
 		FROM ThuThu 
 		WHERE MaThuThu = ?
 	`)
 
 	if err != nil {
-		return nil, err
+		return nil, coreerror.NewInternalServerError("database error: prepare query failed", err)
 	}
 	row := stmt.QueryRow(maThuThu.String())
-	var maThuThuDB string = ""
-	thuthu := &entity.ThuThu{}
-	s := reflect.ValueOf(thuthu).Elem()
+
+	if err = row.Err(); err == sql.ErrNoRows {
+		return nil, coreerror.NewNotFoundError("thu thu not found", err)
+	} else if err != nil {
+		return nil, coreerror.NewInternalServerError("database error: query failed", err)
+	}
+	thuThu := &entity.ThuThu{}
+	s := reflect.ValueOf(thuThu).Elem()
 	numCols := s.NumField()
 	columns := make([]interface{}, numCols)
 	for i := 1; i < numCols; i++ {
 		field := s.Field(i)
 		columns[i] = field.Addr().Interface()
 	}
-	columns[0] = &maThuThuDB
+	columns[0] = utils.Ptr("")
 	err = row.Scan(columns...)
 	if err != nil {
-		return nil, err
+		return nil, coreerror.NewInternalServerError("database error: can not scan row", err)
 	}
-	thuthu.MaThuThu = maThuThu
-	return thuthu, nil
+	thuThu.MaThuThu = maThuThu
+	return thuThu, nil
 }
 func (r *ThuThuRepository) CreateThuThu(thuThu *entity.ThuThu) (_ *entity.ThuThu, err error) {
 	tx := r.db.MustBegin()
@@ -118,7 +122,7 @@ func (r *ThuThuRepository) CreateThuThu(thuThu *entity.ThuThu) (_ *entity.ThuThu
 	_, err = tx.Exec(thuThuExec, thuThu.MaThuThu, thuThu.Name, thuThu.NgaySinh, thuThu.Email, thuThu.PhoneNumber, thuThu.Password, thuThu.Status, thuThu.IsAdminRole)
 
 	if err != nil {
-		return nil, err
+		return nil, coreerror.NewInternalServerError("database error: insert new thu thu failed", err)
 	}
 
 	return thuThu, nil
@@ -136,15 +140,19 @@ func (r *ThuThuRepository) GetThuThuByEmail(email string) (_ *entity.ThuThu, err
 		}
 	}()
 
-	stmt, err := tx.Preparex(`
-	SELECT MaThuThu, Name, NgaySinh, Email, PhoneNumber, Password, Status, IsAdminRole 
-	FROM ThuThu 
-	WHERE Email = ?
-	`)
+	stmt, err := tx.Prepare(`SELECT MaThuThu, Name, NgaySinh, Email, PhoneNumber, Password, Status, IsAdminRole 
+									FROM ThuThu 
+									WHERE Email = ?`)
 	if err != nil {
-		return nil, err
+		return nil, coreerror.NewInternalServerError("database error: prepare query failed", err)
 	}
 	row := stmt.QueryRow(email)
+
+	if err = row.Err(); err != sql.ErrNoRows {
+		return nil, coreerror.NewInternalServerError("thu thu not found", err)
+	} else if err != nil {
+		return nil, coreerror.NewInternalServerError("database error: query failed", err)
+	}
 	var maThuThu string = ""
 	thuThu := &entity.ThuThu{}
 	s := reflect.ValueOf(thuThu).Elem()
@@ -158,7 +166,7 @@ func (r *ThuThuRepository) GetThuThuByEmail(email string) (_ *entity.ThuThu, err
 	row.Scan(columns...)
 	thuThu.MaThuThu, err = entity.StringToID(maThuThu)
 	if err != nil {
-		return nil, err
+		return nil, coreerror.NewInternalServerError("databaser error: convert to id failed", err)
 	}
 
 	return thuThu, nil

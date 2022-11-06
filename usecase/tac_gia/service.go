@@ -2,7 +2,7 @@ package tacgia
 
 import (
 	"daijoubuteam.xyz/se214-library-management/core/entity"
-	businessError "daijoubuteam.xyz/se214-library-management/core/error"
+	coreerror "daijoubuteam.xyz/se214-library-management/core/error"
 	"daijoubuteam.xyz/se214-library-management/core/repository"
 )
 
@@ -25,7 +25,7 @@ func (service *TacGiaService) GetTacGia(maTacGia *entity.ID) (*entity.TacGia, er
 	}
 
 	if tacGia != nil {
-		return nil, businessError.NewBusinessError("Tac gia not found")
+		return nil, coreerror.NewNotFoundError("Tac gia not found", nil)
 	}
 
 	return tacGia, nil
@@ -34,7 +34,7 @@ func (service *TacGiaService) GetTacGia(maTacGia *entity.ID) (*entity.TacGia, er
 func (service *TacGiaService) CreateTacGia(tenTacGia string) (*entity.TacGia, error) {
 	newTacGia := entity.NewTacGia(tenTacGia)
 	if !newTacGia.IsValid() {
-		return nil, businessError.NewBusinessError("Invalid tac gia")
+		return nil, coreerror.NewBadRequestError("Invalid tac gia", nil)
 	}
 	newTacGia, err := service.tacGiaRepo.CreateTacGia(newTacGia)
 	if err != nil {
@@ -49,11 +49,11 @@ func (service *TacGiaService) UpdateTacGia(maTacGia *entity.ID, tenTacGia string
 		return nil, err
 	}
 	if updatedTacGia == nil {
-		return nil, businessError.NewBusinessError("Tac gia not found")
+		return nil, coreerror.NewNotFoundError("Tac gia not found", nil)
 	}
 	updatedTacGia.TenTacGia = tenTacGia
 	if !updatedTacGia.IsValid() {
-		return nil, businessError.NewBusinessError("Invalid tac gia")
+		return nil, coreerror.NewBadRequestError("Invalid tac gia", nil)
 	}
 	_, err = service.tacGiaRepo.UpdateTacGia(updatedTacGia)
 	if err != nil {

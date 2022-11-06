@@ -1,10 +1,10 @@
 package entity
 
 import (
+	coreerror "daijoubuteam.xyz/se214-library-management/core/error"
 	"fmt"
 	"time"
 
-	businessError "daijoubuteam.xyz/se214-library-management/core/error"
 	"daijoubuteam.xyz/se214-library-management/utils"
 )
 
@@ -37,26 +37,26 @@ func NewDocGia(hoTen string, loaiDocGia *LoaiDocGia, ngaySinh *time.Time, diaChi
 
 func (docGia *DocGia) IsValid(tuoiToiDa uint, tuoiToiThieu uint, thoiHanTheMonth uint) (bool, error) {
 	if docGia.MaDocGia == nil {
-		return false, businessError.NewBusinessError("ma doc gia is nil")
+		return false, coreerror.NewBadRequestError("ma doc gia is nil", nil)
 	}
 	if docGia.LoaiDocGia == nil {
-		return false, businessError.NewBusinessError("loai doc gia is nil")
+		return false, coreerror.NewBadRequestError("loai doc gia is nil", nil)
 	}
 
 	if docGia.NgaySinh == nil {
-		return false, businessError.NewBusinessError("ngay sinh is nil")
+		return false, coreerror.NewBadRequestError("ngay sinh is nil", nil)
 	}
 
 	tuoi := time.Now().Year() - docGia.NgaySinh.Year()
 	if tuoi < 0 {
-		return false, businessError.NewBusinessError(fmt.Sprintf("tuoi(%v) must be positive", tuoi))
+		return false, coreerror.NewBadRequestError(fmt.Sprintf("tuoi(%v) must be positive", tuoi), nil)
 	}
 	if uint(tuoi) > tuoiToiDa || uint(tuoi) < tuoiToiThieu {
-		return false, businessError.NewBusinessError(fmt.Sprintf("tuoi(%v) is not between tuoi toi da(%v) and tuoi toi thieu(%v)", tuoi, tuoiToiThieu, tuoiToiDa))
+		return false, coreerror.NewBadRequestError(fmt.Sprintf("tuoi(%v) is not between tuoi toi da(%v) and tuoi toi thieu(%v)", tuoi, tuoiToiThieu, tuoiToiDa), nil)
 	}
 
 	if diffMonths := utils.DiffMonths(*docGia.NgayHetHan, *docGia.NgayLapThe); diffMonths != int(thoiHanTheMonth) {
-		return false, businessError.NewBusinessError("thoi han the is not match")
+		return false, coreerror.NewBadRequestError("thoi han the is not match", nil)
 	}
 	return true, nil
 }

@@ -7,6 +7,8 @@ import (
 	"daijoubuteam.xyz/se214-library-management/config"
 	"daijoubuteam.xyz/se214-library-management/utils"
 	"github.com/spf13/cobra"
+	"log"
+	"os"
 )
 
 func main() {
@@ -18,7 +20,10 @@ func main() {
 	rootCommand.AddCommand(admin.AdminCommand(db))
 	rootCommand.AddCommand(api.ServerCommand(db))
 	rootCommand.AddCommand(thuthucommand.ThuThuCommand(db))
-	rootCommand.Execute()
+	if err := rootCommand.Execute(); err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	}
 }
 
 func CreateCommand() *cobra.Command {

@@ -2,7 +2,7 @@ package sach
 
 import (
 	"daijoubuteam.xyz/se214-library-management/core/entity"
-	businessError "daijoubuteam.xyz/se214-library-management/core/error"
+	coreerror "daijoubuteam.xyz/se214-library-management/core/error"
 	"daijoubuteam.xyz/se214-library-management/core/repository"
 	dausach "daijoubuteam.xyz/se214-library-management/usecase/dau_sach"
 )
@@ -29,7 +29,7 @@ func (service *SachService) GetSach(maSach *entity.ID) (*entity.Sach, error) {
 	}
 
 	if sach == nil {
-		return nil, businessError.NewBusinessError("Sach not found")
+		return nil, coreerror.NewNotFoundError("Sach not found", nil)
 	}
 
 	return sach, nil
@@ -44,7 +44,7 @@ func (service *SachService) CreateSach(maDauSach *entity.ID, nhaXuatBan string, 
 	newSach := entity.NewSach(dauSach, nhaXuatBan, soLuong, triGia, namXuatBan)
 
 	if !newSach.IsValid() {
-		return nil, businessError.NewBusinessError("Invalid sach")
+		return nil, coreerror.NewBadRequestError("Invalid sach", nil)
 	}
 
 	newSach, err = service.sachRepo.CreateSach(newSach)
@@ -70,7 +70,7 @@ func (service *SachService) UpdateSach(maSach *entity.ID, maDauSach *entity.ID, 
 	}
 
 	if sach == nil {
-		return nil, businessError.NewBusinessError("Sach not found")
+		return nil, coreerror.NewNotFoundError("Sach not found", nil)
 	}
 
 	sach.DauSach = dauSach
@@ -80,7 +80,7 @@ func (service *SachService) UpdateSach(maSach *entity.ID, maDauSach *entity.ID, 
 	sach.NamXuatBan = namXuatBan
 
 	if !sach.IsValid() {
-		return nil, businessError.NewBusinessError("Invalid sach")
+		return nil, coreerror.NewBadRequestError("Invalid sach", nil)
 	}
 
 	sach, err = service.sachRepo.UpdateSach(sach)

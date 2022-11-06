@@ -73,7 +73,7 @@ func TestGetThuThu(t *testing.T) {
 		thuThuRepo.On("GetThuThu", &mockMaThuThu).Return((*entity.ThuThu)(nil), nil)
 		rs, err := thuThuService.GetThuThu(&mockMaThuThu)
 
-		_, ok := err.(*coreerror.BusinessError)
+		_, ok := err.(*coreerror.NotFoundError)
 
 		assert.True(t, ok)
 		assert.Nil(t, rs)

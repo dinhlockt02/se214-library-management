@@ -28,7 +28,7 @@ func (service *TheLoaiService) GetTheLoai(maTheLoai *entity.ID) (*entity.TheLoai
 	}
 
 	if theLoai == nil {
-		return nil, businessError.NewBusinessError("The loai not found")
+		return nil, businessError.NewNotFoundError("The loai not found", nil)
 	}
 
 	return theLoai, nil
@@ -37,7 +37,7 @@ func (service *TheLoaiService) GetTheLoai(maTheLoai *entity.ID) (*entity.TheLoai
 func (service *TheLoaiService) CreateTheLoai(tenTheLoai string) (*entity.TheLoai, error) {
 	newTheLoai := entity.NewTheLoai(tenTheLoai)
 	if !newTheLoai.IsValid() {
-		return nil, businessError.NewBusinessError("Invalid the loai")
+		return nil, businessError.NewBadRequestError("Invalid the loai", nil)
 	}
 	newTheLoai, err := service.theLoaiRepo.CreateTheLoai(newTheLoai)
 
@@ -54,11 +54,11 @@ func (service *TheLoaiService) UpdateTheLoai(maTheLoai *entity.ID, tenTheLoai st
 		return nil, err
 	}
 	if updatedTheLoai == nil {
-		return nil, businessError.NewBusinessError("The loai not found")
+		return nil, businessError.NewNotFoundError("The loai not found", nil)
 	}
 	updatedTheLoai.TenTheLoai = tenTheLoai
 	if !updatedTheLoai.IsValid() {
-		return nil, businessError.NewBusinessError("Invalid the loai")
+		return nil, businessError.NewBadRequestError("Invalid the loai", nil)
 	}
 	return updatedTheLoai, nil
 }

@@ -1,13 +1,12 @@
 package thuthu
 
 import (
+	coreerror "daijoubuteam.xyz/se214-library-management/core/error"
 	"time"
 
 	"daijoubuteam.xyz/se214-library-management/core/entity"
 	"daijoubuteam.xyz/se214-library-management/core/repository"
 	coreservice "daijoubuteam.xyz/se214-library-management/core/service"
-
-	businessError "daijoubuteam.xyz/se214-library-management/core/error"
 )
 
 type ThuThuService struct {
@@ -47,7 +46,7 @@ func (service *ThuThuService) GetThuThu(maThuThu *entity.ID) (*entity.ThuThu, er
 	}
 
 	if thuThu == nil {
-		return nil, businessError.NewBusinessError("thu thu not found")
+		return nil, coreerror.NewNotFoundError("thu thu not found", nil)
 	}
 
 	return thuThu, nil
@@ -134,7 +133,7 @@ func (service *ThuThuService) GetThuThuByEmail(email string) (*entity.ThuThu, er
 		return nil, err
 	}
 	if thuThu == nil {
-		return nil, businessError.NewBusinessError("Thu thu not found")
+		return nil, coreerror.NewNotFoundError("Thu thu not found", nil)
 	}
 	return thuThu, nil
 }

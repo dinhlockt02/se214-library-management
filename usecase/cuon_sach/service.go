@@ -2,11 +2,10 @@ package cuonsach
 
 import (
 	"daijoubuteam.xyz/se214-library-management/core/entity"
+	coreerror "daijoubuteam.xyz/se214-library-management/core/error"
 	"daijoubuteam.xyz/se214-library-management/core/repository"
 	nhapsach "daijoubuteam.xyz/se214-library-management/usecase/nhap_sach"
 	"daijoubuteam.xyz/se214-library-management/usecase/sach"
-
-	businessError "daijoubuteam.xyz/se214-library-management/core/error"
 )
 
 type CuonSachService struct {
@@ -33,7 +32,7 @@ func (service *CuonSachService) GetCuonSach(maCuonSach *entity.ID) (*entity.Cuon
 	}
 
 	if cuonSach == nil {
-		return nil, businessError.NewBusinessError("cuon sach not found")
+		return nil, coreerror.NewNotFoundError("cuon sach not found", err)
 	}
 
 	return cuonSach, nil

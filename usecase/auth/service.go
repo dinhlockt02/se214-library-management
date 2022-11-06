@@ -2,7 +2,7 @@ package auth
 
 import (
 	"daijoubuteam.xyz/se214-library-management/core/entity"
-	businessError "daijoubuteam.xyz/se214-library-management/core/error"
+	coreerror "daijoubuteam.xyz/se214-library-management/core/error"
 	coreservice "daijoubuteam.xyz/se214-library-management/core/service"
 	thuthu "daijoubuteam.xyz/se214-library-management/usecase/thu_thu"
 )
@@ -32,14 +32,8 @@ func (service *AuthService) Login(email string, password string) (*string, error
 		return nil, err
 	}
 
-	isPasswordMatch, err := service.passwordHasher.VerifyPassword(password, thuThu.Password)
-
-	if err != nil {
-		return nil, err
-	}
-
-	if !isPasswordMatch {
-		return nil, businessError.NewBusinessError("invalid email or password")
+	if isPasswordMatch, err := service.passwordHasher.VerifyPassword(password, thuThu.Password); !isPasswordMatch {
+		return nil, coreerror.NewBadRequestError("invalid email or password", err)
 	}
 
 	token, err := service.jwtTokenService.Encode(thuThu.MaThuThu)

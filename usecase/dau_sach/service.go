@@ -2,7 +2,7 @@ package dausach
 
 import (
 	"daijoubuteam.xyz/se214-library-management/core/entity"
-	businessError "daijoubuteam.xyz/se214-library-management/core/error"
+	coreerror "daijoubuteam.xyz/se214-library-management/core/error"
 	"daijoubuteam.xyz/se214-library-management/core/repository"
 	tacgia "daijoubuteam.xyz/se214-library-management/usecase/tac_gia"
 	theloai "daijoubuteam.xyz/se214-library-management/usecase/the_loai"
@@ -31,7 +31,7 @@ func (service *DauSachService) GetDauSach(maDauSach *entity.ID) (*entity.DauSach
 	}
 
 	if dauSach == nil {
-		return nil, businessError.NewBusinessError("Dau sach not found")
+		return nil, coreerror.NewNotFoundError("Dau sach not found", nil)
 	}
 
 	return dauSach, nil

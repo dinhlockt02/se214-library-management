@@ -5,7 +5,7 @@ type ForbiddenError struct {
 	err error
 }
 
-func (err *NotFoundError) ForbiddenError() string {
+func (err ForbiddenError) Error() string {
 	return err.Msg
 }
 

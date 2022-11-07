@@ -5,7 +5,7 @@ type BadRequestError struct {
 	err error
 }
 
-func (err *BadRequestError) Error() string {
+func (err BadRequestError) Error() string {
 	return err.Msg
 }
 

@@ -5,7 +5,7 @@ type InternalServerError struct {
 	err error
 }
 
-func (err *InternalServerError) Error() string {
+func (err InternalServerError) Error() string {
 	return err.Msg
 }
 

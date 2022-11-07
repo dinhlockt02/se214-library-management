@@ -5,7 +5,7 @@ type UnauthorizedError struct {
 	err error
 }
 
-func (err *UnauthorizedError) Error() string {
+func (err UnauthorizedError) Error() string {
 	return err.Msg
 }
 

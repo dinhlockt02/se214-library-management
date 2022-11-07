@@ -5,7 +5,7 @@ type NotFoundError struct {
 	err error
 }
 
-func (err *NotFoundError) Error() string {
+func (err NotFoundError) Error() string {
 	return err.Msg
 }
 

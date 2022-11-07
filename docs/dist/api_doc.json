@@ -1,0 +1,105 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Library Management Service API",
+    "description": "Library Management Service API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost"
+    }
+  ],
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "Get authentication token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "login/retrieve token successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginPresenter"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "test@email.com",
+            "required": true
+          },
+          "password": {
+            "type": "string",
+            "example": 12345678,
+            "required": true
+          }
+        }
+      },
+      "LoginPresenter": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Jwt token format"
+          }
+        }
+      }
+    },
+    "responses": {
+      "BadRequestError": {
+        "description": "provide bad request"
+      },
+      "ForbiddenError": {
+        "description": "do not have permission to view this resource"
+      },
+      "NotFoundError": {
+        "description": "resource not found"
+      },
+      "UnauthorizedError": {
+        "description": "token is missing"
+      },
+      "InternalServerError": {
+        "description": "internal server error"
+      }
+    }
+  }
+}

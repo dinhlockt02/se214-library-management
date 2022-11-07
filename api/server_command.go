@@ -1,6 +1,8 @@
 package api
 
 import (
+	"daijoubuteam.xyz/se214-library-management/api/handler"
+	"daijoubuteam.xyz/se214-library-management/wireimpl"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 	"github.com/spf13/cobra"
@@ -28,7 +30,13 @@ func StartServerCommand(db *sqlx.DB) *cobra.Command {
 
 func StartServer(db *sqlx.DB) {
 
+	authUsecase := wireimpl.InitAuthUsecase(db)
+
 	r := gin.Default()
 
-	r.Run(":8080")
+	r.Static("/api-docs", "./docs/dist")
+
+	handler.MakeAuthHandler(r, authUsecase)
+
+	r.Run(":80")
 }

@@ -4,20 +4,14 @@ import (
 	"fmt"
 	"strings"
 
-	"daijoubuteam.xyz/se214-library-management/infrastructure/mysql"
-	"daijoubuteam.xyz/se214-library-management/infrastructure/service"
-	thuthu "daijoubuteam.xyz/se214-library-management/usecase/thu_thu"
+	"daijoubuteam.xyz/se214-library-management/wireimpl"
 	"github.com/fatih/color"
 	"github.com/jmoiron/sqlx"
 	"github.com/rodaine/table"
 )
 
 func ListThuThu(db *sqlx.DB) {
-	thuThuService := thuthu.NewThuThuService(
-		service.NewBcryptPasswordHasher(),
-		mysql.NewThuThuRepository(db),
-		mysql.NewThamSoRepository(db),
-	)
+	thuThuService := wireimpl.InitThuThuUsecase(db)
 
 	danhSachThuThu, err := thuThuService.GetDanhSachThuThu()
 	if err != nil {

@@ -142,14 +142,14 @@ func (r *ThuThuRepository) GetThuThuByEmail(email string) (_ *entity.ThuThu, err
 
 	stmt, err := tx.Prepare(`SELECT MaThuThu, Name, NgaySinh, Email, PhoneNumber, Password, Status, IsAdminRole 
 									FROM ThuThu 
-									WHERE Email = ?`)
+									WHERE Email LIKE ?`)
 	if err != nil {
 		return nil, coreerror.NewInternalServerError("database error: prepare query failed", err)
 	}
 	row := stmt.QueryRow(email)
 
-	if err = row.Err(); err != sql.ErrNoRows {
-		return nil, coreerror.NewInternalServerError("thu thu not found", err)
+	if err = row.Err(); err == sql.ErrNoRows {
+		return nil, coreerror.NewNotFoundError("thu thu not found", err)
 	} else if err != nil {
 		return nil, coreerror.NewInternalServerError("database error: query failed", err)
 	}

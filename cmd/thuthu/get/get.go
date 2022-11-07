@@ -2,9 +2,7 @@ package thuthucommandget
 
 import (
 	"daijoubuteam.xyz/se214-library-management/core/entity"
-	"daijoubuteam.xyz/se214-library-management/infrastructure/mysql"
-	"daijoubuteam.xyz/se214-library-management/infrastructure/service"
-	thuthu "daijoubuteam.xyz/se214-library-management/usecase/thu_thu"
+	"daijoubuteam.xyz/se214-library-management/wireimpl"
 	"fmt"
 	"github.com/fatih/color"
 	"github.com/jmoiron/sqlx"
@@ -12,11 +10,7 @@ import (
 )
 
 func GetThuThu(db *sqlx.DB, maThuThuStr string) {
-	thuThuService := thuthu.NewThuThuService(
-		service.NewBcryptPasswordHasher(),
-		mysql.NewThuThuRepository(db),
-		mysql.NewThamSoRepository(db),
-	)
+	thuThuService := wireimpl.InitThuThuUsecase(db)
 
 	maThuThu, err := entity.StringToID(maThuThuStr)
 	if err != nil {

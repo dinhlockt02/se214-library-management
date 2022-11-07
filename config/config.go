@@ -18,3 +18,11 @@ type JwtConfig struct {
 	Issuer      string
 	ExpDuration time.Duration
 }
+
+func GetConfig() *Config {
+	return DevConfig
+}
+
+func GetJwtConfig() JwtConfig {
+	return GetConfig().JwtConfig
+}

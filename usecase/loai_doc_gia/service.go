@@ -10,6 +10,12 @@ type LoaiDocGiaService struct {
 	loaiDocGiaRepo repository.LoaiDocGiaRepository
 }
 
+func NewLoaiDocGiaService(loaiDocGiaRepo repository.LoaiDocGiaRepository) *LoaiDocGiaService {
+	return &LoaiDocGiaService{
+		loaiDocGiaRepo: loaiDocGiaRepo,
+	}
+}
+
 func (service *LoaiDocGiaService) GetDanhSachLoaiDocGia() ([]*entity.LoaiDocGia, error) {
 	danhSachDocGia, err := service.loaiDocGiaRepo.GetDanhSachLoaiDocGia()
 
@@ -21,17 +27,17 @@ func (service *LoaiDocGiaService) GetDanhSachLoaiDocGia() ([]*entity.LoaiDocGia,
 }
 
 func (service *LoaiDocGiaService) GetLoaiDocGia(maLoaiDocGia *entity.ID) (*entity.LoaiDocGia, error) {
-	docGia, err := service.loaiDocGiaRepo.GetLoaiDocGia(maLoaiDocGia)
+	loaiDocGia, err := service.loaiDocGiaRepo.GetLoaiDocGia(maLoaiDocGia)
 
 	if err != nil {
 		return nil, err
 	}
 
-	if docGia == nil {
-		return nil, coreerror.NewNotFoundError("doc gia not found", nil)
+	if loaiDocGia == nil {
+		return nil, coreerror.NewNotFoundError("loai doc gia not found", nil)
 	}
 
-	return docGia, nil
+	return loaiDocGia, nil
 }
 
 func (service *LoaiDocGiaService) CreateLoaiDocGia(tenLoaiDocGia string) (*entity.LoaiDocGia, error) {

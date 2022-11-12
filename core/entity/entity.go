@@ -1,6 +1,9 @@
 package entity
 
-import "github.com/google/uuid"
+import (
+	coreerror "daijoubuteam.xyz/se214-library-management/core/error"
+	"github.com/google/uuid"
+)
 
 type ID = uuid.UUID
 
@@ -12,5 +15,8 @@ func NewID() ID {
 
 func StringToID(s string) (*ID, error) {
 	id, err := uuid.Parse(s)
-	return &id, err
+	if err != nil {
+		return nil, coreerror.NewBadRequestError("Invalid id string", err)
+	}
+	return &id, nil
 }

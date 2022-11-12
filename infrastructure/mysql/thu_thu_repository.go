@@ -148,11 +148,6 @@ func (r *ThuThuRepository) GetThuThuByEmail(email string) (_ *entity.ThuThu, err
 	}
 	row := stmt.QueryRow(email)
 
-	if err = row.Err(); err == sql.ErrNoRows {
-		return nil, coreerror.NewNotFoundError("thu thu not found", err)
-	} else if err != nil {
-		return nil, coreerror.NewInternalServerError("database error: query failed", err)
-	}
 	var maThuThu string = ""
 	thuThu := &entity.ThuThu{}
 	s := reflect.ValueOf(thuThu).Elem()
@@ -163,7 +158,10 @@ func (r *ThuThuRepository) GetThuThuByEmail(email string) (_ *entity.ThuThu, err
 		columns[i] = field.Addr().Interface()
 	}
 	columns[0] = &maThuThu
-	row.Scan(columns...)
+	err = row.Scan(columns...)
+	if err == sql.ErrNoRows {
+		return nil, coreerror.NewNotFoundError("thu thu not found", err)
+	}
 	thuThu.MaThuThu, err = entity.StringToID(maThuThu)
 	if err != nil {
 		return nil, coreerror.NewInternalServerError("databaser error: convert to id failed", err)

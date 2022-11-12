@@ -31,12 +31,12 @@ func StartServerCommand(db *sqlx.DB) *cobra.Command {
 func StartServer(db *sqlx.DB) {
 
 	authUsecase := wireimpl.InitAuthUsecase(db)
+	loaiDocGiaUsecase := wireimpl.InitLoaiDocGiaUsecase(db)
 
 	r := gin.Default()
 
-	r.Static("/api-docs", "./docs/dist")
-
 	handler.MakeAuthHandler(r, authUsecase)
+	handler.MakeLoaiThuThuHandler(r, loaiDocGiaUsecase)
 
-	r.Run(":80")
+	r.Run(":8080")
 }

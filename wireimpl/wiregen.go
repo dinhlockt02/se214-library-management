@@ -13,6 +13,7 @@ import (
 	"daijoubuteam.xyz/se214-library-management/infrastructure/mysql"
 	"daijoubuteam.xyz/se214-library-management/infrastructure/service"
 	"daijoubuteam.xyz/se214-library-management/usecase/auth"
+	"daijoubuteam.xyz/se214-library-management/usecase/loai_doc_gia"
 	"daijoubuteam.xyz/se214-library-management/usecase/thu_thu"
 	"github.com/google/wire"
 	"github.com/jmoiron/sqlx"
@@ -39,6 +40,12 @@ func InitAuthUsecase(db *sqlx.DB) auth.AuthUsecase {
 	return authService
 }
 
+func InitLoaiDocGiaUsecase(db *sqlx.DB) loaidocgia.LoaiDocGiaUsecase {
+	loaiDocGiaRepository := mysql.NewLoaiDocGiaRepository(db)
+	loaiDocGiaService := loaidocgia.NewLoaiDocGiaService(loaiDocGiaRepository)
+	return loaiDocGiaService
+}
+
 // wire.go:
 
 var PasswordHasherSet = wire.NewSet(wire.Bind(new(coreservice.PasswordHasher), new(*service.BcryptPasswordHasher)), service.NewBcryptPasswordHasher)
@@ -49,6 +56,10 @@ var ThuThuRepositorySet = wire.NewSet(wire.Bind(new(repository.ThuThuRepository)
 
 var ThamSoRepositorySet = wire.NewSet(wire.Bind(new(repository.ThamSoRepository), new(*mysql.ThamSoRepository)), mysql.NewThamSoRepository)
 
+var LoaiDocGiaRepositorySet = wire.NewSet(wire.Bind(new(repository.LoaiDocGiaRepository), new(*mysql.LoaiDocGiaRepository)), mysql.NewLoaiDocGiaRepository)
+
 var ThuThuUsecaseSet = wire.NewSet(wire.Bind(new(thuthu.ThuThuUsecase), new(*thuthu.ThuThuService)), thuthu.NewThuThuService, PasswordHasherSet, ThuThuRepositorySet, ThamSoRepositorySet)
 
 var AuthUsecaseSet = wire.NewSet(wire.Bind(new(auth.AuthUsecase), new(*auth.AuthService)), auth.NewAuthService, ThuThuUsecaseSet, JwtTokenServiceSet)
+
+var LoaiDocGiaUsecaseSet = wire.NewSet(wire.Bind(new(loaidocgia.LoaiDocGiaUsecase), new(*loaidocgia.LoaiDocGiaService)), loaidocgia.NewLoaiDocGiaService, LoaiDocGiaRepositorySet)

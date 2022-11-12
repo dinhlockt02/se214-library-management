@@ -4,8 +4,6 @@ services:
     build:
       context: .
       dockerfile: dev.Dockerfile
-    ports:
-      - 80:8080
     volumes:
       - ./:/app
     environment:
@@ -22,7 +20,7 @@ services:
       MYSQL_ROOT_PASSWORD: example
       MYSQL_DATABASE: se214
     ports:
-      - 3306:3306
+      - "3306:3306"
     networks:
       - se214
     volumes:
@@ -31,11 +29,23 @@ services:
     image: adminer
     restart: always
     ports:
-      - 8080:8080
+      - "8080:8080"
     networks:
       - se214
     depends_on:
       - db
+  nginx:
+    image: nginx
+    volumes:
+      - "./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro"
+      - "./docs:/usr/share/nginx/html/:ro"
+    ports:
+      - "80:80"
+    depends_on:
+      - server
+    command: [nginx-debug, '-g', 'daemon off;']
+    networks:
+      - se214
 networks:
   se214:
 volumes:

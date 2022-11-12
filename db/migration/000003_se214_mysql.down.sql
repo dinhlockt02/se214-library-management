@@ -1,0 +1,2 @@
+DELETE FROM LoaiDocGia;
+DROP TABLE IF EXISTS LoaiDocGia;

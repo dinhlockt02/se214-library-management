@@ -6,7 +6,7 @@ var DevConfig = &Config{
 	DbName:         "se214",
 	User:           "root",
 	Password:       "example",
-	Host:           "localhost",
+	Host:           "db",
 	DatabaseDriver: "mysql",
 	Port:           "3306",
 	JwtConfig: JwtConfig{

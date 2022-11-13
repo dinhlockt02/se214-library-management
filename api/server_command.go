@@ -33,6 +33,7 @@ func StartServer(db *sqlx.DB) {
 
 	authUsecase := wireimpl.InitAuthUsecase(db)
 	loaiDocGiaUsecase := wireimpl.InitLoaiDocGiaUsecase(db)
+	docGiaUsecase := wireimpl.InitDocGiaUsecase(db)
 
 	r := gin.Default()
 
@@ -40,6 +41,7 @@ func StartServer(db *sqlx.DB) {
 
 	handler.MakeAuthHandler(r, authUsecase)
 	handler.MakeLoaiThuThuHandler(r, loaiDocGiaUsecase)
+	handler.MakeDocGiaHandler(r, docGiaUsecase)
 
 	r.Run(":8080")
 }

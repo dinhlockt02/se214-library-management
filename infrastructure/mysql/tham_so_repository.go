@@ -13,13 +13,13 @@ func NewThamSoRepository(db *sqlx.DB) *ThamSoRepository {
 }
 
 func (r *ThamSoRepository) GetThoiHanThe() (uint, error) {
-	panic("not implemented")
+	return 6, nil
 }
 func (r *ThamSoRepository) GetTuoiToiThieu() (uint, error) {
-	panic("not implemented")
+	return 18, nil
 }
 func (r *ThamSoRepository) GetTuoiToiDa() (uint, error) {
-	panic("not implemented")
+	return 55, nil
 }
 func (r *ThamSoRepository) GetDefaultPassword() (string, error) {
 	panic("not implemented")

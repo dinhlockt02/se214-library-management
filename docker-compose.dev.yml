@@ -46,7 +46,7 @@ services:
     command: [nginx-debug, '-g', 'daemon off;']
     networks:
       - se214
-  migrate:
+  migrate-up:
     image: migrate/migrate
     networks:
       - se214

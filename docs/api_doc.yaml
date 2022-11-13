@@ -167,6 +167,140 @@ paths:
           $ref: '#/components/responses/NotFoundError'
         500:
           $ref: '#/components/responses/InternalServerError'
+  /docgia:
+    get:
+      tags:
+        - Doc gia
+      description: Get danh sach doc gia
+      responses:
+        200:
+          description: Get danh sach doc gia successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DocGiaPresenter'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      description: Create new doc gia
+      tags:
+        - Doc gia
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocGiaDto'
+      responses:
+        201:
+          description: Create doc gia successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocGiaPresenter'
+
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /docgia/{maDocGia}:
+    get:
+      tags:
+        - Doc gia
+      description: Get doc gia by id
+      parameters:
+        - in: path
+          name: maDocGia
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Get doc gia successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocGiaPresenter'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      description: Update doc gia successful
+      tags:
+        - Doc gia
+      parameters:
+        - in: path
+          name: maDocGia
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocGiaDto'
+      responses:
+        200:
+          description: Update doc gia successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocGiaPresenter'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Doc gia
+      description: Delete doc gia by id
+      parameters:
+        - in: path
+          name: maDocGia
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Delete doc gia successful
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
 components:
   schemas:
     LoginDto:
@@ -201,6 +335,48 @@ components:
           type: string
         tenLoaiDocGia:
           type: string
+    DocGiaDto:
+      type: object
+      properties:
+        hoTen:
+          type: string
+        maLoaiDocGia:
+          type: string
+        ngaySinh:
+          type: string
+          format: date-time
+        diaChi:
+          type: string
+        email:
+          type: string
+        ngayLapThe:
+          type: string
+          format: date-time
+    DocGiaPresenter:
+      type: object
+      properties:
+        maDocGia:
+          type: string
+        hoTen:
+          type: string
+        loaiDocGia:
+          type: string
+        ngaySinh:
+          type: string
+          format: date-time
+        diaChi:
+          type: string
+        email:
+          type: string
+        ngayLapThe:
+          type: string
+          format: date-time
+        ngayHetHan:
+          type: string
+          format: date-time,
+        tongNo:
+          type: integer
+          minimum: 0
   responses:
     BadRequestError:
       description: provide bad request

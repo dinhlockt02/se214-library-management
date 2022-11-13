@@ -15,9 +15,13 @@ type DocGiaService struct {
 	thamSoRepo        repository.ThamSoRepository
 }
 
-func NewDocGiaService(docGiaRepo repository.DocGiaRepository) *DocGiaService {
+func NewDocGiaService(docGiaRepo repository.DocGiaRepository,
+	loaiDocGiaUsecase loaidocgia.LoaiDocGiaUsecase,
+	thamSoRepo repository.ThamSoRepository) *DocGiaService {
 	return &DocGiaService{
-		docGiaRepo: docGiaRepo,
+		docGiaRepo:        docGiaRepo,
+		loaiDocGiaUsecase: loaiDocGiaUsecase,
+		thamSoRepo:        thamSoRepo,
 	}
 }
 func (service *DocGiaService) GetDanhSachDocGia() ([]*entity.DocGia, error) {
@@ -42,7 +46,6 @@ func (service *DocGiaService) GetDocGia(maDocGia *entity.ID) (*entity.DocGia, er
 }
 
 func (service *DocGiaService) CreateDocGia(hoTen string, maLoaiDocGia *entity.ID, ngaySinh *time.Time, diaChi string, email string, ngayLapThe *time.Time) (*entity.DocGia, error) {
-
 	loaiDocGia, err := service.loaiDocGiaUsecase.GetLoaiDocGia(maLoaiDocGia)
 	if err != nil {
 		return nil, err
@@ -80,7 +83,7 @@ func (service *DocGiaService) CreateDocGia(hoTen string, maLoaiDocGia *entity.ID
 	return docGiaRs, nil
 }
 
-func (service *DocGiaService) UpdateDocGia(maDocGia *entity.ID, hoTen string, maLoaiDocGia *entity.ID, ngaySinh *time.Time, diaChi string, email string) (*entity.DocGia, error) {
+func (service *DocGiaService) UpdateDocGia(maDocGia *entity.ID, hoTen string, maLoaiDocGia *entity.ID, ngaySinh *time.Time, diaChi string, email string, ngayLapThe *time.Time) (*entity.DocGia, error) {
 	docGia, err := service.docGiaRepo.GetDocGia(maDocGia)
 	if err != nil {
 		return nil, err
@@ -131,6 +134,7 @@ func (service *DocGiaService) UpdateDocGia(maDocGia *entity.ID, hoTen string, ma
 		return nil, err
 	}
 
+	docGia.NgayLapThe = ngayLapThe
 	// Validate
 
 	if isValid, err := docGia.IsValid(tuoiToiDa, tuoiToiThieu, thoiHanThe); isValid {

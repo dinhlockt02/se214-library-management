@@ -6,7 +6,9 @@ type TheLoai struct {
 }
 
 func NewTheLoai(tenTheLoai string) *TheLoai {
+	newId := NewID()
 	return &TheLoai{
+		MaTheLoai:  &newId,
 		TenTheLoai: tenTheLoai,
 	}
 }

@@ -1,0 +1,4 @@
+CREATE TABLE TheLoai (
+    MaTheLoai VARCHAR(255) PRIMARY KEY ,
+    TenTheLoai VARCHAR(255)
+);

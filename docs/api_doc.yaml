@@ -301,6 +301,140 @@ paths:
           $ref: '#/components/responses/NotFoundError'
         500:
           $ref: '#/components/responses/InternalServerError'
+  /theloai:
+    get:
+      tags:
+        - The loai
+      description: Get danh sach the loai
+      responses:
+        200:
+          description: Get danh sach the loai successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TheLoaiPresenter'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      description: Create new the loai
+      tags:
+        - The loai
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TheLoaiDto'
+      responses:
+        201:
+          description: Create the loai successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TheLoaiPresenter'
+
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /theloai/{maTheLoai}:
+    get:
+      tags:
+        - The loai
+      description: Get the loai by id
+      parameters:
+        - in: path
+          name: maTheLoai
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Get the loai successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TheLoaiPresenter'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      description: Update the loai successful
+      tags:
+        - The loai
+      parameters:
+        - in: path
+          name: maTheLoai
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TheLoaiDto'
+      responses:
+        200:
+          description: Update the loai successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TheLoaiPresenter'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - The loai
+      description: Delete the loai by id
+      parameters:
+        - in: path
+          name: maTheLoai
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Delete the loai successful
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
 components:
   schemas:
     LoginDto:
@@ -377,6 +511,18 @@ components:
         tongNo:
           type: integer
           minimum: 0
+    TheLoaiDto:
+      type: object
+      properties:
+        tenTheLoai:
+          type: string
+    TheLoaiPresenter:
+      type: object
+      properties:
+        maTheLoai:
+          type: string
+        tenTheLoai:
+          type: string
   responses:
     BadRequestError:
       description: provide bad request

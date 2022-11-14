@@ -15,6 +15,7 @@ import (
 	"daijoubuteam.xyz/se214-library-management/usecase/auth"
 	"daijoubuteam.xyz/se214-library-management/usecase/doc_gia"
 	"daijoubuteam.xyz/se214-library-management/usecase/loai_doc_gia"
+	"daijoubuteam.xyz/se214-library-management/usecase/the_loai"
 	"daijoubuteam.xyz/se214-library-management/usecase/thu_thu"
 	"github.com/google/wire"
 	"github.com/jmoiron/sqlx"
@@ -56,6 +57,12 @@ func InitDocGiaUsecase(db *sqlx.DB) docgia.DocGiaUsecase {
 	return docGiaService
 }
 
+func InitTheLoaiUsecase(db *sqlx.DB) theloai.TheLoaiUsecase {
+	theLoaiRepository := mysql.NewTheLoaiRepository(db)
+	theLoaiService := theloai.NewTheLoaiService(theLoaiRepository)
+	return theLoaiService
+}
+
 // wire.go:
 
 var PasswordHasherSet = wire.NewSet(wire.Bind(new(coreservice.PasswordHasher), new(*service.BcryptPasswordHasher)), service.NewBcryptPasswordHasher)
@@ -70,6 +77,8 @@ var LoaiDocGiaRepositorySet = wire.NewSet(wire.Bind(new(repository.LoaiDocGiaRep
 
 var DocGiaRepositorySet = wire.NewSet(wire.Bind(new(repository.DocGiaRepository), new(*mysql.DocGiaRepository)), mysql.NewDocGiaRepository)
 
+var TheLoaiRepositorySet = wire.NewSet(wire.Bind(new(repository.TheLoaiRepository), new(*mysql.TheLoaiRepository)), mysql.NewTheLoaiRepository)
+
 var ThuThuUsecaseSet = wire.NewSet(wire.Bind(new(thuthu.ThuThuUsecase), new(*thuthu.ThuThuService)), thuthu.NewThuThuService, PasswordHasherSet, ThuThuRepositorySet, ThamSoRepositorySet)
 
 var AuthUsecaseSet = wire.NewSet(wire.Bind(new(auth.AuthUsecase), new(*auth.AuthService)), auth.NewAuthService, ThuThuUsecaseSet, JwtTokenServiceSet)
@@ -77,3 +86,5 @@ var AuthUsecaseSet = wire.NewSet(wire.Bind(new(auth.AuthUsecase), new(*auth.Auth
 var LoaiDocGiaUsecaseSet = wire.NewSet(wire.Bind(new(loaidocgia.LoaiDocGiaUsecase), new(*loaidocgia.LoaiDocGiaService)), loaidocgia.NewLoaiDocGiaService, LoaiDocGiaRepositorySet)
 
 var DocGiaUsecaseSet = wire.NewSet(wire.Bind(new(docgia.DocGiaUsecase), new(*docgia.DocGiaService)), docgia.NewDocGiaService, DocGiaRepositorySet, LoaiDocGiaUsecaseSet, ThamSoRepositorySet)
+
+var TheLoaiUsecaseSet = wire.NewSet(wire.Bind(new(theloai.TheLoaiUsecase), new(*theloai.TheLoaiService)), theloai.NewTheLoaiService, TheLoaiRepositorySet)

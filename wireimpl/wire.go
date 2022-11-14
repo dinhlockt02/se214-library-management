@@ -4,6 +4,7 @@
 package wireimpl
 
 import (
+	dausach "daijoubuteam.xyz/se214-library-management/usecase/dau_sach"
 	docgia "daijoubuteam.xyz/se214-library-management/usecase/doc_gia"
 	loaidocgia "daijoubuteam.xyz/se214-library-management/usecase/loai_doc_gia"
 	tacgia "daijoubuteam.xyz/se214-library-management/usecase/tac_gia"
@@ -31,6 +32,7 @@ var LoaiDocGiaRepositorySet = wire.NewSet(wire.Bind(new(repository.LoaiDocGiaRep
 var DocGiaRepositorySet = wire.NewSet(wire.Bind(new(repository.DocGiaRepository), new(*mysql.DocGiaRepository)), mysql.NewDocGiaRepository)
 var TheLoaiRepositorySet = wire.NewSet(wire.Bind(new(repository.TheLoaiRepository), new(*mysql.TheLoaiRepository)), mysql.NewTheLoaiRepository)
 var TacGiaRepositorySet = wire.NewSet(wire.Bind(new(repository.TacGiaRepository), new(*mysql.TacGiaRepository)), mysql.NewTacGiaRepository)
+var DauSachRepositorySet = wire.NewSet(wire.Bind(new(repository.DauSachRepository), new(*mysql.DauSachRepository)), mysql.NewDauSachRepository)
 
 var ThuThuUsecaseSet = wire.NewSet(wire.Bind(new(thuthu.ThuThuUsecase), new(*thuthu.ThuThuService)), thuthu.NewThuThuService, PasswordHasherSet, ThuThuRepositorySet, ThamSoRepositorySet)
 var AuthUsecaseSet = wire.NewSet(wire.Bind(new(auth.AuthUsecase), new(*auth.AuthService)), auth.NewAuthService, ThuThuUsecaseSet, JwtTokenServiceSet)
@@ -38,6 +40,7 @@ var LoaiDocGiaUsecaseSet = wire.NewSet(wire.Bind(new(loaidocgia.LoaiDocGiaUsecas
 var DocGiaUsecaseSet = wire.NewSet(wire.Bind(new(docgia.DocGiaUsecase), new(*docgia.DocGiaService)), docgia.NewDocGiaService, DocGiaRepositorySet, LoaiDocGiaUsecaseSet, ThamSoRepositorySet)
 var TheLoaiUsecaseSet = wire.NewSet(wire.Bind(new(theloai.TheLoaiUsecase), new(*theloai.TheLoaiService)), theloai.NewTheLoaiService, TheLoaiRepositorySet)
 var TacGiaUsecaseSet = wire.NewSet(wire.Bind(new(tacgia.TacGiaUsecase), new(*tacgia.TacGiaService)), tacgia.NewTacGiaService, TacGiaRepositorySet)
+var DauSachUsecaseSet = wire.NewSet(wire.Bind(new(dausach.DauSachUsecase), new(*dausach.DauSachService)), dausach.NewDauSachService, TacGiaUsecaseSet, TheLoaiUsecaseSet, DauSachRepositorySet)
 
 func InitThuThuUsecase(db *sqlx.DB) thuthu.ThuThuUsecase {
 	wire.Build(ThuThuUsecaseSet)
@@ -67,4 +70,9 @@ func InitTheLoaiUsecase(db *sqlx.DB) theloai.TheLoaiUsecase {
 func InitTacGiaUsecase(db *sqlx.DB) tacgia.TacGiaUsecase {
 	wire.Build(TacGiaUsecaseSet)
 	return &tacgia.TacGiaService{}
+}
+
+func InitDauSachUsecase(db *sqlx.DB) dausach.DauSachUsecase {
+	wire.Build(DauSachUsecaseSet)
+	return &dausach.DauSachService{}
 }

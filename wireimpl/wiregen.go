@@ -13,6 +13,7 @@ import (
 	"daijoubuteam.xyz/se214-library-management/infrastructure/mysql"
 	"daijoubuteam.xyz/se214-library-management/infrastructure/service"
 	"daijoubuteam.xyz/se214-library-management/usecase/auth"
+	"daijoubuteam.xyz/se214-library-management/usecase/dau_sach"
 	"daijoubuteam.xyz/se214-library-management/usecase/doc_gia"
 	"daijoubuteam.xyz/se214-library-management/usecase/loai_doc_gia"
 	"daijoubuteam.xyz/se214-library-management/usecase/tac_gia"
@@ -70,6 +71,16 @@ func InitTacGiaUsecase(db *sqlx.DB) tacgia.TacGiaUsecase {
 	return tacGiaService
 }
 
+func InitDauSachUsecase(db *sqlx.DB) dausach.DauSachUsecase {
+	dauSachRepository := mysql.NewDauSachRepository(db)
+	tacGiaRepository := mysql.NewTacGiaRepository(db)
+	tacGiaService := tacgia.NewTacGiaService(tacGiaRepository)
+	theLoaiRepository := mysql.NewTheLoaiRepository(db)
+	theLoaiService := theloai.NewTheLoaiService(theLoaiRepository)
+	dauSachService := dausach.NewDauSachService(dauSachRepository, tacGiaService, theLoaiService)
+	return dauSachService
+}
+
 // wire.go:
 
 var PasswordHasherSet = wire.NewSet(wire.Bind(new(coreservice.PasswordHasher), new(*service.BcryptPasswordHasher)), service.NewBcryptPasswordHasher)
@@ -88,6 +99,8 @@ var TheLoaiRepositorySet = wire.NewSet(wire.Bind(new(repository.TheLoaiRepositor
 
 var TacGiaRepositorySet = wire.NewSet(wire.Bind(new(repository.TacGiaRepository), new(*mysql.TacGiaRepository)), mysql.NewTacGiaRepository)
 
+var DauSachRepositorySet = wire.NewSet(wire.Bind(new(repository.DauSachRepository), new(*mysql.DauSachRepository)), mysql.NewDauSachRepository)
+
 var ThuThuUsecaseSet = wire.NewSet(wire.Bind(new(thuthu.ThuThuUsecase), new(*thuthu.ThuThuService)), thuthu.NewThuThuService, PasswordHasherSet, ThuThuRepositorySet, ThamSoRepositorySet)
 
 var AuthUsecaseSet = wire.NewSet(wire.Bind(new(auth.AuthUsecase), new(*auth.AuthService)), auth.NewAuthService, ThuThuUsecaseSet, JwtTokenServiceSet)
@@ -99,3 +112,5 @@ var DocGiaUsecaseSet = wire.NewSet(wire.Bind(new(docgia.DocGiaUsecase), new(*doc
 var TheLoaiUsecaseSet = wire.NewSet(wire.Bind(new(theloai.TheLoaiUsecase), new(*theloai.TheLoaiService)), theloai.NewTheLoaiService, TheLoaiRepositorySet)
 
 var TacGiaUsecaseSet = wire.NewSet(wire.Bind(new(tacgia.TacGiaUsecase), new(*tacgia.TacGiaService)), tacgia.NewTacGiaService, TacGiaRepositorySet)
+
+var DauSachUsecaseSet = wire.NewSet(wire.Bind(new(dausach.DauSachUsecase), new(*dausach.DauSachService)), dausach.NewDauSachService, TacGiaUsecaseSet, TheLoaiUsecaseSet, DauSachRepositorySet)

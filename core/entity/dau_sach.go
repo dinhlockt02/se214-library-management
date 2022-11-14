@@ -3,11 +3,11 @@ package entity
 type DauSach struct {
 	MaDauSach  *ID
 	TenDauSach string
-	TheLoai    *TheLoai
+	TheLoai    []*TheLoai
 	TacGia     []*TacGia
 }
 
-func NewDauSach(theLoai *TheLoai, tenDauSach string, tacGia []*TacGia) *DauSach {
+func NewDauSach(theLoai []*TheLoai, tenDauSach string, tacGia []*TacGia) *DauSach {
 	newID := NewID()
 	return &DauSach{
 		MaDauSach:  &newID,

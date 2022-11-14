@@ -6,12 +6,21 @@ import (
 	"daijoubuteam.xyz/se214-library-management/core/repository"
 	tacgia "daijoubuteam.xyz/se214-library-management/usecase/tac_gia"
 	theloai "daijoubuteam.xyz/se214-library-management/usecase/the_loai"
+	"fmt"
 )
 
 type DauSachService struct {
 	dauSachRepo    repository.DauSachRepository
 	tacGiaUsecase  tacgia.TacGiaUsecase
 	theLoaiUsecase theloai.TheLoaiUsecase
+}
+
+func NewDauSachService(dauSachRepo repository.DauSachRepository, tacGiaUsecase tacgia.TacGiaUsecase, theLoaiUsecase theloai.TheLoaiUsecase) *DauSachService {
+	return &DauSachService{
+		dauSachRepo:    dauSachRepo,
+		tacGiaUsecase:  tacGiaUsecase,
+		theLoaiUsecase: theLoaiUsecase,
+	}
 }
 
 func (service *DauSachService) GetDanhSachDauSach() ([]*entity.DauSach, error) {
@@ -37,8 +46,8 @@ func (service *DauSachService) GetDauSach(maDauSach *entity.ID) (*entity.DauSach
 	return dauSach, nil
 }
 
-func (service *DauSachService) CreateDauSach(tenDauSach string, maTheLoai *entity.ID, maTacGia []*entity.ID) (*entity.DauSach, error) {
-	tacGia := make([]*entity.TacGia, len(maTacGia))
+func (service *DauSachService) CreateDauSach(tenDauSach string, maTheLoai []*entity.ID, maTacGia []*entity.ID) (*entity.DauSach, error) {
+	tacGia := make([]*entity.TacGia, 0, len(maTacGia))
 
 	for _, mtg := range maTacGia {
 		tg, err := service.tacGiaUsecase.GetTacGia(mtg)
@@ -48,15 +57,18 @@ func (service *DauSachService) CreateDauSach(tenDauSach string, maTheLoai *entit
 		tacGia = append(tacGia, tg)
 	}
 
-	theLoai, err := service.theLoaiUsecase.GetTheLoai(maTheLoai)
-
-	if err != nil {
-		return nil, err
+	theLoai := make([]*entity.TheLoai, 0, len(maTheLoai))
+	for _, mtl := range maTheLoai {
+		tl, err := service.theLoaiUsecase.GetTheLoai(mtl)
+		if err != nil {
+			return nil, err
+		}
+		theLoai = append(theLoai, tl)
 	}
 
 	dauSach := entity.NewDauSach(theLoai, tenDauSach, tacGia)
 
-	dauSach, err = service.dauSachRepo.CreateDauSach(dauSach)
+	dauSach, err := service.dauSachRepo.CreateDauSach(dauSach)
 
 	if err != nil {
 		return nil, err
@@ -65,9 +77,9 @@ func (service *DauSachService) CreateDauSach(tenDauSach string, maTheLoai *entit
 	return dauSach, nil
 }
 
-func (service *DauSachService) UpdateDauSach(maDauSach *entity.ID, tenDauSach string, maTheLoai *entity.ID, maTacGia []*entity.ID) (*entity.DauSach, error) {
+func (service *DauSachService) UpdateDauSach(maDauSach *entity.ID, tenDauSach string, maTheLoai []*entity.ID, maTacGia []*entity.ID) (*entity.DauSach, error) {
 
-	tacGia := make([]*entity.TacGia, len(maTacGia))
+	tacGia := make([]*entity.TacGia, 0, len(maTacGia))
 
 	for _, mtg := range maTacGia {
 		tg, err := service.tacGiaUsecase.GetTacGia(mtg)
@@ -77,10 +89,15 @@ func (service *DauSachService) UpdateDauSach(maDauSach *entity.ID, tenDauSach st
 		tacGia = append(tacGia, tg)
 	}
 
-	theLoai, err := service.theLoaiUsecase.GetTheLoai(maTheLoai)
+	fmt.Println(tacGia)
 
-	if err != nil {
-		return nil, err
+	theLoai := make([]*entity.TheLoai, 0, len(maTheLoai))
+	for _, mtl := range maTheLoai {
+		tl, err := service.theLoaiUsecase.GetTheLoai(mtl)
+		if err != nil {
+			return nil, err
+		}
+		theLoai = append(theLoai, tl)
 	}
 
 	dauSach, err := service.dauSachRepo.GetDauSach(maDauSach)

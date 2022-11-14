@@ -574,6 +574,143 @@ paths:
           $ref: '#/components/responses/NotFoundError'
         500:
           $ref: '#/components/responses/InternalServerError'
+  /dausach:
+    get:
+      summary: Get danh sach dau sach
+      tags:
+        - Dau sach
+      responses:
+        200:
+          description: Get danh sach dau sach successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DauSachPresenter'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: Create dau sach
+      tags:
+        - Dau sach
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DauSachDto'
+      responses:
+        201:
+          description: Create dau sach successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DauSachPresenter'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /dausach/{maDauSach}:
+    get:
+      summary: Get dau sach by ma dau sach
+      tags:
+        - Dau sach
+      parameters:
+        - in: path
+          name: maDauSach
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Get dau sach successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DauSachPresenter'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      summary: Update dau sach
+      tags:
+        - Dau sach
+      parameters:
+        - in: path
+          name: maDauSach
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DauSachDto'
+      responses:
+        200:
+          description: Create dau sach successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DauSachPresenter'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: Delete dau sach by ma dau sach
+      tags:
+        - Dau sach
+      parameters:
+        - in: path
+          name: maDauSach
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Delete dau sach successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DauSachPresenter'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
 components:
   schemas:
     LoginDto:
@@ -674,6 +811,34 @@ components:
           type: string
         tenTacGia:
           type: string
+    DauSachDto:
+      type: object
+      properties:
+        tenDauSach:
+          type: string
+        theLoai:
+          type: array
+          items:
+            type: string
+        tacGia:
+          type: array
+          items:
+            type: string
+    DauSachPresenter:
+      type: object
+      properties:
+        maDauSach:
+          type: string
+        tenDauSach:
+          type: string
+        theLoai:
+          type: array
+          items:
+            $ref: '#/components/schemas/TheLoaiPresenter'
+        tacGia:
+          type: array
+          items:
+            $ref: '#/components/schemas/TacGiaPresenter'
   responses:
     BadRequestError:
       description: provide bad request

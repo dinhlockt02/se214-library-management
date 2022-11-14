@@ -6,7 +6,9 @@ type TacGia struct {
 }
 
 func NewTacGia(tenTacGia string) *TacGia {
+	newId := NewID()
 	return &TacGia{
+		MaTacGia:  &newId,
 		TenTacGia: tenTacGia,
 	}
 }

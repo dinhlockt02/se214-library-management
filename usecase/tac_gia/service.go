@@ -10,6 +10,12 @@ type TacGiaService struct {
 	tacGiaRepo repository.TacGiaRepository
 }
 
+func NewTacGiaService(tacGiaRepo repository.TacGiaRepository) *TacGiaService {
+	return &TacGiaService{
+		tacGiaRepo: tacGiaRepo,
+	}
+}
+
 func (service *TacGiaService) GetDanhSachTacGia() ([]*entity.TacGia, error) {
 	danhSachTacGia, err := service.tacGiaRepo.GetDanhSachTacGia()
 	if err != nil {
@@ -24,7 +30,7 @@ func (service *TacGiaService) GetTacGia(maTacGia *entity.ID) (*entity.TacGia, er
 		return nil, err
 	}
 
-	if tacGia != nil {
+	if tacGia == nil {
 		return nil, coreerror.NewNotFoundError("Tac gia not found", nil)
 	}
 

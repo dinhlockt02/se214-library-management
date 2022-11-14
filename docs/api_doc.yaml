@@ -435,6 +435,145 @@ paths:
           $ref: '#/components/responses/NotFoundError'
         500:
           $ref: '#/components/responses/InternalServerError'
+  /tacgia:
+    get:
+      summary: Get danh sach tac gia
+      tags:
+        - Tac gia
+      responses:
+        200:
+          description: Get danh sach tac gia successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TacGiaDto'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: Create tac gia
+      tags:
+        - Tac gia
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TacGiaDto'
+      responses:
+        201:
+          description: Get danh sach tac gia successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TacGiaPresenter'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /tacgia/{maTacGia}:
+    get:
+      summary: Get tac gia by ma tac gia
+      tags:
+        - Tac gia
+      parameters:
+        - in: path
+          name: maTacGia
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Get tac gia successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TacGiaPresenter'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      summary: Update tac gia by ma tac gia
+      tags:
+        - Tac gia
+      parameters:
+        - in: path
+          name: maTacGia
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TacGiaDto'
+      responses:
+        200:
+          description: Update tac gia successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TacGiaPresenter'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: Delete tac gia by ma tac gia
+      tags:
+        - Tac gia
+      parameters:
+        - in: path
+          name: maTacGia
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Delete tac gia successful
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
 components:
   schemas:
     LoginDto:
@@ -522,6 +661,18 @@ components:
         maTheLoai:
           type: string
         tenTheLoai:
+          type: string
+    TacGiaDto:
+      type: object
+      properties:
+        tenTacGia:
+          type: string
+    TacGiaPresenter:
+      type: object
+      properties:
+        maTacGia:
+          type: string
+        tenTacGia:
           type: string
   responses:
     BadRequestError:

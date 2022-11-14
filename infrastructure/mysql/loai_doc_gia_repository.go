@@ -148,10 +148,19 @@ func (repo *LoaiDocGiaRepository) RemoveLoaiDocGia(maLoaiDocGia *entity.ID) (err
 		}
 	}()
 
+	row := tx.QueryRow(`SELECT COUNT(*) FROM DocGia WHERE MaLoaiDocGia = ?`, maLoaiDocGia.String())
+	var count int = 0
+	err = row.Scan(&count)
+	if err != nil {
+		return coreerror.NewInternalServerError("database error: cant query number of rows", err)
+	}
+	if count > 0 {
+		return coreerror.NewConflictError("can't not delete loai doc gia because doc gia has this loai doc gia", nil)
+	}
 	exec := `DELETE FROM LoaiDocGia WHERE MaLoaiDocGia = ?;`
 	_, err = tx.Exec(exec, maLoaiDocGia.String())
 	if err != nil {
-		return coreerror.NewInternalServerError("database error: insert new loai doc gia failed", err)
+		return coreerror.NewInternalServerError("database error: delete new loai doc gia failed", err)
 	}
 	return nil
 }

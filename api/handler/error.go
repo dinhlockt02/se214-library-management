@@ -18,6 +18,8 @@ func ErrorHandling(context *gin.Context, err error) bool {
 			context.AbortWithStatusJSON(http.StatusNotFound, err.Error())
 		case *coreerror.ForbiddenError:
 			context.AbortWithStatusJSON(http.StatusForbidden, err.Error())
+		case *coreerror.ConflictError:
+			context.AbortWithStatusJSON(http.StatusConflict, err.Error())
 		case *coreerror.InternalServerError:
 			fmt.Println(err)
 			context.AbortWithStatus(http.StatusInternalServerError)

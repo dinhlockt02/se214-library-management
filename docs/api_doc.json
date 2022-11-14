@@ -263,6 +263,9 @@
           "404": {
             "$ref": "#/components/responses/NotFoundError"
           },
+          "409": {
+            "$ref": "#/components/responses/ConflictError"
+          },
           "500": {
             "$ref": "#/components/responses/InternalServerError"
           }
@@ -476,6 +479,9 @@
           "404": {
             "$ref": "#/components/responses/NotFoundError"
           },
+          "409": {
+            "$ref": "#/components/responses/ConflictError"
+          },
           "500": {
             "$ref": "#/components/responses/InternalServerError"
           }
@@ -688,6 +694,9 @@
           },
           "404": {
             "$ref": "#/components/responses/NotFoundError"
+          },
+          "409": {
+            "$ref": "#/components/responses/ConflictError"
           },
           "500": {
             "$ref": "#/components/responses/InternalServerError"
@@ -911,6 +920,9 @@
           "404": {
             "$ref": "#/components/responses/NotFoundError"
           },
+          "409": {
+            "$ref": "#/components/responses/ConflictError"
+          },
           "500": {
             "$ref": "#/components/responses/InternalServerError"
           }
@@ -1110,14 +1122,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Delete dau sach successful",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DauSachPresenter"
-                }
-              }
-            }
+            "description": "Delete dau sach successful"
           },
           "400": {
             "$ref": "#/components/responses/BadRequestError"
@@ -1130,6 +1135,9 @@
           },
           "404": {
             "$ref": "#/components/responses/NotFoundError"
+          },
+          "409": {
+            "$ref": "#/components/responses/ConflictError"
           },
           "500": {
             "$ref": "#/components/responses/InternalServerError"
@@ -1344,6 +1352,9 @@
       },
       "UnauthorizedError": {
         "description": "token is missing"
+      },
+      "ConflictError": {
+        "description": "conflict with state of server, maybe due to database constraint reason,.."
       },
       "InternalServerError": {
         "description": "internal server error"

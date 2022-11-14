@@ -117,6 +117,17 @@ func (repo *TacGiaRepository) RemoveTacGia(maTacGia *entity.ID) (err error) {
 			tx.Commit()
 		}
 	}()
+
+	row := tx.QueryRow(`SELECT COUNT(*) FROM CT_TacGia WHERE MaTacGia = ?`, maTacGia.String())
+	var count int = 0
+	err = row.Scan(&count)
+	if err != nil {
+		return coreerror.NewInternalServerError("database error: cant query number of rows", err)
+	}
+	if count > 0 {
+		return coreerror.NewConflictError("can't not delete tac gia because dau sach has this tac gia", nil)
+	}
+
 	exec := `DELETE FROM TacGia WHERE MaTacGia = ?`
 	_, err = tx.Exec(exec, maTacGia.String())
 	if err != nil {

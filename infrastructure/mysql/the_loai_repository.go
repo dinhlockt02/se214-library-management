@@ -135,6 +135,16 @@ func (r *TheLoaiRepository) RemoveTheLoai(maTheLoai *entity.ID) (err error) {
 		}
 	}()
 
+	row := tx.QueryRow(`SELECT COUNT(*) FROM CT_TheLoai WHERE MaTheLoai = ?`, maTheLoai.String())
+	var count int = 0
+	err = row.Scan(&count)
+	if err != nil {
+		return coreerror.NewInternalServerError("database error: cant query number of rows", err)
+	}
+	if count > 0 {
+		return coreerror.NewConflictError("can't not delete the loai because dau sach has this the loai", nil)
+	}
+
 	exec := `DELETE FROM TheLoai WHERE MaTheLoai = ?`
 	_, err = tx.Exec(exec, maTheLoai.String())
 	if err != nil {

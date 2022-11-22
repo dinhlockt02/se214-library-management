@@ -9,7 +9,6 @@ type PhieuNhapRepository interface {
 	UpdatePhieuNhap(phieuNhap *entity.PhieuNhap) (*entity.PhieuNhap, error)
 	RemovePhieuNhap(phieuNhap *entity.PhieuNhap) error
 
-	AddChiTietPhieuNhap(ctPhieuNhap *entity.CtPhieuNhap) (*entity.PhieuNhap, error)
-	RemoveChiTietPhieuNhap(ctPhieuNhap *entity.CtPhieuNhap) (*entity.PhieuNhap, error)
-	GetChiTietPhieuNhap(maChiTietPhieuNhap *entity.ID) (*entity.CtPhieuNhap, error)
+	AddChiTietPhieuNhap(maPhieuNhap *entity.ID, ctPhieuNhap *entity.CtPhieuNhap) (*entity.CtPhieuNhap, error)
+	RemoveChiTietPhieuNhap(maSach *entity.ID) error
 }

@@ -1,47 +1,25 @@
 package handler
 
 import (
+	"daijoubuteam.xyz/se214-library-management/api/dto"
+	"daijoubuteam.xyz/se214-library-management/api/presenter"
 	"daijoubuteam.xyz/se214-library-management/core/entity"
 	tacgia "daijoubuteam.xyz/se214-library-management/usecase/tac_gia"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-type TacGiaDto struct {
-	TenTacGia string `json:"tenTacGia" binding:"required"`
-}
-
-type TacGiaPresenter struct {
-	MaTacGia  string `json:"maTacGia" binding:"required"`
-	TenTacGia string `json:"tenTacGia" binding:"required"`
-}
-
-func NewTacGiaPresenter(tacGia *entity.TacGia) *TacGiaPresenter {
-	return &TacGiaPresenter{
-		MaTacGia:  tacGia.MaTacGia.String(),
-		TenTacGia: tacGia.TenTacGia,
-	}
-}
-
-func NewDanhSachTacGiaPresenter(danhSachTacGia []*entity.TacGia) []*TacGiaPresenter {
-	danhSachTacGiaPresenter := make([]*TacGiaPresenter, len(danhSachTacGia))
-	for index, tacGia := range danhSachTacGia {
-		danhSachTacGiaPresenter[index] = NewTacGiaPresenter(tacGia)
-	}
-	return danhSachTacGiaPresenter
-}
-
-func GetDanhSachTacGia(usecase tacgia.TacGiaUsecase) gin.HandlerFunc {
+func getDanhSachTacGia(usecase tacgia.TacGiaUsecase) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		danhSachTacGia, err := usecase.GetDanhSachTacGia()
 		if ErrorHandling(context, err) {
 			return
 		}
-		context.JSON(http.StatusOK, NewDanhSachTacGiaPresenter(danhSachTacGia))
+		context.JSON(http.StatusOK, presenter.NewDanhSachTacGiaPresenter(danhSachTacGia))
 	}
 }
 
-func GetTacGia(usecase tacgia.TacGiaUsecase) gin.HandlerFunc {
+func getTacGia(usecase tacgia.TacGiaUsecase) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		maTacGia, err := entity.StringToID(context.Param("maTacGia"))
 		if ErrorHandling(context, err) {
@@ -51,13 +29,13 @@ func GetTacGia(usecase tacgia.TacGiaUsecase) gin.HandlerFunc {
 		if ErrorHandling(context, err) {
 			return
 		}
-		context.JSON(http.StatusOK, NewTacGiaPresenter(tacGia))
+		context.JSON(http.StatusOK, presenter.NewTacGiaPresenter(tacGia))
 	}
 }
 
-func CreateTacGia(usecase tacgia.TacGiaUsecase) gin.HandlerFunc {
+func createTacGia(usecase tacgia.TacGiaUsecase) gin.HandlerFunc {
 	return func(context *gin.Context) {
-		var tacGiaDto TacGiaDto
+		var tacGiaDto dto.TacGiaDto
 		err := context.ShouldBind(&tacGiaDto)
 		if err != nil {
 			context.AbortWithStatus(http.StatusBadRequest)
@@ -67,17 +45,17 @@ func CreateTacGia(usecase tacgia.TacGiaUsecase) gin.HandlerFunc {
 		if ErrorHandling(context, err) {
 			return
 		}
-		context.JSON(http.StatusCreated, NewTacGiaPresenter(tacGia))
+		context.JSON(http.StatusCreated, presenter.NewTacGiaPresenter(tacGia))
 	}
 }
 
-func UpdateTacGia(usecase tacgia.TacGiaUsecase) gin.HandlerFunc {
+func updateTacGia(usecase tacgia.TacGiaUsecase) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		maTacGia, err := entity.StringToID(context.Param("maTacGia"))
 		if ErrorHandling(context, err) {
 			return
 		}
-		var tacGiaDto TacGiaDto
+		var tacGiaDto dto.TacGiaDto
 		err = context.ShouldBind(&tacGiaDto)
 		if err != nil {
 			context.AbortWithStatus(http.StatusBadRequest)
@@ -87,11 +65,11 @@ func UpdateTacGia(usecase tacgia.TacGiaUsecase) gin.HandlerFunc {
 		if ErrorHandling(context, err) {
 			return
 		}
-		context.JSON(http.StatusOK, NewTacGiaPresenter(tacGia))
+		context.JSON(http.StatusOK, presenter.NewTacGiaPresenter(tacGia))
 	}
 }
 
-func DeleteTacGia(usecase tacgia.TacGiaUsecase) gin.HandlerFunc {
+func deleteTacGia(usecase tacgia.TacGiaUsecase) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		maTacGia, err := entity.StringToID(context.Param("maTacGia"))
 		if ErrorHandling(context, err) {
@@ -105,9 +83,9 @@ func DeleteTacGia(usecase tacgia.TacGiaUsecase) gin.HandlerFunc {
 	}
 }
 func MakeTacGiaHandler(r *gin.Engine, usecase tacgia.TacGiaUsecase) {
-	r.GET("/tacgia", GetDanhSachTacGia(usecase))
-	r.POST("/tacgia", CreateTacGia(usecase))
-	r.GET("/tacgia/:maTacGia", GetTacGia(usecase))
-	r.PUT("/tacgia/:maTacGia", UpdateTacGia(usecase))
-	r.DELETE("/tacgia/:maTacGia", DeleteTacGia(usecase))
+	r.GET("/tacgia", getDanhSachTacGia(usecase))
+	r.POST("/tacgia", createTacGia(usecase))
+	r.GET("/tacgia/:maTacGia", getTacGia(usecase))
+	r.PUT("/tacgia/:maTacGia", updateTacGia(usecase))
+	r.DELETE("/tacgia/:maTacGia", deleteTacGia(usecase))
 }

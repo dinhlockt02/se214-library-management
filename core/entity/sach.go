@@ -4,12 +4,12 @@ type Sach struct {
 	MaSach     *ID
 	DauSach    *DauSach
 	NhaXuatBan string
-	SoLuong    uint
 	TriGia     uint
 	NamXuatBan uint
+	TinhTrang  bool
 }
 
-func NewSach(dauSach *DauSach, nhaXuatBan string, soLuong uint, triGia uint, namXuatBan uint) *Sach {
+func NewSach(dauSach *DauSach, nhaXuatBan string, triGia uint, namXuatBan uint, tinhTrang bool) *Sach {
 
 	newId := NewID()
 
@@ -17,9 +17,9 @@ func NewSach(dauSach *DauSach, nhaXuatBan string, soLuong uint, triGia uint, nam
 		MaSach:     &newId,
 		DauSach:    dauSach,
 		NhaXuatBan: nhaXuatBan,
-		SoLuong:    soLuong,
 		TriGia:     triGia,
 		NamXuatBan: namXuatBan,
+		TinhTrang:  tinhTrang,
 	}
 }
 

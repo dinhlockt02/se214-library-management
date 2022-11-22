@@ -1,22 +1,16 @@
 package handler
 
 import (
+	"daijoubuteam.xyz/se214-library-management/api/dto"
+	"daijoubuteam.xyz/se214-library-management/api/presenter"
 	"daijoubuteam.xyz/se214-library-management/usecase/auth"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-type LoginDto struct {
-	Email    string `json:"email" binding:"required"`
-	Password string `json:"password" binding:"required"`
-}
-type LoginPresenter struct {
-	Token string `json:"token"`
-}
-
-func Login(service auth.AuthUsecase) gin.HandlerFunc {
+func login(service auth.AuthUsecase) gin.HandlerFunc {
 	return func(context *gin.Context) {
-		var loginDto LoginDto
+		var loginDto dto.LoginDto
 		err := context.ShouldBind(&loginDto)
 		if err != nil {
 			context.AbortWithStatus(http.StatusBadRequest)
@@ -25,12 +19,12 @@ func Login(service auth.AuthUsecase) gin.HandlerFunc {
 		if ErrorHandling(context, err) {
 			return
 		}
-		context.JSON(http.StatusOK, &LoginPresenter{
+		context.JSON(http.StatusOK, &presenter.LoginPresenter{
 			Token: *token,
 		})
 	}
 }
 
 func MakeAuthHandler(r *gin.Engine, authUsecase auth.AuthUsecase) {
-	r.POST("/auth/login", Login(authUsecase))
+	r.POST("/auth/login", login(authUsecase))
 }

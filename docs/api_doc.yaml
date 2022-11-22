@@ -717,6 +717,200 @@ paths:
           $ref: '#/components/responses/ConflictError'
         500:
           $ref: '#/components/responses/InternalServerError'
+  /phieunhap:
+    get:
+      summary: Get danh sach phieu nhap
+      tags:
+        - Phieu nhap
+      responses:
+        200:
+          description: Get danh sach phieu nhap successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PhieuNhapPresenter'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: Create phieu nhap
+      tags:
+        - Phieu nhap
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PhieuNhapDto'
+      responses:
+        201:
+          description: Create dau sach successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhieuNhapPresenter'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /phieunhap/{maPhieuNhap}:
+    get:
+      summary: Get phieu nhap
+      tags:
+        - Phieu nhap
+      parameters:
+        - in: path
+          name: maPhieuNhap
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Get phieu nhap successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhieuNhapPresenter'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      summary: Update phieu nhap
+      tags:
+        - Phieu nhap
+      parameters:
+        - in: path
+          name: maPhieuNhap
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PhieuNhapDto'
+      responses:
+        201:
+          description: Update phieu nhap successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhieuNhapPresenter'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: Remove phieu nhap
+      tags:
+        - Phieu nhap
+      parameters:
+        - in: path
+          name: maPhieuNhap
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Remove phieu nhap successful
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: Add chi tiet phieu nhap
+      tags:
+        - Phieu nhap
+      parameters:
+        - in: path
+          name: maPhieuNhap
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CtPhieuNhapDto'
+      responses:
+        201:
+          description: Add chi tiet phieu nhap successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CtPhieuNhapPresenter'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /phieunhap/{maPhieuNhap}/{maSach}:
+    delete:
+      summary: Remove chi tiet phieu nhap
+      tags:
+        - Phieu nhap
+      parameters:
+        - in: path
+          name: maPhieuNhap
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: maSach
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Remove chi tiet phieu nhap successful
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
 components:
   schemas:
     LoginDto:
@@ -845,6 +1039,63 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TacGiaPresenter'
+    PhieuNhapPresenter:
+      type: object
+      properties:
+        maPhieuNhap:
+          type: string
+        ngayLap:
+          type: string
+          format: date-time
+        tongTien:
+          type: integer
+        ctPhieuNhap:
+          type: array
+          items:
+            $ref: '#/components/schemas/CtPhieuNhapPresenter'
+    CtPhieuNhapPresenter:
+      type: object
+      properties:
+        sach:
+          $ref: '#/components/schemas/SachPresenter'
+        donGia:
+          type: integer
+    SachPresenter:
+      type: object
+      properties:
+        maSach:
+          type: string
+        dauSach:
+          $ref: '#/components/schemas/DauSachPresenter'
+        nhaXuatBan:
+          type: string
+        triGia:
+          type: integer
+        namXuatBan:
+          type: integer
+        tinhTrang:
+          type: boolean
+    PhieuNhapDto:
+      type: object
+      properties:
+        ngayLap:
+          type: string
+          format: date-time
+    CtPhieuNhapDto:
+      type: object
+      properties:
+        maDauSach:
+          type: string
+        nhaXuatBan:
+          type: string
+        triGia:
+          type: integer
+        namXuatBan:
+          type: integer
+        tinhTrang:
+          type: boolean
+        donGia:
+          type: integer
   responses:
     BadRequestError:
       description: provide bad request

@@ -9,6 +9,10 @@ func (err InternalServerError) Error() string {
 	return err.Msg
 }
 
+func (err InternalServerError) UnderlyingError() error {
+	return err.err
+}
+
 func NewInternalServerError(msg string, err error) *InternalServerError {
 	return &InternalServerError{
 		Msg: msg,

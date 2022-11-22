@@ -6,6 +6,7 @@ type PhieuNhap struct {
 	MaPhieuNhap *ID
 	NgayLap     *time.Time
 	TongTien    uint
+	CtPhieuNhap []*CtPhieuNhap
 }
 
 func NewPhieuNhap(ngayNhap *time.Time) *PhieuNhap {
@@ -15,6 +16,7 @@ func NewPhieuNhap(ngayNhap *time.Time) *PhieuNhap {
 		MaPhieuNhap: &newId,
 		NgayLap:     ngayNhap,
 		TongTien:    0,
+		CtPhieuNhap: nil,
 	}
 }
 

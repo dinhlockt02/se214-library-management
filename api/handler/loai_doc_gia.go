@@ -1,43 +1,17 @@
 package handler
 
 import (
+	"daijoubuteam.xyz/se214-library-management/api/dto"
+	"daijoubuteam.xyz/se214-library-management/api/presenter"
 	"daijoubuteam.xyz/se214-library-management/core/entity"
 	loaidocgia "daijoubuteam.xyz/se214-library-management/usecase/loai_doc_gia"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-type PostLoaiDocGiaDto struct {
-	TenLoaiDocGia string `json:"tenLoaiDocGia" binding:"required"`
-}
-
-type PutLoaiDocGiaDto struct {
-	TenLoaiDocGia string `json:"tenLoaiDocGia" binding:"required"`
-}
-
-type LoaiDocGiaPresenter struct {
-	MaLoaiDocGia  string `json:"maLoaiDocGia" binding:"required"`
-	TenLoaiDocGia string `json:"tenLoaiDocGia" binding:"required"`
-}
-
-func NewLoaiDocGiaPresenter(loaiDocGia *entity.LoaiDocGia) *LoaiDocGiaPresenter {
-	return &LoaiDocGiaPresenter{
-		MaLoaiDocGia:  loaiDocGia.MaLoaiDocGia.String(),
-		TenLoaiDocGia: loaiDocGia.TenLoaiDocGia,
-	}
-}
-
-func NewDanhSachLoaiDocGiaPresenter(danhSachLoaiDocGia []*entity.LoaiDocGia) []*LoaiDocGiaPresenter {
-	danhSachLoaiDocGiaPresenter := make([]*LoaiDocGiaPresenter, len(danhSachLoaiDocGia))
-	for index, loaiDocGia := range danhSachLoaiDocGia {
-		danhSachLoaiDocGiaPresenter[index] = NewLoaiDocGiaPresenter(loaiDocGia)
-	}
-	return danhSachLoaiDocGiaPresenter
-}
-
-func CreateLoaiDocGia(usecase loaidocgia.LoaiDocGiaUsecase) gin.HandlerFunc {
+func createLoaiDocGia(usecase loaidocgia.LoaiDocGiaUsecase) gin.HandlerFunc {
 	return func(context *gin.Context) {
-		var createLoaiDocGiaDto PostLoaiDocGiaDto
+		var createLoaiDocGiaDto dto.PostLoaiDocGiaDto
 		err := context.ShouldBind(&createLoaiDocGiaDto)
 		if err != nil {
 			context.AbortWithStatus(http.StatusBadRequest)
@@ -46,21 +20,21 @@ func CreateLoaiDocGia(usecase loaidocgia.LoaiDocGiaUsecase) gin.HandlerFunc {
 		if ErrorHandling(context, err) {
 			return
 		}
-		context.JSON(http.StatusCreated, NewLoaiDocGiaPresenter(loaiDocGia))
+		context.JSON(http.StatusCreated, presenter.NewLoaiDocGiaPresenter(loaiDocGia))
 	}
 }
 
-func GetDanhSachLoaiDocGia(usecase loaidocgia.LoaiDocGiaUsecase) gin.HandlerFunc {
+func getDanhSachLoaiDocGia(usecase loaidocgia.LoaiDocGiaUsecase) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		danhSachLoaiDocGia, err := usecase.GetDanhSachLoaiDocGia()
 		if ErrorHandling(context, err) {
 			return
 		}
-		context.JSON(http.StatusOK, NewDanhSachLoaiDocGiaPresenter(danhSachLoaiDocGia))
+		context.JSON(http.StatusOK, presenter.NewDanhSachLoaiDocGiaPresenter(danhSachLoaiDocGia))
 	}
 }
 
-func GetLoaiDocGia(usecase loaidocgia.LoaiDocGiaUsecase) gin.HandlerFunc {
+func getLoaiDocGia(usecase loaidocgia.LoaiDocGiaUsecase) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		maLoaiDocGia, err := entity.StringToID(context.Param("maLoaiDocGia"))
 		if ErrorHandling(context, err) {
@@ -70,17 +44,17 @@ func GetLoaiDocGia(usecase loaidocgia.LoaiDocGiaUsecase) gin.HandlerFunc {
 		if ErrorHandling(context, err) {
 			return
 		}
-		context.JSON(http.StatusOK, NewLoaiDocGiaPresenter(loaiDocGia))
+		context.JSON(http.StatusOK, presenter.NewLoaiDocGiaPresenter(loaiDocGia))
 	}
 }
 
-func PutLoaiDocGia(usecase loaidocgia.LoaiDocGiaUsecase) gin.HandlerFunc {
+func putLoaiDocGia(usecase loaidocgia.LoaiDocGiaUsecase) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		maLoaiDocGia, err := entity.StringToID(context.Param("maLoaiDocGia"))
 		if ErrorHandling(context, err) {
 			return
 		}
-		var putLoaiDocGiaDto PutLoaiDocGiaDto
+		var putLoaiDocGiaDto dto.PutLoaiDocGiaDto
 		err = context.ShouldBind(&putLoaiDocGiaDto)
 		if err != nil {
 			context.AbortWithStatus(http.StatusBadRequest)
@@ -89,11 +63,11 @@ func PutLoaiDocGia(usecase loaidocgia.LoaiDocGiaUsecase) gin.HandlerFunc {
 		if ErrorHandling(context, err) {
 			return
 		}
-		context.JSON(http.StatusOK, NewLoaiDocGiaPresenter(loaiDocGia))
+		context.JSON(http.StatusOK, presenter.NewLoaiDocGiaPresenter(loaiDocGia))
 	}
 }
 
-func DeleteLoaiDocGia(usecase loaidocgia.LoaiDocGiaUsecase) gin.HandlerFunc {
+func deleteLoaiDocGia(usecase loaidocgia.LoaiDocGiaUsecase) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		maLoaiDocGia, err := entity.StringToID(context.Param("maLoaiDocGia"))
 		if ErrorHandling(context, err) {
@@ -108,9 +82,9 @@ func DeleteLoaiDocGia(usecase loaidocgia.LoaiDocGiaUsecase) gin.HandlerFunc {
 }
 
 func MakeLoaiThuThuHandler(r *gin.Engine, usecase loaidocgia.LoaiDocGiaUsecase) {
-	r.POST("/loaidocgia", CreateLoaiDocGia(usecase))
-	r.GET("/loaidocgia", GetDanhSachLoaiDocGia(usecase))
-	r.GET("/loaidocgia/:maLoaiDocGia", GetLoaiDocGia(usecase))
-	r.PUT("/loaidocgia/:maLoaiDocGia", PutLoaiDocGia(usecase))
-	r.DELETE("/loaidocgia/:maLoaiDocGia", DeleteLoaiDocGia(usecase))
+	r.POST("/loaidocgia", createLoaiDocGia(usecase))
+	r.GET("/loaidocgia", getDanhSachLoaiDocGia(usecase))
+	r.GET("/loaidocgia/:maLoaiDocGia", getLoaiDocGia(usecase))
+	r.PUT("/loaidocgia/:maLoaiDocGia", putLoaiDocGia(usecase))
+	r.DELETE("/loaidocgia/:maLoaiDocGia", deleteLoaiDocGia(usecase))
 }

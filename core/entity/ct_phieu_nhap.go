@@ -1,24 +1,15 @@
 package entity
 
 type CtPhieuNhap struct {
-	MaCTPN    *ID
-	PhieuNhap *PhieuNhap
-	Sach      *Sach
-	SoLuong   uint
-	DonGia    uint
-	ThanhTien uint
+	Sach   *Sach
+	DonGia uint
 }
 
-func NewCtPhieuNhap(phieuNhap *PhieuNhap, sach *Sach, soLuong uint, donGia uint) *CtPhieuNhap {
-	newId := NewID()
+func NewCtPhieuNhap(sach *Sach, donGia uint) *CtPhieuNhap {
 
 	return &CtPhieuNhap{
-		MaCTPN:    &newId,
-		PhieuNhap: phieuNhap,
-		Sach:      sach,
-		SoLuong:   soLuong,
-		DonGia:    donGia,
-		ThanhTien: donGia * soLuong,
+		Sach:   sach,
+		DonGia: donGia,
 	}
 }
 

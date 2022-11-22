@@ -2,16 +2,23 @@ package nhapsach
 
 import (
 	coreerror "daijoubuteam.xyz/se214-library-management/core/error"
+	dausach "daijoubuteam.xyz/se214-library-management/usecase/dau_sach"
 	"time"
 
 	"daijoubuteam.xyz/se214-library-management/core/entity"
 	"daijoubuteam.xyz/se214-library-management/core/repository"
-	"daijoubuteam.xyz/se214-library-management/usecase/sach"
 )
 
 type NhapSachService struct {
-	phieuNhapRepo repository.PhieuNhapRepository
-	sachUsecase   sach.SachUsecase
+	phieuNhapRepo  repository.PhieuNhapRepository
+	dauSachUsecase dausach.DauSachUsecase
+}
+
+func NewNhapSachService(phieuNhapRepository repository.PhieuNhapRepository, dauSachUsecase dausach.DauSachUsecase) *NhapSachService {
+	return &NhapSachService{
+		phieuNhapRepo:  phieuNhapRepository,
+		dauSachUsecase: dauSachUsecase,
+	}
 }
 
 func (service *NhapSachService) GetDanhSachPhieuNhapSach() ([]*entity.PhieuNhap, error) {
@@ -82,61 +89,26 @@ func (service *NhapSachService) RemovePhieuNhapSach(maPhieuNhap *entity.ID) erro
 	return err
 }
 
-func (service *NhapSachService) AddChiTietPhieuNhapSach(maPhieuNhap *entity.ID, maSach *entity.ID, soLuong uint, donGia uint) (*entity.PhieuNhap, error) {
-
-	sach, err := service.sachUsecase.GetSach(maSach)
-
+func (service *NhapSachService) AddChiTietPhieuNhapSach(
+	maPhieuNhap *entity.ID,
+	maDauSach *entity.ID,
+	nhaXuatBan string, triGia uint,
+	namXuatBan uint,
+	tinhTrang bool,
+	donGia uint) (*entity.CtPhieuNhap, error) {
+	dauSach, err := service.dauSachUsecase.GetDauSach(maDauSach)
 	if err != nil {
 		return nil, err
 	}
-
-	phieuNhap, err := service.GetPhieuNhapSach(maPhieuNhap)
-
+	sach := entity.NewSach(dauSach, nhaXuatBan, triGia, namXuatBan, tinhTrang)
+	ctNhapSach := entity.NewCtPhieuNhap(sach, donGia)
+	chiTietPhieuNhap, err := service.phieuNhapRepo.AddChiTietPhieuNhap(maPhieuNhap, ctNhapSach)
 	if err != nil {
 		return nil, err
 	}
-
-	ctPhieuNhap := entity.NewCtPhieuNhap(phieuNhap, sach, soLuong, donGia)
-
-	if !ctPhieuNhap.IsValid() {
-		return nil, coreerror.NewBadRequestError("Invalid chi tiet phieu nhap", nil)
-	}
-
-	phieuNhap, err = service.phieuNhapRepo.AddChiTietPhieuNhap(ctPhieuNhap)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return phieuNhap, err
+	return chiTietPhieuNhap, nil
 }
 
-func (service *NhapSachService) RemoveChiTietPhieuNhapSach(maChiTietPhieuNhap *entity.ID) (*entity.PhieuNhap, error) {
-	ctPhieuNhap, err := service.GetChiTietPhieuNhap(maChiTietPhieuNhap)
-
-	if err != nil {
-		return nil, err
-	}
-
-	phieuNhap, err := service.phieuNhapRepo.RemoveChiTietPhieuNhap(ctPhieuNhap)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return phieuNhap, nil
-}
-
-func (service *NhapSachService) GetChiTietPhieuNhap(maChiTietPhieuNhap *entity.ID) (*entity.CtPhieuNhap, error) {
-	ctPhieuNhap, err := service.phieuNhapRepo.GetChiTietPhieuNhap(maChiTietPhieuNhap)
-
-	if err != nil {
-		return nil, err
-	}
-
-	if ctPhieuNhap == nil {
-		return nil, coreerror.NewNotFoundError("Chi tiet phieu nhap not found", nil)
-	}
-
-	return ctPhieuNhap, nil
+func (service *NhapSachService) RemoveChiTietPhieuNhapSach(maChiTietPhieuNhap *entity.ID) error {
+	return service.phieuNhapRepo.RemoveChiTietPhieuNhap(maChiTietPhieuNhap)
 }

@@ -1,55 +1,27 @@
 package handler
 
 import (
+	"daijoubuteam.xyz/se214-library-management/api/dto"
+	"daijoubuteam.xyz/se214-library-management/api/presenter"
 	"daijoubuteam.xyz/se214-library-management/core/entity"
 	dausach "daijoubuteam.xyz/se214-library-management/usecase/dau_sach"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-type DauSachDto struct {
-	TenDauSach string   `json:"tenDauSach" binding:"required"`
-	TheLoai    []string `json:"theLoai" binding:"required"`
-	TacGia     []string `json:"tacGia" binding:"required"`
-}
-
-type DauSachPresenter struct {
-	MaDauSach  string              `json:"maDauSach" binding:"required"`
-	TenDauSach string              `json:"tenDauSach" binding:"required"`
-	TheLoai    []*TheLoaiPresenter `json:"theLoai" binding:"required"`
-	TacGia     []*TacGiaPresenter  `json:"tacGia" binding:"required"`
-}
-
-func NewDauSachPresenter(dauSach *entity.DauSach) *DauSachPresenter {
-	return &DauSachPresenter{
-		MaDauSach:  dauSach.MaDauSach.String(),
-		TenDauSach: dauSach.TenDauSach,
-		TheLoai:    NewDanhSachTheLoaiPresenter(dauSach.TheLoai),
-		TacGia:     NewDanhSachTacGiaPresenter(dauSach.TacGia),
-	}
-}
-
-func NewDanhSachDauSachPresenter(danhSachDauSach []*entity.DauSach) []*DauSachPresenter {
-	danhSachDauSachPresenter := make([]*DauSachPresenter, 0, len(danhSachDauSach))
-	for _, dauSach := range danhSachDauSach {
-		danhSachDauSachPresenter = append(danhSachDauSachPresenter, NewDauSachPresenter(dauSach))
-	}
-	return danhSachDauSachPresenter
-}
-
-func GetDanhSachDauSach(usecase dausach.DauSachUsecase) gin.HandlerFunc {
+func getDanhSachDauSach(usecase dausach.DauSachUsecase) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		danhSachDauSach, err := usecase.GetDanhSachDauSach()
 		if ErrorHandling(context, err) {
 			return
 		}
-		context.JSON(http.StatusOK, NewDanhSachDauSachPresenter(danhSachDauSach))
+		context.JSON(http.StatusOK, presenter.NewDanhSachDauSachPresenter(danhSachDauSach))
 	}
 }
 
-func CreateDauSach(usecase dausach.DauSachUsecase) gin.HandlerFunc {
+func createDauSach(usecase dausach.DauSachUsecase) gin.HandlerFunc {
 	return func(context *gin.Context) {
-		var dauSachDto DauSachDto
+		var dauSachDto dto.DauSachDto
 		err := context.ShouldBind(&dauSachDto)
 		if err != nil || len(dauSachDto.TacGia) == 0 || len(dauSachDto.TheLoai) == 0 {
 			context.AbortWithStatus(http.StatusBadRequest)
@@ -75,13 +47,13 @@ func CreateDauSach(usecase dausach.DauSachUsecase) gin.HandlerFunc {
 		if ErrorHandling(context, err) {
 			return
 		}
-		context.JSON(http.StatusCreated, NewDauSachPresenter(dauSach))
+		context.JSON(http.StatusCreated, presenter.NewDauSachPresenter(dauSach))
 	}
 }
 
-func UpdateDauSach(usecase dausach.DauSachUsecase) gin.HandlerFunc {
+func updateDauSach(usecase dausach.DauSachUsecase) gin.HandlerFunc {
 	return func(context *gin.Context) {
-		var dauSachDto DauSachDto
+		var dauSachDto dto.DauSachDto
 		maDauSach, err := entity.StringToID(context.Param("maDauSach"))
 		if ErrorHandling(context, err) {
 			return
@@ -111,11 +83,11 @@ func UpdateDauSach(usecase dausach.DauSachUsecase) gin.HandlerFunc {
 		if ErrorHandling(context, err) {
 			return
 		}
-		context.JSON(http.StatusOK, NewDauSachPresenter(dauSach))
+		context.JSON(http.StatusOK, presenter.NewDauSachPresenter(dauSach))
 	}
 }
 
-func GetDauSach(usecase dausach.DauSachUsecase) gin.HandlerFunc {
+func getDauSach(usecase dausach.DauSachUsecase) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		maDauSach, err := entity.StringToID(context.Param("maDauSach"))
 		if ErrorHandling(context, err) {
@@ -125,11 +97,11 @@ func GetDauSach(usecase dausach.DauSachUsecase) gin.HandlerFunc {
 		if ErrorHandling(context, err) {
 			return
 		}
-		context.JSON(http.StatusOK, NewDauSachPresenter(dauSach))
+		context.JSON(http.StatusOK, presenter.NewDauSachPresenter(dauSach))
 	}
 }
 
-func DeleteDauSach(usecase dausach.DauSachUsecase) gin.HandlerFunc {
+func deleteDauSach(usecase dausach.DauSachUsecase) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		maDauSach, err := entity.StringToID(context.Param("maDauSach"))
 		if ErrorHandling(context, err) {
@@ -144,9 +116,9 @@ func DeleteDauSach(usecase dausach.DauSachUsecase) gin.HandlerFunc {
 }
 
 func MakeDauSachHandler(r *gin.Engine, usecase dausach.DauSachUsecase) {
-	r.GET("/dausach", GetDanhSachDauSach(usecase))
-	r.POST("/dausach", CreateDauSach(usecase))
-	r.GET("/dausach/:maDauSach", GetDauSach(usecase))
-	r.PUT("/dausach/:maDauSach", UpdateDauSach(usecase))
-	r.DELETE("/dausach/:maDauSach", DeleteDauSach(usecase))
+	r.GET("/dausach", getDanhSachDauSach(usecase))
+	r.POST("/dausach", createDauSach(usecase))
+	r.GET("/dausach/:maDauSach", getDauSach(usecase))
+	r.PUT("/dausach/:maDauSach", updateDauSach(usecase))
+	r.DELETE("/dausach/:maDauSach", deleteDauSach(usecase))
 }

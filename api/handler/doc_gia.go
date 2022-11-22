@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"daijoubuteam.xyz/se214-library-management/api/dto"
+	"daijoubuteam.xyz/se214-library-management/api/presenter"
 	"daijoubuteam.xyz/se214-library-management/core/entity"
 	docgia "daijoubuteam.xyz/se214-library-management/usecase/doc_gia"
 	"daijoubuteam.xyz/se214-library-management/utils"
@@ -9,61 +11,17 @@ import (
 	"time"
 )
 
-type DocGiaDto struct {
-	HoTen        string `json:"hoTen" binding:"required"`
-	MaLoaiDocGia string `json:"maLoaiDocGia" binding:"required"`
-	NgaySinh     string `json:"ngaySinh" binding:"required"`
-	DiaChi       string `json:"diaChi" binding:"required"`
-	Email        string `json:"email" binding:"required"`
-	NgayLapThe   string `json:"ngayLapThe" binding:"required"`
-}
-
-type DocGiaPresenter struct {
-	MaDocGia   string               `json:"maDocGia" binding:"required"`
-	HoTen      string               `json:"hoTen" binding:"required"`
-	LoaiDocGia *LoaiDocGiaPresenter `json:"loaiDocGia" binding:"required"`
-	NgaySinh   *time.Time           `json:"ngaySinh" binding:"required"`
-	DiaChi     string               `json:"diaChi" binding:"required"`
-	Email      string               `json:"email" binding:"required"`
-	NgayLapThe *time.Time           `json:"ngayLapThe" binding:"required"`
-	NgayHetHan *time.Time           `json:"ngayHetHan" binding:"required"`
-	TongNo     uint                 `json:"tongNo" binding:"required"`
-}
-
-func NewDanhSachDocGiaPresenter(danhSachDocGia []*entity.DocGia) []*DocGiaPresenter {
-	danhSachDocGiaPresenter := make([]*DocGiaPresenter, len(danhSachDocGia))
-	for index, docGia := range danhSachDocGia {
-		danhSachDocGiaPresenter[index] = NewDocGiaPresenter(docGia)
-	}
-	return danhSachDocGiaPresenter
-
-}
-
-func NewDocGiaPresenter(docGia *entity.DocGia) *DocGiaPresenter {
-	return &DocGiaPresenter{
-		MaDocGia:   docGia.MaDocGia.String(),
-		HoTen:      docGia.HoTen,
-		LoaiDocGia: NewLoaiDocGiaPresenter(docGia.LoaiDocGia),
-		NgaySinh:   docGia.NgaySinh,
-		DiaChi:     docGia.DiaChi,
-		Email:      docGia.Email,
-		NgayLapThe: docGia.NgayLapThe,
-		NgayHetHan: docGia.NgayHetHan,
-		TongNo:     docGia.TongNo,
-	}
-}
-
-func GetDanhSachDocGia(usecase docgia.DocGiaUsecase) gin.HandlerFunc {
+func getDanhSachDocGia(usecase docgia.DocGiaUsecase) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		danhSachDocGia, err := usecase.GetDanhSachDocGia()
 		if ErrorHandling(context, err) {
 			return
 		}
-		context.JSON(http.StatusOK, NewDanhSachDocGiaPresenter(danhSachDocGia))
+		context.JSON(http.StatusOK, presenter.NewDanhSachDocGiaPresenter(danhSachDocGia))
 	}
 }
 
-func DeleteDocGia(usecase docgia.DocGiaUsecase) gin.HandlerFunc {
+func deleteDocGia(usecase docgia.DocGiaUsecase) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		maDocGia, err := entity.StringToID(context.Param("maDocGia"))
 		if ErrorHandling(context, err) {
@@ -77,7 +35,7 @@ func DeleteDocGia(usecase docgia.DocGiaUsecase) gin.HandlerFunc {
 	}
 }
 
-func GetDocGia(usecase docgia.DocGiaUsecase) gin.HandlerFunc {
+func getDocGia(usecase docgia.DocGiaUsecase) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		maDocGia, err := entity.StringToID(context.Param("maDocGia"))
 		if ErrorHandling(context, err) {
@@ -87,13 +45,13 @@ func GetDocGia(usecase docgia.DocGiaUsecase) gin.HandlerFunc {
 		if ErrorHandling(context, err) {
 			return
 		}
-		context.JSON(http.StatusOK, NewDocGiaPresenter(docGia))
+		context.JSON(http.StatusOK, presenter.NewDocGiaPresenter(docGia))
 	}
 }
 
-func CreateDocGia(usecase docgia.DocGiaUsecase) gin.HandlerFunc {
+func createDocGia(usecase docgia.DocGiaUsecase) gin.HandlerFunc {
 	return func(context *gin.Context) {
-		var docGiaDto DocGiaDto
+		var docGiaDto dto.DocGiaDto
 		err := context.ShouldBind(&docGiaDto)
 		if err != nil {
 			context.AbortWithStatus(http.StatusBadRequest)
@@ -114,13 +72,13 @@ func CreateDocGia(usecase docgia.DocGiaUsecase) gin.HandlerFunc {
 		if ErrorHandling(context, err) {
 			return
 		}
-		context.JSON(http.StatusCreated, NewDocGiaPresenter(docGia))
+		context.JSON(http.StatusCreated, presenter.NewDocGiaPresenter(docGia))
 	}
 }
 
-func UpdateDocGia(usecase docgia.DocGiaUsecase) gin.HandlerFunc {
+func updateDocGia(usecase docgia.DocGiaUsecase) gin.HandlerFunc {
 	return func(context *gin.Context) {
-		var docGiaDto DocGiaDto
+		var docGiaDto dto.DocGiaDto
 		err := context.ShouldBind(&docGiaDto)
 		if err != nil {
 			context.AbortWithStatus(http.StatusBadRequest)
@@ -144,14 +102,14 @@ func UpdateDocGia(usecase docgia.DocGiaUsecase) gin.HandlerFunc {
 		if ErrorHandling(context, err) {
 			return
 		}
-		context.JSON(http.StatusCreated, NewDocGiaPresenter(docGia))
+		context.JSON(http.StatusCreated, presenter.NewDocGiaPresenter(docGia))
 	}
 }
 
 func MakeDocGiaHandler(r *gin.Engine, usecase docgia.DocGiaUsecase) {
-	r.GET("/docgia", GetDanhSachDocGia(usecase))
-	r.POST("/docgia", CreateDocGia(usecase))
-	r.GET("/docgia/:maDocGia", GetDocGia(usecase))
-	r.DELETE("/docgia/:maDocGia", DeleteDocGia(usecase))
-	r.PUT("/docgia/:maDocGia", UpdateDocGia(usecase))
+	r.GET("/docgia", getDanhSachDocGia(usecase))
+	r.POST("/docgia", createDocGia(usecase))
+	r.GET("/docgia/:maDocGia", getDocGia(usecase))
+	r.DELETE("/docgia/:maDocGia", deleteDocGia(usecase))
+	r.PUT("/docgia/:maDocGia", updateDocGia(usecase))
 }

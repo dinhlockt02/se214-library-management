@@ -25,6 +25,10 @@ services:
       - se214
     volumes:
       - se214-mysql-db:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 20s
+      retries: 10
   adminer:
     image: adminer
     restart: always
@@ -53,6 +57,9 @@ services:
     volumes:
       - ./db/migration:/migrations
     entrypoint: migrate -database "mysql://root:example@tcp(db:3306)/se214?query" -path /migrations up
+    depends_on:
+      db:
+        condition: service_healthy
 networks:
   se214:
 volumes:

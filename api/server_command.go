@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 	"github.com/spf13/cobra"
+	"net/http"
 )
 
 func ServerCommand(db *sqlx.DB) *cobra.Command {
@@ -42,6 +43,14 @@ func StartServer(db *sqlx.DB) {
 	r := gin.Default()
 
 	r.Use(middleware.Cors())
+
+	r.GET("/health", func(context *gin.Context) {
+		context.JSON(http.StatusOK, struct {
+			Message string `json:"message"`
+		}{
+			Message: "OK",
+		})
+	})
 
 	handler.MakeAuthHandler(r, authUsecase)
 	handler.MakeLoaiThuThuHandler(r, loaiDocGiaUsecase)

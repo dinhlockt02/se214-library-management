@@ -3,6 +3,7 @@ package mysql
 import (
 	"daijoubuteam.xyz/se214-library-management/core/entity"
 	coreerror "daijoubuteam.xyz/se214-library-management/core/error"
+	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"reflect"
 )
@@ -142,24 +143,17 @@ func (repo *LoaiDocGiaRepository) RemoveLoaiDocGia(maLoaiDocGia *entity.ID) (err
 	tx := repo.db.MustBegin()
 	defer func() {
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 		} else {
-			tx.Commit()
+			_ = tx.Commit()
 		}
 	}()
-
-	row := tx.QueryRow(`SELECT COUNT(*) FROM DocGia WHERE MaLoaiDocGia = ?`, maLoaiDocGia.String())
-	var count int = 0
-	err = row.Scan(&count)
-	if err != nil {
-		return coreerror.NewInternalServerError("database error: cant query number of rows", err)
-	}
-	if count > 0 {
-		return coreerror.NewConflictError("can't not delete loai doc gia because doc gia has this loai doc gia", nil)
-	}
 	exec := `DELETE FROM LoaiDocGia WHERE MaLoaiDocGia = ?;`
 	_, err = tx.Exec(exec, maLoaiDocGia.String())
 	if err != nil {
+		if driverError, ok := err.(*mysql.MySQLError); ok {
+			return DriverErrorHandling(driverError)
+		}
 		return coreerror.NewInternalServerError("database error: delete new loai doc gia failed", err)
 	}
 	return nil

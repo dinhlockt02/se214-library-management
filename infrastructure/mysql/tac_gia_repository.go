@@ -4,6 +4,7 @@ import (
 	"daijoubuteam.xyz/se214-library-management/core/entity"
 	coreerror "daijoubuteam.xyz/se214-library-management/core/error"
 	"database/sql"
+	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -112,9 +113,9 @@ func (repo *TacGiaRepository) RemoveTacGia(maTacGia *entity.ID) (err error) {
 	tx := repo.db.MustBegin()
 	defer func() {
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 		} else {
-			tx.Commit()
+			_ = tx.Commit()
 		}
 	}()
 
@@ -130,7 +131,11 @@ func (repo *TacGiaRepository) RemoveTacGia(maTacGia *entity.ID) (err error) {
 
 	exec := `DELETE FROM TacGia WHERE MaTacGia = ?`
 	_, err = tx.Exec(exec, maTacGia.String())
+
 	if err != nil {
+		if driverError, ok := err.(*mysql.MySQLError); ok {
+			return DriverErrorHandling(driverError)
+		}
 		return coreerror.NewInternalServerError("databaser error: can't not delete tac gia", err)
 	}
 	return nil

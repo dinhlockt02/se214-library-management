@@ -4,6 +4,8 @@ import (
 	"daijoubuteam.xyz/se214-library-management/core/entity"
 	coreerror "daijoubuteam.xyz/se214-library-management/core/error"
 	"database/sql"
+	"fmt"
+	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -108,13 +110,14 @@ func (repo *DocGiaRepository) GetDanhSachDocGia() (_ []*entity.DocGia, err error
 		docGia := &entity.DocGia{LoaiDocGia: &entity.LoaiDocGia{}}
 		var maLoaiDocGiaDB string = ""
 		var maDocGiaDB string = ""
-		err = rows.Scan(&(docGia.HoTen), &(docGia.NgaySinh),
+		err = rows.Scan(&maDocGiaDB, &(docGia.HoTen), &(docGia.NgaySinh),
 			&(docGia.DiaChi), &(docGia.Email), &(docGia.NgayLapThe),
 			&(docGia.NgayHetHan), &(docGia.TongNo), &maLoaiDocGiaDB,
 			&(docGia.LoaiDocGia.TenLoaiDocGia))
 		if err == sql.ErrNoRows {
 			return nil, coreerror.NewNotFoundError("doc gia not found", err)
 		} else if err != nil {
+			fmt.Println(err)
 			return nil, coreerror.NewInternalServerError("scan query failed", err)
 		}
 		maLoaiDocGia, err := entity.StringToID(maLoaiDocGiaDB)
@@ -154,9 +157,9 @@ func (repo *DocGiaRepository) RemoveDocGia(maDocGia *entity.ID) (err error) {
 	tx := repo.db.MustBegin()
 	defer func() {
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 		} else {
-			tx.Commit()
+			_ = tx.Commit()
 		}
 	}()
 	exec := `
@@ -166,6 +169,9 @@ func (repo *DocGiaRepository) RemoveDocGia(maDocGia *entity.ID) (err error) {
 	`
 	_, err = tx.Exec(exec, maDocGia.String())
 	if err != nil {
+		if driverError, ok := err.(*mysql.MySQLError); ok {
+			return DriverErrorHandling(driverError)
+		}
 		return coreerror.NewInternalServerError("database error: insert new doc gia failed", err)
 	}
 

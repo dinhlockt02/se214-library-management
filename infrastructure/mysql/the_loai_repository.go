@@ -4,6 +4,7 @@ import (
 	"daijoubuteam.xyz/se214-library-management/core/entity"
 	coreerror "daijoubuteam.xyz/se214-library-management/core/error"
 	"database/sql"
+	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"reflect"
 )
@@ -129,9 +130,9 @@ func (r *TheLoaiRepository) RemoveTheLoai(maTheLoai *entity.ID) (err error) {
 	tx := r.db.MustBegin()
 	defer func() {
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 		} else {
-			tx.Commit()
+			_ = tx.Commit()
 		}
 	}()
 
@@ -148,6 +149,9 @@ func (r *TheLoaiRepository) RemoveTheLoai(maTheLoai *entity.ID) (err error) {
 	exec := `DELETE FROM TheLoai WHERE MaTheLoai = ?`
 	_, err = tx.Exec(exec, maTheLoai.String())
 	if err != nil {
+		if driverError, ok := err.(*mysql.MySQLError); ok {
+			return DriverErrorHandling(driverError)
+		}
 		return coreerror.NewInternalServerError("database error: can't not insert into database", err)
 	}
 	return nil

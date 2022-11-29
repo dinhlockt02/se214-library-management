@@ -6,6 +6,7 @@ import (
 	"daijoubuteam.xyz/se214-library-management/core/repository"
 	"daijoubuteam.xyz/se214-library-management/utils"
 	"database/sql"
+	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"reflect"
 )
@@ -230,6 +231,9 @@ func (repo *PhieuNhapRepository) RemovePhieuNhap(phieuNhap *entity.PhieuNhap) (e
 	phieuNhapExec := `DELETE FROM PhieuNhap WHERE MaPhieuNhap = ?`
 	_, err = tx.Exec(phieuNhapExec, phieuNhap.MaPhieuNhap.String())
 	if err != nil {
+		if driverError, ok := err.(*mysql.MySQLError); ok {
+			return DriverErrorHandling(driverError)
+		}
 		return coreerror.NewInternalServerError("database error: can't not delete phieu nhap", err)
 	}
 	return nil
@@ -273,10 +277,16 @@ func (repo *PhieuNhapRepository) RemoveChiTietPhieuNhap(maSach *entity.ID) (err 
 	removeSachExec := `DELETE FROM Sach WHERE MaSach = ?`
 	_, err = tx.Exec(removeCtPhieuNhapExec, maSach)
 	if err != nil {
+		if driverError, ok := err.(*mysql.MySQLError); ok {
+			return DriverErrorHandling(driverError)
+		}
 		return coreerror.NewInternalServerError("database error: can't not remove ct Phieu nhap", err)
 	}
 	_, err = tx.Exec(removeSachExec, maSach)
 	if err != nil {
+		if driverError, ok := err.(*mysql.MySQLError); ok {
+			return DriverErrorHandling(driverError)
+		}
 		return coreerror.NewInternalServerError("database error: can't not remove sach", err)
 	}
 	return nil

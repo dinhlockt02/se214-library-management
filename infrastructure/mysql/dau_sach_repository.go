@@ -4,6 +4,7 @@ import (
 	"daijoubuteam.xyz/se214-library-management/core/entity"
 	coreerror "daijoubuteam.xyz/se214-library-management/core/error"
 	"fmt"
+	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -222,16 +223,25 @@ func (repo *DauSachRepository) RemoveDauSach(maDauSach *entity.ID) (err error) {
 	exec := `DELETE FROM CT_TheLoai WHERE MaDauSach = ?`
 	_, err = tx.Exec(exec, maDauSach.String())
 	if err != nil {
+		if driverError, ok := err.(*mysql.MySQLError); ok {
+			return DriverErrorHandling(driverError)
+		}
 		return coreerror.NewInternalServerError("database error: can't not delete Ct_TheLoai", err)
 	}
 	exec = `DELETE FROM CT_TacGia WHERE MaDauSach = ?`
 	_, err = tx.Exec(exec, maDauSach.String())
 	if err != nil {
+		if driverError, ok := err.(*mysql.MySQLError); ok {
+			return DriverErrorHandling(driverError)
+		}
 		return coreerror.NewInternalServerError("database error: can't not delete Ct_TheLoai", err)
 	}
 	exec = `DELETE FROM DauSach WHERE MaDauSach = ?`
 	_, err = tx.Exec(exec, maDauSach.String())
 	if err != nil {
+		if driverError, ok := err.(*mysql.MySQLError); ok {
+			return DriverErrorHandling(driverError)
+		}
 		return coreerror.NewInternalServerError("database error: can't not delete Ct_TheLoai", err)
 	}
 	return nil

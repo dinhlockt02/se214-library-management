@@ -6,10 +6,5 @@ import (
 )
 
 func Cors() gin.HandlerFunc {
-	return cors.New(cors.Config{
-		AllowOrigins:  []string{"http://nginx", "http://localhost"},
-		AllowMethods:  []string{"PUT", "PATCH", "POST", "GET", "DELETE"},
-		AllowHeaders:  []string{"Origin"},
-		ExposeHeaders: []string{"Content-Length"},
-	})
+	return cors.Default()
 }

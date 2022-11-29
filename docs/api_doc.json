@@ -1543,7 +1543,7 @@
             "type": "string"
           },
           "loaiDocGia": {
-            "type": "string"
+            "$ref": "#/components/schemas/LoaiDocGiaPresenter"
           },
           "ngaySinh": {
             "type": "string",

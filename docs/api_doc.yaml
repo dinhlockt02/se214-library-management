@@ -970,7 +970,7 @@ components:
         hoTen:
           type: string
         loaiDocGia:
-          type: string
+          $ref: '#/components/schemas/LoaiDocGiaPresenter'
         ngaySinh:
           type: string
           format: date-time

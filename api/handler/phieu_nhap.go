@@ -151,7 +151,7 @@ func updatePhieuNhap(nhapSachUsecase nhapsach.NhapSachUsecase) gin.HandlerFunc {
 		if ErrorHandling(context, err) {
 			return
 		}
-		context.JSON(http.StatusCreated, presenter.NewPhieuNhapPresenter(phieuNhap))
+		context.JSON(http.StatusOK, presenter.NewPhieuNhapPresenter(phieuNhap))
 
 	}
 }

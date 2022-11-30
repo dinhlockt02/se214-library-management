@@ -102,7 +102,8 @@ func updateDocGia(usecase docgia.DocGiaUsecase) gin.HandlerFunc {
 		if ErrorHandling(context, err) {
 			return
 		}
-		context.JSON(http.StatusCreated, presenter.NewDocGiaPresenter(docGia))
+		context.JSON(http.StatusOK, presenter.NewDocGiaPresenter(docGia))
+		context.JSON(http.StatusOK, presenter.NewDocGiaPresenter(docGia))
 	}
 }
 

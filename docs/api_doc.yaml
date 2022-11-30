@@ -475,7 +475,7 @@ paths:
             schema:
               $ref: '#/components/schemas/TacGiaDto'
       responses:
-        201:
+        200:
           description: Get danh sach tac gia successful
           content:
             application/json:
@@ -811,7 +811,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PhieuNhapDto'
       responses:
-        201:
+        200:
           description: Update phieu nhap successful
           content:
             application/json:

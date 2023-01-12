@@ -1,4 +1,5 @@
 CREATE TABLE IF NOT EXISTS LoaiDocGia (
     MaLoaiDocGia VARCHAR(255) PRIMARY KEY,
-    TenLoaiDocGia VARCHAR(255)
+    TenLoaiDocGia VARCHAR(255),
+    SoSachToiDaDuocMuon INT UNSIGNED
 );

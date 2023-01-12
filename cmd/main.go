@@ -5,6 +5,7 @@ import (
 	"daijoubuteam.xyz/se214-library-management/cmd/admin"
 	thuthucommand "daijoubuteam.xyz/se214-library-management/cmd/thuthu"
 	"daijoubuteam.xyz/se214-library-management/config"
+	_ "daijoubuteam.xyz/se214-library-management/config/env_config"
 	"daijoubuteam.xyz/se214-library-management/utils"
 	"github.com/spf13/cobra"
 	"log"
@@ -14,7 +15,7 @@ import (
 func main() {
 
 	// Connect to database
-	db := utils.ConnectDB(config.DevConfig)
+	db := utils.ConnectDB(config.GetConfig())
 
 	rootCommand := CreateCommand()
 	rootCommand.AddCommand(admin.AdminCommand(db))

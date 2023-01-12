@@ -1,15 +1,17 @@
 package config
 
-import "time"
+import (
+	"time"
+)
 
 type Config struct {
-	DatabaseDriver string
-	User           string
-	Password       string
-	Host           string
-	DbName         string
-	Port           string
-	JwtConfig      JwtConfig
+	DatabaseDriver   string
+	DatabaseUser     string
+	DatabasePassword string
+	DatabaseHost     string
+	DatabaseName     string
+	DatabasePort     string
+	JwtConfig        JwtConfig
 }
 
 type JwtConfig struct {
@@ -19,10 +21,16 @@ type JwtConfig struct {
 	ExpDuration time.Duration
 }
 
-func GetConfig() *Config {
-	return DevConfig
+var config Config
+
+func GetConfig() Config {
+	return config
 }
 
 func GetJwtConfig() JwtConfig {
 	return GetConfig().JwtConfig
+}
+
+func SetConfig(cf Config) {
+	config = cf
 }

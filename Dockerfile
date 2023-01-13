@@ -8,8 +8,7 @@ COPY . .
 
 RUN go build -o ./dist/se214 ./cmd
 
-FROM alpine:latest
+FROM alpine
 WORKDIR /root/
 COPY --from=0 /app/dist/se214 /bin/se214
-EXPOSE 8080
 CMD ["se214", "server", "start"]

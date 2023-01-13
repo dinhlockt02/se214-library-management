@@ -4,14 +4,15 @@ import (
 	"time"
 )
 
+const (
+	Release string = "RELEASE"
+	Debug          = "DEBUG"
+)
+
 type Config struct {
-	DatabaseDriver   string
-	DatabaseUser     string
-	DatabasePassword string
-	DatabaseHost     string
-	DatabaseName     string
-	DatabasePort     string
-	JwtConfig        JwtConfig
+	Mode           string
+	DatabaseConfig DatabaseConfig
+	JwtConfig      JwtConfig
 }
 
 type JwtConfig struct {
@@ -19,6 +20,15 @@ type JwtConfig struct {
 	Secret      []byte
 	Issuer      string
 	ExpDuration time.Duration
+}
+
+type DatabaseConfig struct {
+	Driver   string
+	User     string
+	Password string
+	Host     string
+	Name     string
+	Port     string
 }
 
 var config Config

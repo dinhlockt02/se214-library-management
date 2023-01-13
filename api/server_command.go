@@ -3,11 +3,13 @@ package api
 import (
 	"daijoubuteam.xyz/se214-library-management/api/handler"
 	"daijoubuteam.xyz/se214-library-management/api/middleware"
+	"daijoubuteam.xyz/se214-library-management/config"
 	"daijoubuteam.xyz/se214-library-management/wireimpl"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 	"github.com/spf13/cobra"
 	"net/http"
+	"os"
 )
 
 func ServerCommand(db *sqlx.DB) *cobra.Command {
@@ -41,6 +43,16 @@ func StartServer(db *sqlx.DB) {
 	nhapSachUsecase := wireimpl.InitNhapSachUsecase(db)
 
 	r := gin.Default()
+
+	if config.GetConfig().Mode == config.Release {
+		gin.DisableConsoleColor()
+
+		f, _ := os.Create("backend.log")
+		ef, _ := os.Create("error.log")
+
+		gin.DefaultWriter = f
+		gin.DefaultErrorWriter = ef
+	}
 
 	r.Use(middleware.Cors())
 

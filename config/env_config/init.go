@@ -20,6 +20,8 @@ func init() {
 	JwtIssuer, exists := os.LookupEnv("JWT_ISSUER")
 	JWTExpDurationStr, exists := os.LookupEnv("JWT_EXP_DURATION")
 
+	mode, exists := os.LookupEnv("MODE")
+
 	if !exists {
 		panic("environment variable missing")
 	}
@@ -30,13 +32,23 @@ func init() {
 		panic(err)
 	}
 
+	if !exists {
+		panic("")
+	}
+	if mode != config.Release {
+		mode = config.Debug
+	}
+
 	config.SetConfig(config.Config{
-		DatabaseDriver:   DatabaseDriver,
-		DatabaseUser:     DatabaseUser,
-		DatabasePassword: DatabasePassword,
-		DatabaseHost:     DatabaseHost,
-		DatabasePort:     DatabasePort,
-		DatabaseName:     DatabaseName,
+		Mode: mode,
+		DatabaseConfig: config.DatabaseConfig{
+			Driver:   DatabaseDriver,
+			User:     DatabaseUser,
+			Password: DatabasePassword,
+			Host:     DatabaseHost,
+			Port:     DatabasePort,
+			Name:     DatabaseName,
+		},
 		JwtConfig: config.JwtConfig{
 			Audience:    JwtAudience,
 			Secret:      []byte(JwtSecret),

@@ -11,8 +11,8 @@ import (
 
 func ConnectDB(config config.Config) *sqlx.DB {
 
-	connStr := fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?parseTime=true", config.DatabaseUser, config.DatabasePassword, config.DatabaseHost, config.DatabasePort, config.DatabaseName)
-	db, err := sqlx.Connect(config.DatabaseDriver, connStr)
+	connStr := fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?parseTime=true", config.DatabaseConfig.User, config.DatabaseConfig.Password, config.DatabaseConfig.Host, config.DatabaseConfig.Port, config.DatabaseConfig.Name)
+	db, err := sqlx.Connect(config.DatabaseConfig.Driver, connStr)
 	if err != nil {
 		log.Panic(err)
 	}

@@ -35,15 +35,11 @@ services:
     depends_on:
       - db
   nginx:
-    image: nginx
-    volumes:
-      - "./docker/nginx/nginx.conf:/etc/nginx/nginx.conf"
-      - "./docs:/docs:ro"
+    image: dinhlockt02/se214-proxy
     ports:
       - "80:80"
     depends_on:
       - server
-    command: [nginx-debug, '-g', 'daemon off;']
     networks:
       - se214
   migrate-up:

@@ -22,5 +22,5 @@ func (r *ThamSoRepository) GetTuoiToiDa() (uint, error) {
 	return 55, nil
 }
 func (r *ThamSoRepository) GetDefaultPassword() (string, error) {
-	panic("not implemented")
+	return "12345678", nil
 }

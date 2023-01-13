@@ -2,7 +2,6 @@ package main
 
 import (
 	"daijoubuteam.xyz/se214-library-management/api"
-	"daijoubuteam.xyz/se214-library-management/cmd/admin"
 	thuthucommand "daijoubuteam.xyz/se214-library-management/cmd/thuthu"
 	"daijoubuteam.xyz/se214-library-management/config"
 	_ "daijoubuteam.xyz/se214-library-management/config/env_config"
@@ -18,7 +17,6 @@ func main() {
 	db := utils.ConnectDB(config.GetConfig())
 
 	rootCommand := CreateCommand()
-	rootCommand.AddCommand(admin.AdminCommand(db))
 	rootCommand.AddCommand(api.ServerCommand(db))
 	rootCommand.AddCommand(thuthucommand.ThuThuCommand(db))
 	if err := rootCommand.Execute(); err != nil {

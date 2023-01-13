@@ -71,7 +71,6 @@ func (service *ThuThuService) CreateThuThu(name string, ngaySinh *time.Time, ema
 	}
 
 	thuThu := entity.NewThuThu(name, ngaySinh, email, phoneNumber, hashedPassword, status, isAdminRole)
-
 	thuThu, err = service.thuThuRepo.CreateThuThu(thuThu)
 
 	if err != nil {

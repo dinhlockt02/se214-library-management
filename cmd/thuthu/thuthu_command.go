@@ -13,5 +13,6 @@ func ThuThuCommand(db *sqlx.DB) *cobra.Command {
 	command.AddCommand(LsThuThuCommand(db))
 	command.AddCommand(GetThuThuCommand(db))
 	command.AddCommand(LoginCommand(db))
+	command.AddCommand(CreateThuThuCommand(db))
 	return command
 }

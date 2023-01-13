@@ -40,8 +40,8 @@ func (service *LoaiDocGiaService) GetLoaiDocGia(maLoaiDocGia *entity.ID) (*entit
 	return loaiDocGia, nil
 }
 
-func (service *LoaiDocGiaService) CreateLoaiDocGia(tenLoaiDocGia string) (*entity.LoaiDocGia, error) {
-	loaiDocGia := entity.NewLoaiDocGia(tenLoaiDocGia)
+func (service *LoaiDocGiaService) CreateLoaiDocGia(tenLoaiDocGia string, soSachToiDaDuocMuon int) (*entity.LoaiDocGia, error) {
+	loaiDocGia := entity.NewLoaiDocGia(tenLoaiDocGia, soSachToiDaDuocMuon)
 	_, err := service.loaiDocGiaRepo.CreateLoaiDocGia(loaiDocGia)
 	if err != nil {
 		return nil, err
@@ -50,7 +50,7 @@ func (service *LoaiDocGiaService) CreateLoaiDocGia(tenLoaiDocGia string) (*entit
 	return loaiDocGia, err
 }
 
-func (service *LoaiDocGiaService) UpdateLoaiDocGia(maLoaiDocGia *entity.ID, tenLoaiDocGia string) (*entity.LoaiDocGia, error) {
+func (service *LoaiDocGiaService) UpdateLoaiDocGia(maLoaiDocGia *entity.ID, tenLoaiDocGia string, soSachToiDaDuocMuon int) (*entity.LoaiDocGia, error) {
 	loaiDocGia, err := service.loaiDocGiaRepo.GetLoaiDocGia(maLoaiDocGia)
 
 	if err != nil {
@@ -62,6 +62,7 @@ func (service *LoaiDocGiaService) UpdateLoaiDocGia(maLoaiDocGia *entity.ID, tenL
 	}
 
 	loaiDocGia.TenLoaiDocGia = tenLoaiDocGia
+	loaiDocGia.SoSachToiDaDuocMuon = soSachToiDaDuocMuon
 
 	_, err = service.loaiDocGiaRepo.UpdateLoaiDocGia(loaiDocGia)
 

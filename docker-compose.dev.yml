@@ -10,6 +10,8 @@ services:
       - CGO_ENABLED=0
     networks:
       - se214
+    env_file:
+      - example.env
     depends_on:
       - db
       - adminer

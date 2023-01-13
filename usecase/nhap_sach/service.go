@@ -95,12 +95,13 @@ func (service *NhapSachService) AddChiTietPhieuNhapSach(
 	nhaXuatBan string, triGia uint,
 	namXuatBan uint,
 	tinhTrang bool,
-	donGia uint) (*entity.CtPhieuNhap, error) {
+	donGia uint,
+	ghiChu string) (*entity.CtPhieuNhap, error) {
 	dauSach, err := service.dauSachUsecase.GetDauSach(maDauSach)
 	if err != nil {
 		return nil, err
 	}
-	sach := entity.NewSach(dauSach, nhaXuatBan, triGia, namXuatBan, tinhTrang)
+	sach := entity.NewSach(dauSach, nhaXuatBan, triGia, namXuatBan, tinhTrang, ghiChu)
 	ctNhapSach := entity.NewCtPhieuNhap(sach, donGia)
 	chiTietPhieuNhap, err := service.phieuNhapRepo.AddChiTietPhieuNhap(maPhieuNhap, ctNhapSach)
 	if err != nil {

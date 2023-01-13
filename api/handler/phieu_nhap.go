@@ -85,6 +85,7 @@ func addCtPhieuNhap(nhapSachUsecase nhapsach.NhapSachUsecase) gin.HandlerFunc {
 			ctPhieuNhapDto.NamXuatBan,
 			ctPhieuNhapDto.TinhTrang,
 			ctPhieuNhapDto.DonGia,
+			ctPhieuNhapDto.GhiChu,
 		)
 		if ErrorHandling(context, err) {
 			return

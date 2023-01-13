@@ -85,7 +85,7 @@ func (repo *PhieuNhapRepository) getCtPhieuNhapByPhieuNhap(maPhieuNhap string) (
 			tx.Commit()
 		}
 	}()
-	stmt, err := tx.Prepare(`SELECT Sach.MaSach,MaDauSach, NhaXuatBan, TriGia, NamXuatBan, TinhTrang, DonGia FROM Sach INNER JOIN Ct_PhieuNhap CPN on Sach.MaSach = CPN.MaSach WHERE MaPhieuNhap = ?`)
+	stmt, err := tx.Prepare(`SELECT Sach.MaSach,MaDauSach, NhaXuatBan, TriGia, NamXuatBan, TinhTrang, DonGia, GhiChu FROM Sach INNER JOIN Ct_PhieuNhap CPN on Sach.MaSach = CPN.MaSach WHERE MaPhieuNhap = ?`)
 	if err != nil {
 		return nil, coreerror.NewInternalServerError("database err: can't not prepare query", err)
 	}
@@ -102,7 +102,9 @@ func (repo *PhieuNhapRepository) getCtPhieuNhapByPhieuNhap(maPhieuNhap string) (
 		var NamXuatBan uint
 		var TinhTrang bool
 		var DonGia uint
-		err := rows.Scan(&MaSachDB, &MaDauSachDB, &NhaXuatBan, &TriGia, &NamXuatBan, &TinhTrang, &DonGia)
+		var GhiChu string
+
+		err := rows.Scan(&MaSachDB, &MaDauSachDB, &NhaXuatBan, &TriGia, &NamXuatBan, &TinhTrang, &DonGia, &GhiChu)
 		if err != nil {
 			return nil, coreerror.NewInternalServerError("database err: can't not scan rows", err)
 		}
@@ -129,6 +131,7 @@ func (repo *PhieuNhapRepository) getCtPhieuNhapByPhieuNhap(maPhieuNhap string) (
 			TriGia:     TriGia,
 			NamXuatBan: NamXuatBan,
 			TinhTrang:  TinhTrang,
+			GhiChu:     GhiChu,
 		}
 		ctPhieuNhap := &entity.CtPhieuNhap{
 			Sach:   sach,
@@ -249,9 +252,17 @@ func (repo *PhieuNhapRepository) AddChiTietPhieuNhap(maPhieuNhap *entity.ID, ctP
 		}
 	}()
 
-	sachExec := `INSERT INTO Sach (MaSach, MaDauSach, NhaXuatBan, TriGia, NamXuatBan, TinhTrang) VALUES (?, ?, ?, ? ,?, ?);`
+	sachExec := `INSERT INTO Sach (MaSach, MaDauSach, NhaXuatBan, TriGia, NamXuatBan, TinhTrang, GhiChu) VALUES (?, ?, ?, ? ,?, ?, ?);`
 
-	_, err = tx.Exec(sachExec, ctPhieuNhap.Sach.MaSach.String(), ctPhieuNhap.Sach.DauSach.MaDauSach.String(), ctPhieuNhap.Sach.NhaXuatBan, ctPhieuNhap.Sach.TriGia, ctPhieuNhap.Sach.NamXuatBan, ctPhieuNhap.Sach.TinhTrang)
+	_, err = tx.Exec(sachExec,
+		ctPhieuNhap.Sach.MaSach.String(),
+		ctPhieuNhap.Sach.DauSach.MaDauSach.String(),
+		ctPhieuNhap.Sach.NhaXuatBan,
+		ctPhieuNhap.Sach.TriGia,
+		ctPhieuNhap.Sach.NamXuatBan,
+		ctPhieuNhap.Sach.TinhTrang,
+		ctPhieuNhap.Sach.GhiChu,
+	)
 	if err != nil {
 		return nil, coreerror.NewInternalServerError("database error: can't not create sach", err)
 	}

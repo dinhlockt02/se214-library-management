@@ -28,8 +28,8 @@ func (repo *LoaiDocGiaRepository) CreateLoaiDocGia(loaiDocGia *entity.LoaiDocGia
 		}
 	}()
 
-	exec := `INSERT INTO LoaiDocGia (MaLoaiDocGia, TenLoaiDocGia) VALUES (? , ?);`
-	_, err = tx.Exec(exec, loaiDocGia.MaLoaiDocGia.String(), loaiDocGia.TenLoaiDocGia)
+	exec := `INSERT INTO LoaiDocGia (MaLoaiDocGia, TenLoaiDocGia, SoSachToiDaDuocMuon) VALUES (? , ?, ?);`
+	_, err = tx.Exec(exec, loaiDocGia.MaLoaiDocGia.String(), loaiDocGia.TenLoaiDocGia, loaiDocGia.SoSachToiDaDuocMuon)
 	if err != nil {
 		return nil, coreerror.NewInternalServerError("database error: insert new loai doc gia failed", err)
 	}
@@ -46,7 +46,7 @@ func (repo *LoaiDocGiaRepository) GetLoaiDocGia(maLoaiDocGia *entity.ID) (_ *ent
 		}
 	}()
 
-	stmt, err := tx.Prepare("SELECT MaLoaiDocGia, TenLoaiDocGia FROM LoaiDocGia WHERE MaLoaiDocGia = ?")
+	stmt, err := tx.Prepare("SELECT MaLoaiDocGia, TenLoaiDocGia, SoSachToiDaDuocMuon FROM LoaiDocGia WHERE MaLoaiDocGia = ?")
 	if err != nil {
 		return nil, coreerror.NewInternalServerError("database error: can't not prepare query", err)
 	}
@@ -87,7 +87,7 @@ func (repo *LoaiDocGiaRepository) GetDanhSachLoaiDocGia() (_ []*entity.LoaiDocGi
 			tx.Commit()
 		}
 	}()
-	stmt, err := tx.Prepare("SELECT MaLoaiDocGia, TenLoaiDocGia FROM LoaiDocGia")
+	stmt, err := tx.Prepare("SELECT MaLoaiDocGia, TenLoaiDocGia, SoSachToiDaDuocMuon FROM LoaiDocGia")
 	if err != nil {
 		return nil, coreerror.NewInternalServerError("database error: can't not prepare query", err)
 	}
@@ -131,8 +131,8 @@ func (repo *LoaiDocGiaRepository) UpdateLoaiDocGia(loaiDocGia *entity.LoaiDocGia
 		}
 	}()
 
-	exec := `UPDATE LoaiDocGia SET TenLoaiDocGia = ? WHERE MaLoaiDocGia = ?;`
-	_, err = tx.Exec(exec, loaiDocGia.TenLoaiDocGia, loaiDocGia.MaLoaiDocGia.String())
+	exec := `UPDATE LoaiDocGia SET TenLoaiDocGia = ?, SoSachToiDaDuocMuon = ? WHERE MaLoaiDocGia = ?;`
+	_, err = tx.Exec(exec, loaiDocGia.TenLoaiDocGia, loaiDocGia.SoSachToiDaDuocMuon, loaiDocGia.MaLoaiDocGia.String())
 	if err != nil {
 		return nil, coreerror.NewInternalServerError("database error: insert new loai doc gia failed", err)
 	}

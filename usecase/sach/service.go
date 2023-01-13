@@ -35,13 +35,13 @@ func (service *SachService) GetSach(maSach *entity.ID) (*entity.Sach, error) {
 	return sach, nil
 }
 
-func (service *SachService) CreateSach(maDauSach *entity.ID, nhaXuatBan string, soLuong uint, triGia uint, namXuatBan uint) (*entity.Sach, error) {
+func (service *SachService) CreateSach(maDauSach *entity.ID, nhaXuatBan string, triGia uint, namXuatBan uint, ghiChu string) (*entity.Sach, error) {
 	dauSach, err := service.dauSachUsecase.GetDauSach(maDauSach)
 	if err != nil {
 		return nil, err
 	}
 
-	newSach := entity.NewSach(dauSach, nhaXuatBan, soLuong, triGia, namXuatBan)
+	newSach := entity.NewSach(dauSach, nhaXuatBan, triGia, namXuatBan, true, ghiChu)
 
 	if !newSach.IsValid() {
 		return nil, coreerror.NewBadRequestError("Invalid sach", nil)
@@ -57,7 +57,7 @@ func (service *SachService) CreateSach(maDauSach *entity.ID, nhaXuatBan string, 
 
 }
 
-func (service *SachService) UpdateSach(maSach *entity.ID, maDauSach *entity.ID, nhaXuatBan string, soLuong uint, triGia uint, namXuatBan uint) (*entity.Sach, error) {
+func (service *SachService) UpdateSach(maSach *entity.ID, maDauSach *entity.ID, nhaXuatBan string, triGia uint, namXuatBan uint, ghiChu string) (*entity.Sach, error) {
 	dauSach, err := service.dauSachUsecase.GetDauSach(maDauSach)
 
 	if err != nil {
@@ -75,9 +75,9 @@ func (service *SachService) UpdateSach(maSach *entity.ID, maDauSach *entity.ID, 
 
 	sach.DauSach = dauSach
 	sach.NhaXuatBan = nhaXuatBan
-	sach.SoLuong = soLuong
 	sach.TriGia = triGia
 	sach.NamXuatBan = namXuatBan
+	sach.GhiChu = ghiChu
 
 	if !sach.IsValid() {
 		return nil, coreerror.NewBadRequestError("Invalid sach", nil)

@@ -12,6 +12,6 @@ type NhapSachUsecase interface {
 	CreatePhieuNhapSach(ngayLap *time.Time) (*entity.PhieuNhap, error)
 	UpdatePhieuNhapSach(maPhieuNhap *entity.ID, ngayLap *time.Time) (*entity.PhieuNhap, error)
 	RemovePhieuNhapSach(maPhieuNhap *entity.ID) error
-	AddChiTietPhieuNhapSach(maPhieuNhap *entity.ID, maDauSach *entity.ID, nhaXuatBan string, triGia uint, namXuatBan uint, tinhTrang bool, donGia uint) (*entity.CtPhieuNhap, error)
+	AddChiTietPhieuNhapSach(maPhieuNhap *entity.ID, maDauSach *entity.ID, nhaXuatBan string, triGia uint, namXuatBan uint, tinhTrang bool, donGia uint, ghiChu string) (*entity.CtPhieuNhap, error)
 	RemoveChiTietPhieuNhapSach(maChiTietPhieuNhap *entity.ID) error
 }

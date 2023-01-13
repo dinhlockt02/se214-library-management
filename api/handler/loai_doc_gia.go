@@ -16,7 +16,7 @@ func createLoaiDocGia(usecase loaidocgia.LoaiDocGiaUsecase) gin.HandlerFunc {
 		if err != nil {
 			context.AbortWithStatus(http.StatusBadRequest)
 		}
-		loaiDocGia, err := usecase.CreateLoaiDocGia(createLoaiDocGiaDto.TenLoaiDocGia)
+		loaiDocGia, err := usecase.CreateLoaiDocGia(createLoaiDocGiaDto.TenLoaiDocGia, createLoaiDocGiaDto.SoSachToiDaDuocMuon)
 		if ErrorHandling(context, err) {
 			return
 		}
@@ -59,7 +59,7 @@ func putLoaiDocGia(usecase loaidocgia.LoaiDocGiaUsecase) gin.HandlerFunc {
 		if err != nil {
 			context.AbortWithStatus(http.StatusBadRequest)
 		}
-		loaiDocGia, err := usecase.UpdateLoaiDocGia(maLoaiDocGia, putLoaiDocGiaDto.TenLoaiDocGia)
+		loaiDocGia, err := usecase.UpdateLoaiDocGia(maLoaiDocGia, putLoaiDocGiaDto.TenLoaiDocGia, putLoaiDocGiaDto.SoSachToiDaDuocMuon)
 		if ErrorHandling(context, err) {
 			return
 		}

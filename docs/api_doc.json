@@ -756,7 +756,7 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Get danh sach tac gia successful",
             "content": {
               "application/json": {
@@ -1294,7 +1294,7 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Update phieu nhap successful",
             "content": {
               "application/json": {
@@ -1486,6 +1486,9 @@
         "properties": {
           "tenLoaiDocGia": {
             "type": "string"
+          },
+          "soSachToiDaDuocMuon": {
+            "type": "integer"
           }
         }
       },
@@ -1494,6 +1497,9 @@
         "properties": {
           "tenLoaiDocGia": {
             "type": "string"
+          },
+          "soSachToiDaDuocMuon": {
+            "type": "integer"
           }
         }
       },
@@ -1505,6 +1511,9 @@
           },
           "tenLoaiDocGia": {
             "type": "string"
+          },
+          "soSachToiDaDuocMuon": {
+            "type": "integer"
           }
         }
       },
@@ -1702,6 +1711,9 @@
           },
           "tinhTrang": {
             "type": "boolean"
+          },
+          "ghiChu": {
+            "type": "string"
           }
         }
       },
@@ -1734,6 +1746,9 @@
           },
           "donGia": {
             "type": "integer"
+          },
+          "ghiChu": {
+            "type": "string"
           }
         }
       }

@@ -933,11 +933,15 @@ components:
       properties:
         tenLoaiDocGia:
           type: string
+        soSachToiDaDuocMuon:
+          type: integer
     PutLoaiDocGiaDto:
       type: object
       properties:
         tenLoaiDocGia:
           type: string
+        soSachToiDaDuocMuon:
+          type: integer
     LoaiDocGiaPresenter:
       type: object
       properties:
@@ -945,6 +949,8 @@ components:
           type: string
         tenLoaiDocGia:
           type: string
+        soSachToiDaDuocMuon:
+          type: integer
     DocGiaDto:
       type: object
       properties:
@@ -1075,6 +1081,8 @@ components:
           type: integer
         tinhTrang:
           type: boolean
+        ghiChu:
+          type: string
     PhieuNhapDto:
       type: object
       properties:
@@ -1096,6 +1104,8 @@ components:
           type: boolean
         donGia:
           type: integer
+        ghiChu:
+          type: string
   responses:
     BadRequestError:
       description: provide bad request

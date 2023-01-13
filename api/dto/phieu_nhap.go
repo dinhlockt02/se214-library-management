@@ -11,4 +11,5 @@ type CtPhieuNhapDto struct {
 	NamXuatBan uint   `json:"namXuatBan"  binding:"required"`
 	TinhTrang  bool   `json:"tinhTrang"  binding:"required"`
 	DonGia     uint   `json:"donGia"  binding:"required"`
+	GhiChu     string `json:"ghiChu" binding:"required"`
 }

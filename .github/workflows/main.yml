@@ -27,10 +27,19 @@ jobs:
           push: true
           tags: dinhlockt02/se214-be:latest
           platforms: linux/amd64,linux/arm64
-      - name: Build and push proxy
+      -
+        name: Build and push proxy
         uses: docker/build-push-action@v3
         with:
           push: true
           tags: dinhlockt02/se214-proxy:latest
+          platforms: linux/amd64,linux/arm64
+          file: ./proxy.Dockerfile
+      -
+        name: Build and push migration
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: dinhlockt02/se214-migrate:latest
           platforms: linux/amd64,linux/arm64
           file: ./proxy.Dockerfile

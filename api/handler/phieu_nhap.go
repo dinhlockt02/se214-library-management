@@ -4,6 +4,7 @@ import (
 	"daijoubuteam.xyz/se214-library-management/api/dto"
 	"daijoubuteam.xyz/se214-library-management/api/presenter"
 	"daijoubuteam.xyz/se214-library-management/core/entity"
+	coreerror "daijoubuteam.xyz/se214-library-management/core/error"
 	nhapsach "daijoubuteam.xyz/se214-library-management/usecase/nhap_sach"
 	"daijoubuteam.xyz/se214-library-management/utils"
 	"fmt"
@@ -42,75 +43,21 @@ func createPhieuNhap(nhapSachUsecase nhapsach.NhapSachUsecase) gin.HandlerFunc {
 		var phieuNhapDto dto.PhieuNhapDto
 		err := context.ShouldBind(&phieuNhapDto)
 		if err != nil {
-			context.AbortWithStatus(http.StatusBadRequest)
+			ErrorHandling(context, coreerror.NewBadRequestError("Invalid json data", err))
 			return
 		}
 		ngayLap, err := time.Parse(utils.TimeLayout, phieuNhapDto.NgayLap)
 		if err != nil {
-			context.AbortWithStatus(http.StatusBadRequest)
+			ErrorHandling(context, coreerror.NewBadRequestError("Invalid json data", err))
 			return
 		}
-		phieuNhap, err := nhapSachUsecase.CreatePhieuNhapSach(&ngayLap)
+		phieuNhap, err := nhapSachUsecase.CreatePhieuNhapSach(&ngayLap, phieuNhapDto.CtPhieuNhap)
 		if ErrorHandling(context, err) {
 			return
 		}
 		context.JSON(http.StatusCreated, presenter.NewPhieuNhapPresenter(phieuNhap))
 	}
 }
-
-func addCtPhieuNhap(nhapSachUsecase nhapsach.NhapSachUsecase) gin.HandlerFunc {
-	return func(context *gin.Context) {
-		var ctPhieuNhapDto dto.CtPhieuNhapDto
-		err := context.ShouldBind(&ctPhieuNhapDto)
-		if err != nil {
-			fmt.Println(err)
-			context.AbortWithStatus(http.StatusBadRequest)
-			return
-		}
-		maPhieuNhap, err := entity.StringToID(context.Param("maPhieuNhap"))
-		if err != nil {
-			context.AbortWithStatus(http.StatusBadRequest)
-			return
-		}
-		maDauSach, err := entity.StringToID(ctPhieuNhapDto.MaDauSach)
-		if err != nil {
-			context.AbortWithStatus(http.StatusBadRequest)
-			return
-		}
-		ctPhieuNhap, err := nhapSachUsecase.AddChiTietPhieuNhapSach(
-			maPhieuNhap,
-			maDauSach,
-			ctPhieuNhapDto.NhaXuatBan,
-			ctPhieuNhapDto.TriGia,
-			ctPhieuNhapDto.NamXuatBan,
-			ctPhieuNhapDto.TinhTrang,
-			ctPhieuNhapDto.DonGia,
-			ctPhieuNhapDto.GhiChu,
-		)
-		if ErrorHandling(context, err) {
-			return
-		}
-		context.JSON(http.StatusCreated, presenter.NewCtPhieuNhapPresenter(ctPhieuNhap))
-	}
-}
-
-func removeCtPhieuNhap(nhapSachUsecase nhapsach.NhapSachUsecase) gin.HandlerFunc {
-	return func(context *gin.Context) {
-
-		maSach, err := entity.StringToID(context.Param("maSach"))
-		if err != nil {
-			context.AbortWithStatus(http.StatusBadRequest)
-			return
-		}
-
-		err = nhapSachUsecase.RemoveChiTietPhieuNhapSach(maSach)
-		if ErrorHandling(context, err) {
-			return
-		}
-		context.Status(http.StatusOK)
-	}
-}
-
 func removePhieuNhap(nhapSachUsecase nhapsach.NhapSachUsecase) gin.HandlerFunc {
 	return func(context *gin.Context) {
 
@@ -132,14 +79,13 @@ func updatePhieuNhap(nhapSachUsecase nhapsach.NhapSachUsecase) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		maPhieuNhap, err := entity.StringToID(context.Param("maPhieuNhap"))
 		if err != nil {
-
 			context.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
 		var phieuNhapDto dto.PhieuNhapDto
 		err = context.ShouldBind(&phieuNhapDto)
 		if err != nil {
-			context.AbortWithStatus(http.StatusBadRequest)
+			ErrorHandling(context, coreerror.NewBadRequestError("Invalid json data", err))
 			return
 		}
 		ngayLap, err := time.Parse(utils.TimeLayout, phieuNhapDto.NgayLap)
@@ -163,6 +109,4 @@ func MakePhieuNhapHandler(r *gin.Engine, nhapSachUsecase nhapsach.NhapSachUsecas
 	r.GET("/phieunhap/:maPhieuNhap", getPhieuNhap(nhapSachUsecase))
 	r.PATCH("/phieunhap/:maPhieuNhap", updatePhieuNhap(nhapSachUsecase))
 	r.DELETE("/phieunhap/:maPhieuNhap", removePhieuNhap(nhapSachUsecase))
-	r.POST("/phieunhap/:maPhieuNhap", addCtPhieuNhap(nhapSachUsecase))
-	r.DELETE("/phieunhap/:maPhieuNhap/:maSach", removeCtPhieuNhap(nhapSachUsecase))
 }

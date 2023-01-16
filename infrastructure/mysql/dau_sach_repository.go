@@ -22,9 +22,9 @@ func (repo *DauSachRepository) GetDanhSachDauSach() (_ []*entity.DauSach, err er
 	tx := repo.db.MustBegin()
 	defer func() {
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 		} else {
-			tx.Commit()
+			_ = tx.Commit()
 		}
 	}()
 	stmt, err := tx.Prepare(`
@@ -130,13 +130,92 @@ func (repo *DauSachRepository) GetDanhSachDauSach() (_ []*entity.DauSach, err er
 }
 
 func (repo *DauSachRepository) GetDauSach(maDauSach *entity.ID) (_ *entity.DauSach, err error) {
-	danhSachDauSach, err := repo.GetDanhSachDauSach()
-	for _, dauSach := range danhSachDauSach {
-		if dauSach.MaDauSach.String() == maDauSach.String() {
-			return dauSach, nil
+	tx := repo.db.MustBegin()
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback()
+		} else {
+			_ = tx.Commit()
 		}
+	}()
+	return repo.getDauSachWithTx(maDauSach, tx)
+}
+
+func (repo *DauSachRepository) getDauSachWithTx(maDauSach *entity.ID, tx *sqlx.Tx) (_ *entity.DauSach, err error) {
+	var dauSach = entity.DauSach{}
+	tx.QueryRowx(`SELECT TenDauSach FROM DauSach WHERE MaDauSach = ?`, maDauSach).Scan(&(dauSach.TenDauSach))
+	// Query tac gia
+	var danhSachTacGia []*entity.TacGia
+	rows, err := tx.Queryx(
+		`SELECT TG.MaTacGia AS MaTacGia, TG.TenTacGia AS TenTacGia
+			   FROM TacGia TG JOIN CT_TacGia CTG on TG.MaTacGia = CTG.MaTacGia
+			   WHERE MaDauSach = ?`,
+		maDauSach,
+	)
+	defer func() {
+		_ = rows.Close()
+	}()
+	if err != nil {
+		return nil, coreerror.NewInternalServerError("database error: can't not query tac gia", nil)
 	}
-	return nil, coreerror.NewNotFoundError("dau sach not found", nil)
+
+	for rows.Next() {
+		var maTacGia string
+		var tenTacGia string
+		var mtg *entity.ID
+		if err != nil {
+			return nil, coreerror.NewInternalServerError("database error: can't not query tac gia", err)
+		}
+		rows.Scan(&maTacGia, &tenTacGia)
+		mtg, err = entity.StringToID(maTacGia)
+		if err != nil {
+			return nil, coreerror.NewInternalServerError("database error: can't not query tac gia", err)
+		}
+		var tacGia = entity.TacGia{
+			MaTacGia:  mtg,
+			TenTacGia: tenTacGia,
+		}
+		danhSachTacGia = append(danhSachTacGia, &tacGia)
+	}
+
+	// Query the loai
+	rows, err = tx.Queryx(
+		`SELECT TL.MaTheLoai AS MaTheLoai, TL.TenTheLoai AS TenTheLoai
+			   FROM TheLoai TL JOIN CT_TheLoai CTL on TL.MaTheLoai = CTL.MaTheLoai
+			   WHERE MaDauSach = ?`,
+		maDauSach,
+	)
+	defer func() {
+		_ = rows.Close()
+	}()
+
+	if err != nil {
+		return nil, coreerror.NewInternalServerError("database error: can't not query the loai", nil)
+	}
+	var danhSachTheLoai []*entity.TheLoai
+	for rows.Next() {
+		var maTheLoai string
+		var tenTheLoai string
+		err = rows.Scan(&maTheLoai, &tenTheLoai)
+		if err != nil {
+			return nil, coreerror.NewInternalServerError("database error: can't not query the loai", nil)
+		}
+
+		var mtl *entity.ID
+		mtl, err = entity.StringToID(maTheLoai)
+
+		if err != nil {
+			return nil, coreerror.NewInternalServerError("database error: can't not query the loai", nil)
+		}
+		var theLoai = entity.TheLoai{
+			mtl, tenTheLoai,
+		}
+		danhSachTheLoai = append(danhSachTheLoai, &theLoai)
+	}
+	dauSach.MaDauSach = maDauSach
+	dauSach.TheLoai = danhSachTheLoai
+	dauSach.TacGia = danhSachTacGia
+	return &dauSach, nil
 }
 
 func (repo *DauSachRepository) CreateDauSach(dauSach *entity.DauSach) (_ *entity.DauSach, err error) {

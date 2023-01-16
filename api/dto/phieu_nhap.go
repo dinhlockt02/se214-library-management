@@ -1,7 +1,8 @@
 package dto
 
 type PhieuNhapDto struct {
-	NgayLap string `json:"ngayLap" binding:"required"`
+	NgayLap     string           `json:"ngayLap" binding:"required"`
+	CtPhieuNhap []CtPhieuNhapDto `json:"ctPhieuNhap" binding:"required"`
 }
 
 type CtPhieuNhapDto struct {

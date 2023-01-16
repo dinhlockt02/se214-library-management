@@ -1,7 +1,7 @@
 package entity
 
 type CtPhieuNhap struct {
-	Sach   *Sach
+	*Sach
 	DonGia uint
 }
 
@@ -14,5 +14,5 @@ func NewCtPhieuNhap(sach *Sach, donGia uint) *CtPhieuNhap {
 }
 
 func (ctPhieuNhap *CtPhieuNhap) IsValid() bool {
-	return true
+	return true && ctPhieuNhap.Sach.IsValid()
 }

@@ -1,6 +1,7 @@
 package nhapsach
 
 import (
+	"daijoubuteam.xyz/se214-library-management/api/dto"
 	coreerror "daijoubuteam.xyz/se214-library-management/core/error"
 	dausach "daijoubuteam.xyz/se214-library-management/usecase/dau_sach"
 	"time"
@@ -41,9 +42,27 @@ func (service *NhapSachService) GetPhieuNhapSach(maPhieuNhap *entity.ID) (*entit
 	return phieuNhap, nil
 }
 
-func (service *NhapSachService) CreatePhieuNhapSach(ngayLap *time.Time) (*entity.PhieuNhap, error) {
+func (service *NhapSachService) CreatePhieuNhapSach(ngayLap *time.Time, ctPhieuNhapDto []dto.CtPhieuNhapDto) (*entity.PhieuNhap, error) {
+	ctPhieuNhap := make([]*entity.CtPhieuNhap, len(ctPhieuNhapDto))
+	var tongTien uint
+	for i, ct := range ctPhieuNhapDto {
+		id, err := entity.StringToID(ct.MaDauSach)
+		if err != nil {
+			return nil, err
+		}
+		dauSach, err := service.dauSachUsecase.GetDauSach(id)
+		if err != nil {
+			return nil, err
+		}
+		sach := entity.NewSach(dauSach, ct.NhaXuatBan, ct.TriGia, ct.NamXuatBan, ct.TinhTrang, ct.GhiChu)
+		if !sach.IsValid() {
+			return nil, coreerror.NewBadRequestError("Invalid sach data", nil)
+		}
+		ctPhieuNhap[i] = entity.NewCtPhieuNhap(sach, ct.DonGia)
+		tongTien += ct.DonGia
+	}
 
-	phieuNhap := entity.NewPhieuNhap(ngayLap)
+	phieuNhap := entity.NewPhieuNhap(ngayLap, tongTien, ctPhieuNhap)
 
 	if !phieuNhap.IsValid() {
 		return nil, coreerror.NewBadRequestError("Invalid phieu nhap", nil)
@@ -80,36 +99,6 @@ func (service *NhapSachService) UpdatePhieuNhapSach(maPhieuNhap *entity.ID, ngay
 }
 
 func (service *NhapSachService) RemovePhieuNhapSach(maPhieuNhap *entity.ID) error {
-	phieuNhap, err := service.GetPhieuNhapSach(maPhieuNhap)
-	if err != nil {
-		return err
-	}
-
-	err = service.phieuNhapRepo.RemovePhieuNhap(phieuNhap)
+	err := service.phieuNhapRepo.RemovePhieuNhap(maPhieuNhap)
 	return err
-}
-
-func (service *NhapSachService) AddChiTietPhieuNhapSach(
-	maPhieuNhap *entity.ID,
-	maDauSach *entity.ID,
-	nhaXuatBan string, triGia uint,
-	namXuatBan uint,
-	tinhTrang bool,
-	donGia uint,
-	ghiChu string) (*entity.CtPhieuNhap, error) {
-	dauSach, err := service.dauSachUsecase.GetDauSach(maDauSach)
-	if err != nil {
-		return nil, err
-	}
-	sach := entity.NewSach(dauSach, nhaXuatBan, triGia, namXuatBan, tinhTrang, ghiChu)
-	ctNhapSach := entity.NewCtPhieuNhap(sach, donGia)
-	chiTietPhieuNhap, err := service.phieuNhapRepo.AddChiTietPhieuNhap(maPhieuNhap, ctNhapSach)
-	if err != nil {
-		return nil, err
-	}
-	return chiTietPhieuNhap, nil
-}
-
-func (service *NhapSachService) RemoveChiTietPhieuNhapSach(maChiTietPhieuNhap *entity.ID) error {
-	return service.phieuNhapRepo.RemoveChiTietPhieuNhap(maChiTietPhieuNhap)
 }

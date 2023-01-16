@@ -2,6 +2,7 @@ package handler
 
 import (
 	coreerror "daijoubuteam.xyz/se214-library-management/core/error"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -21,6 +22,10 @@ func ErrorHandling(context *gin.Context, err error) bool {
 			context.AbortWithStatusJSON(http.StatusConflict, err.Error())
 		case *coreerror.InternalServerError:
 			context.AbortWithStatus(http.StatusInternalServerError)
+			fmt.Println(err)
+		default:
+			context.AbortWithStatus(http.StatusInternalServerError)
+			fmt.Println(err)
 		}
 		return true
 	}

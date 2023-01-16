@@ -3,23 +3,21 @@ package mysql
 import (
 	"daijoubuteam.xyz/se214-library-management/core/entity"
 	coreerror "daijoubuteam.xyz/se214-library-management/core/error"
-	"daijoubuteam.xyz/se214-library-management/core/repository"
 	"daijoubuteam.xyz/se214-library-management/utils"
-	"database/sql"
+	"fmt"
 	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
-	"reflect"
 )
 
 type PhieuNhapRepository struct {
-	db                *sqlx.DB
-	dauSachRepository repository.DauSachRepository
+	db          *sqlx.DB
+	dauSachRepo *DauSachRepository
 }
 
-func NewPhieuNhapRepository(db *sqlx.DB, dauSachRepository repository.DauSachRepository) *PhieuNhapRepository {
+func NewPhieuNhapRepository(db *sqlx.DB, dauSachRepo *DauSachRepository) *PhieuNhapRepository {
 	return &PhieuNhapRepository{
-		db:                db,
-		dauSachRepository: dauSachRepository,
+		db:          db,
+		dauSachRepo: dauSachRepo,
 	}
 }
 
@@ -27,160 +25,124 @@ func (repo *PhieuNhapRepository) GetDanhSachPhieuNhap() (_ []*entity.PhieuNhap, 
 	tx := repo.db.MustBegin()
 	defer func() {
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 		} else {
-			tx.Commit()
+			_ = tx.Commit()
 		}
 	}()
-
-	// Query phieu nhap
-
-	stmt, err := tx.Prepare(`SELECT MaPhieuNhap, NgayNhap, TongTien FROM PhieuNhap`)
-	if err != nil {
-		return nil, coreerror.NewInternalServerError("database err: can't not prepare query", err)
-	}
-	rows, err := stmt.Query()
+	var danhSachPhieuNhap []*entity.PhieuNhap
+	rows, err := tx.Queryx(`SELECT NgayNhap AS NgayLap, TongTien FROM PhieuNhap`)
 	defer func() {
-		rows.Close()
+		_ = rows.Close()
 	}()
 	if err != nil {
-		return nil, coreerror.NewInternalServerError("database err: can't not execute query", err)
+		return nil, coreerror.NewInternalServerError("database error: can't not query phieu nhap", err)
 	}
-	danhSachPhieuNhap := make([]*entity.PhieuNhap, 0)
 	for rows.Next() {
-		var phieuNhap *entity.PhieuNhap = &entity.PhieuNhap{}
-		var maPhieuNhap string
-		s := reflect.ValueOf(phieuNhap).Elem()
-		numCols := s.NumField()
-		columns := make([]interface{}, numCols)
-		for i := 1; i < numCols; i++ {
-			field := s.Field(i)
-			columns[i] = field.Addr().Interface()
-		}
-		columns[0] = &maPhieuNhap
-		err := rows.Scan(columns[0 : len(columns)-1]...)
+		var phieuNhap = entity.PhieuNhap{}
+		var maPhieuNhap *string
+		err = rows.Scan(maPhieuNhap, &phieuNhap)
 		if err != nil {
-			return nil, coreerror.NewInternalServerError("database err: can't not scan rows", err)
+			return nil, coreerror.NewInternalServerError("database error: can't not query phieu nhap", err)
 		}
-		phieuNhap.MaPhieuNhap, err = entity.StringToID(maPhieuNhap)
+		phieuNhap.MaPhieuNhap, err = entity.StringToID(*maPhieuNhap)
 		if err != nil {
-			return nil, coreerror.NewInternalServerError("database err: can't not convert to id", err)
+			return nil, coreerror.NewInternalServerError("database error: can't not query phieu nhap", err)
 		}
-		ctPhieuNhap, err := repo.getCtPhieuNhapByPhieuNhap(maPhieuNhap)
+	}
+	for i, _ := range danhSachPhieuNhap {
+		var ctPhieuNhapRow *sqlx.Rows
+		ctPhieuNhapRow, err = tx.Queryx(
+			`SELECT CT.MaSach, DonGia, MaDauSach, NhaXuatBan, TriGia, NamXuatBan, TinhTrang, GhiChu
+	FROM Ct_PhieuNhap CT JOIN Sach S on S.MaSach = CT.MaSach
+	WHERE MaPhieuNhap = ?`, danhSachPhieuNhap[i].MaPhieuNhap)
 		if err != nil {
-			return nil, err
+			fmt.Println(err)
+			return nil, coreerror.NewInternalServerError("database error: can't not query chi tiet phieu nhap", err)
 		}
-		phieuNhap.CtPhieuNhap = ctPhieuNhap
-		danhSachPhieuNhap = append(danhSachPhieuNhap, phieuNhap)
+		var ctPhieuNhap []*entity.CtPhieuNhap
+		for ctPhieuNhapRow.Next() {
+			var sach = entity.Sach{}
+			var ct = entity.CtPhieuNhap{
+				Sach: &sach,
+			}
+			var maSach string
+			var maDauSach string
+
+			err = ctPhieuNhapRow.Scan(&maSach, &(ct.DonGia), &maDauSach, &(ct.NhaXuatBan), &(ct.TriGia), &(ct.NamXuatBan), &(ct.TinhTrang), &(ct.GhiChu))
+			if err != nil {
+				return nil, coreerror.NewInternalServerError("database error: can't not query chi tiet phieu nhap", err)
+			}
+			ct.MaSach, err = entity.StringToID(maSach)
+			if err != nil {
+				fmt.Println(ct.Sach)
+				return nil, coreerror.NewInternalServerError("database error: can't not execute query", err)
+			}
+			mds, _ := entity.StringToID(maDauSach)
+			ct.DauSach = utils.Ptr(entity.DauSach{MaDauSach: mds})
+			ctPhieuNhap = append(ctPhieuNhap, &ct)
+		}
+		for i, _ := range ctPhieuNhap {
+			ctPhieuNhap[i].DauSach, err = repo.dauSachRepo.getDauSachWithTx(ctPhieuNhap[i].DauSach.MaDauSach, tx)
+			if err != nil {
+				return nil, err
+			}
+		}
+		danhSachPhieuNhap[i].CtPhieuNhap = ctPhieuNhap
 	}
 	return danhSachPhieuNhap, nil
-}
-
-func (repo *PhieuNhapRepository) getCtPhieuNhapByPhieuNhap(maPhieuNhap string) (_ []*entity.CtPhieuNhap, err error) {
-	tx := repo.db.MustBegin()
-	defer func() {
-		if err != nil {
-			tx.Rollback()
-		} else {
-			tx.Commit()
-		}
-	}()
-	stmt, err := tx.Prepare(`SELECT Sach.MaSach,MaDauSach, NhaXuatBan, TriGia, NamXuatBan, TinhTrang, DonGia, GhiChu FROM Sach INNER JOIN Ct_PhieuNhap CPN on Sach.MaSach = CPN.MaSach WHERE MaPhieuNhap = ?`)
-	if err != nil {
-		return nil, coreerror.NewInternalServerError("database err: can't not prepare query", err)
-	}
-	rows, err := stmt.Query(maPhieuNhap)
-	defer func() {
-		rows.Close()
-	}()
-	danhSachCtPhieuNhap := make([]*entity.CtPhieuNhap, 0)
-	for rows.Next() {
-		var MaSachDB string
-		var MaDauSachDB string
-		var NhaXuatBan string
-		var TriGia uint
-		var NamXuatBan uint
-		var TinhTrang bool
-		var DonGia uint
-		var GhiChu string
-
-		err := rows.Scan(&MaSachDB, &MaDauSachDB, &NhaXuatBan, &TriGia, &NamXuatBan, &TinhTrang, &DonGia, &GhiChu)
-		if err != nil {
-			return nil, coreerror.NewInternalServerError("database err: can't not scan rows", err)
-		}
-
-		MaSach, err := entity.StringToID(MaSachDB)
-		if err != nil {
-			return nil, coreerror.NewInternalServerError("database err: can't not convert to id", err)
-		}
-		MaDauSach, err := entity.StringToID(MaDauSachDB)
-		if err != nil {
-			return nil, coreerror.NewInternalServerError("database err: can't not convert to id", err)
-		}
-
-		dauSach, err := repo.dauSachRepository.GetDauSach(MaDauSach)
-
-		if err != nil {
-			return nil, err
-		}
-
-		sach := &entity.Sach{
-			MaSach:     MaSach,
-			DauSach:    dauSach,
-			NhaXuatBan: NhaXuatBan,
-			TriGia:     TriGia,
-			NamXuatBan: NamXuatBan,
-			TinhTrang:  TinhTrang,
-			GhiChu:     GhiChu,
-		}
-		ctPhieuNhap := &entity.CtPhieuNhap{
-			Sach:   sach,
-			DonGia: DonGia,
-		}
-		danhSachCtPhieuNhap = append(danhSachCtPhieuNhap, ctPhieuNhap)
-	}
-	return danhSachCtPhieuNhap, nil
 }
 
 func (repo *PhieuNhapRepository) GetPhieuNhap(maPhieuNhap *entity.ID) (_ *entity.PhieuNhap, err error) {
 	tx := repo.db.MustBegin()
 	defer func() {
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 		} else {
-			tx.Commit()
+			_ = tx.Commit()
 		}
 	}()
-
-	// Query phieu nhap
-
-	stmt, err := tx.Prepare(`SELECT MaPhieuNhap, NgayNhap, TongTien FROM PhieuNhap WHERE MaPhieuNhap = ?`)
-	if err != nil {
-		return nil, coreerror.NewInternalServerError("database err: can't not prepare query", err)
-	}
-	row := stmt.QueryRow(maPhieuNhap.String())
-	var phieuNhap = &entity.PhieuNhap{}
-	s := reflect.ValueOf(phieuNhap).Elem()
-	numCols := s.NumField()
-	columns := make([]interface{}, numCols)
-	for i := 1; i < numCols; i++ {
-		field := s.Field(i)
-		columns[i] = field.Addr().Interface()
-	}
-	columns[0] = utils.Ptr("")
-	err = row.Scan(columns[0 : len(columns)-1]...)
-	if err == sql.ErrNoRows {
-		return nil, coreerror.NewNotFoundError("phieu nhap not found", err)
-	} else if err != nil {
-		return nil, coreerror.NewInternalServerError("database err: can't not scan row", err)
-	}
+	var phieuNhap = entity.PhieuNhap{}
+	tx.QueryRowx(`SELECT NgayNhap AS NgayLap, TongTien FROM PhieuNhap WHERE MaPhieuNhap = ?`).StructScan(phieuNhap)
 	phieuNhap.MaPhieuNhap = maPhieuNhap
-
-	phieuNhap.CtPhieuNhap, err = repo.getCtPhieuNhapByPhieuNhap(phieuNhap.MaPhieuNhap.String())
+	ctPhieuNhapRow, err := tx.Queryx(
+		`SELECT CT.MaSach, DonGia, MaDauSach, NhaXuatBan, TriGia, NamXuatBan, TinhTrang, GhiChu
+	FROM Ct_PhieuNhap CT JOIN Sach S on S.MaSach = CT.MaSach
+	WHERE MaPhieuNhap = ?`, maPhieuNhap)
 	if err != nil {
-		return nil, err
+		fmt.Println(err)
+		return nil, coreerror.NewInternalServerError("database error: can't not query chi tiet phieu nhap", err)
 	}
-	return phieuNhap, nil
+	var ctPhieuNhap []*entity.CtPhieuNhap
+	for ctPhieuNhapRow.Next() {
+		var sach = entity.Sach{}
+		var ct = entity.CtPhieuNhap{
+			Sach: &sach,
+		}
+		var maSach string
+		var maDauSach string
+
+		err = ctPhieuNhapRow.Scan(&maSach, &(ct.DonGia), &maDauSach, &(ct.NhaXuatBan), &(ct.TriGia), &(ct.NamXuatBan), &(ct.TinhTrang), &(ct.GhiChu))
+		if err != nil {
+			return nil, coreerror.NewInternalServerError("database error: can't not query chi tiet phieu nhap", err)
+		}
+		ct.MaSach, err = entity.StringToID(maSach)
+		if err != nil {
+			fmt.Println(ct.Sach)
+			return nil, coreerror.NewInternalServerError("database error: can't not execute query", err)
+		}
+		mds, _ := entity.StringToID(maDauSach)
+		ct.DauSach = utils.Ptr(entity.DauSach{MaDauSach: mds})
+		ctPhieuNhap = append(ctPhieuNhap, &ct)
+	}
+	for i, _ := range ctPhieuNhap {
+		ctPhieuNhap[i].DauSach, err = repo.dauSachRepo.getDauSachWithTx(ctPhieuNhap[i].DauSach.MaDauSach, tx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	phieuNhap.CtPhieuNhap = ctPhieuNhap
+	return &phieuNhap, nil
 }
 
 func (repo *PhieuNhapRepository) CreatePhieuNhap(phieuNhap *entity.PhieuNhap) (_ *entity.PhieuNhap, err error) {
@@ -199,7 +161,61 @@ func (repo *PhieuNhapRepository) CreatePhieuNhap(phieuNhap *entity.PhieuNhap) (_
 		return nil, coreerror.NewInternalServerError("database error: can't not create phieu nhap", err)
 	}
 
+	for _, ctPhieuNhap := range phieuNhap.CtPhieuNhap {
+		var sach *entity.Sach
+		sach, err = repo.createSach(tx, ctPhieuNhap.Sach)
+		if err != nil {
+			return nil, err
+		}
+		err = repo.createCtPhieuNhap(tx, sach.MaSach, phieuNhap.MaPhieuNhap, ctPhieuNhap.DonGia)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return phieuNhap, nil
+}
+
+func (repo *PhieuNhapRepository) createSach(tx *sqlx.Tx, sach *entity.Sach) (_ *entity.Sach, err error) {
+	sachExec := `INSERT INTO 
+    Sach(MaSach, 
+         MaDauSach, 
+         NhaXuatBan, 
+         TriGia, 
+         NamXuatBan, 
+         TinhTrang, 
+         GhiChu) 
+	VALUES (?,?,?,?,?,?,?)`
+	_, err = tx.Exec(sachExec,
+		sach.MaSach,
+		sach.DauSach.MaDauSach,
+		sach.NhaXuatBan,
+		sach.TriGia,
+		sach.NamXuatBan,
+		sach.TinhTrang,
+		sach.GhiChu)
+	if err != nil {
+		if driverError, ok := err.(*mysql.MySQLError); ok {
+			return nil, DriverErrorHandling(driverError)
+		}
+		return nil, coreerror.NewInternalServerError("database error: can't not create chi tiet phieu nhap", err)
+	}
+	return sach, nil
+}
+
+func (repo *PhieuNhapRepository) createCtPhieuNhap(tx *sqlx.Tx, maSach *entity.ID, maPhieuNhap *entity.ID, donGia uint) error {
+	ctPhieuNhapExec := `INSERT INTO 
+    Ct_PhieuNhap(MaPhieuNhap, MaSach, DonGia) 
+	VALUES (?,?,?)`
+	_, err := tx.Exec(ctPhieuNhapExec,
+		maPhieuNhap.String(), maSach.String(), donGia)
+	if err != nil {
+		if driverError, ok := err.(*mysql.MySQLError); ok {
+			return DriverErrorHandling(driverError)
+		}
+		err = coreerror.NewInternalServerError("database error: can't not create chi tiet phieu nhap", err)
+	}
+	return err
 }
 
 func (repo *PhieuNhapRepository) UpdatePhieuNhap(phieuNhap *entity.PhieuNhap) (_ *entity.PhieuNhap, err error) {
@@ -217,88 +233,72 @@ func (repo *PhieuNhapRepository) UpdatePhieuNhap(phieuNhap *entity.PhieuNhap) (_
 	if err != nil {
 		return nil, coreerror.NewInternalServerError("database error: can't not create phieu nhap", err)
 	}
-
 	return phieuNhap, nil
 }
 
-func (repo *PhieuNhapRepository) RemovePhieuNhap(phieuNhap *entity.PhieuNhap) (err error) {
+func (repo *PhieuNhapRepository) RemovePhieuNhap(maPhieuNhap *entity.ID) (err error) {
 	tx := repo.db.MustBegin()
 	defer func() {
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 		} else {
-			tx.Commit()
+			_ = tx.Commit()
 		}
 	}()
 
-	phieuNhapExec := `DELETE FROM PhieuNhap WHERE MaPhieuNhap = ?`
-	_, err = tx.Exec(phieuNhapExec, phieuNhap.MaPhieuNhap.String())
+	// Get all ma sach in phieu nhap
+	maSachRow, err := tx.Queryx(
+		`SELECT MaSach From Ct_PhieuNhap WHERE MaPhieuNhap = ?`,
+		maPhieuNhap.String(),
+	)
+	defer func() {
+		_ = maSachRow.Close()
+	}()
+	var maSach []interface{}
+	for maSachRow.Next() {
+		var ms string
+		err = maSachRow.Scan(&ms)
+		maSach = append(maSach, ms)
+	}
+	if err != nil {
+		fmt.Println(err)
+		return coreerror.NewInternalServerError("database error: can't not query ma sach", err)
+	}
+	// Delete sach if exists
+	if len(maSach) > 0 {
+		_, err = tx.Exec(
+			`DELETE FROM Ct_PhieuNhap WHERE MaPhieuNhap = ?`,
+			maPhieuNhap,
+		)
+		if err != nil {
+			if driverError, ok := err.(*mysql.MySQLError); ok {
+				return DriverErrorHandling(driverError)
+			}
+			return coreerror.NewInternalServerError("database error: can't not delete chi tiet phieu nhap", err)
+		}
+		var query string
+		var args []interface{}
+		query, args, err = sqlx.In(
+			`DELETE FROM Sach WHERE Sach.MaSach IN (?);`,
+			maSach,
+		)
+		_, err = tx.Exec(tx.Rebind(query), args...)
+		if err != nil {
+			return coreerror.NewInternalServerError("database error: can't not delete sach", err)
+		}
+	}
+
+	// Delete phieu nhap
+	_, err = tx.Exec(
+		`DELETE FROM PhieuNhap WHERE MaPhieuNhap = ?`,
+		maPhieuNhap.String(),
+	)
 	if err != nil {
 		if driverError, ok := err.(*mysql.MySQLError); ok {
 			return DriverErrorHandling(driverError)
 		}
 		return coreerror.NewInternalServerError("database error: can't not delete phieu nhap", err)
 	}
-	return nil
-}
 
-func (repo *PhieuNhapRepository) AddChiTietPhieuNhap(maPhieuNhap *entity.ID, ctPhieuNhap *entity.CtPhieuNhap) (_ *entity.CtPhieuNhap, err error) {
-	tx := repo.db.MustBegin()
-	defer func() {
-		if err != nil {
-			tx.Rollback()
-		} else {
-			tx.Commit()
-		}
-	}()
-
-	sachExec := `INSERT INTO Sach (MaSach, MaDauSach, NhaXuatBan, TriGia, NamXuatBan, TinhTrang, GhiChu) VALUES (?, ?, ?, ? ,?, ?, ?);`
-
-	_, err = tx.Exec(sachExec,
-		ctPhieuNhap.Sach.MaSach.String(),
-		ctPhieuNhap.Sach.DauSach.MaDauSach.String(),
-		ctPhieuNhap.Sach.NhaXuatBan,
-		ctPhieuNhap.Sach.TriGia,
-		ctPhieuNhap.Sach.NamXuatBan,
-		ctPhieuNhap.Sach.TinhTrang,
-		ctPhieuNhap.Sach.GhiChu,
-	)
-	if err != nil {
-		return nil, coreerror.NewInternalServerError("database error: can't not create sach", err)
-	}
-	ctPhieuNhapExec := `INSERT INTO Ct_PhieuNhap(MaPhieuNhap, MaSach, DonGia) VALUES (?, ?, ?)`
-	_, err = tx.Exec(ctPhieuNhapExec, maPhieuNhap.String(), ctPhieuNhap.Sach.MaSach.String(), ctPhieuNhap.DonGia)
-	if err != nil {
-		return nil, coreerror.NewInternalServerError("database error: can't not create ct phieu nhap", err)
-	}
-	return ctPhieuNhap, nil
-}
-
-func (repo *PhieuNhapRepository) RemoveChiTietPhieuNhap(maSach *entity.ID) (err error) {
-	tx := repo.db.MustBegin()
-	defer func() {
-		if err != nil {
-			tx.Rollback()
-		} else {
-			tx.Commit()
-		}
-	}()
-
-	removeCtPhieuNhapExec := `DELETE FROM Ct_PhieuNhap WHERE MaSach = ?`
-	removeSachExec := `DELETE FROM Sach WHERE MaSach = ?`
-	_, err = tx.Exec(removeCtPhieuNhapExec, maSach)
-	if err != nil {
-		if driverError, ok := err.(*mysql.MySQLError); ok {
-			return DriverErrorHandling(driverError)
-		}
-		return coreerror.NewInternalServerError("database error: can't not remove ct Phieu nhap", err)
-	}
-	_, err = tx.Exec(removeSachExec, maSach)
-	if err != nil {
-		if driverError, ok := err.(*mysql.MySQLError); ok {
-			return DriverErrorHandling(driverError)
-		}
-		return coreerror.NewInternalServerError("database error: can't not remove sach", err)
-	}
 	return nil
 }

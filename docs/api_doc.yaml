@@ -749,7 +749,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PhieuNhapDto'
+              allOf:
+                - $ref: '#/components/schemas/PhieuNhapDto'
+                - type: object
+                  properties:
+                    ctPhieuNhap:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/CtPhieuNhapDto'
       responses:
         201:
           description: Create dau sach successful
@@ -840,67 +847,6 @@ paths:
       responses:
         200:
           description: Remove phieu nhap successful
-        400:
-          $ref: '#/components/responses/BadRequestError'
-        401:
-          $ref: '#/components/responses/UnauthorizedError'
-        403:
-          $ref: '#/components/responses/ForbiddenError'
-        404:
-          $ref: '#/components/responses/NotFoundError'
-        500:
-          $ref: '#/components/responses/InternalServerError'
-    post:
-      summary: Add chi tiet phieu nhap
-      tags:
-        - Phieu nhap
-      parameters:
-        - in: path
-          name: maPhieuNhap
-          schema:
-            type: string
-          required: true
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CtPhieuNhapDto'
-      responses:
-        201:
-          description: Add chi tiet phieu nhap successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CtPhieuNhapPresenter'
-        400:
-          $ref: '#/components/responses/BadRequestError'
-        401:
-          $ref: '#/components/responses/UnauthorizedError'
-        403:
-          $ref: '#/components/responses/ForbiddenError'
-        404:
-          $ref: '#/components/responses/NotFoundError'
-        500:
-          $ref: '#/components/responses/InternalServerError'
-  /phieunhap/{maPhieuNhap}/{maSach}:
-    delete:
-      summary: Remove chi tiet phieu nhap
-      tags:
-        - Phieu nhap
-      parameters:
-        - in: path
-          name: maPhieuNhap
-          schema:
-            type: string
-          required: true
-        - in: path
-          name: maSach
-          schema:
-            type: string
-          required: true
-      responses:
-        200:
-          description: Remove chi tiet phieu nhap successful
         400:
           $ref: '#/components/responses/BadRequestError'
         401:

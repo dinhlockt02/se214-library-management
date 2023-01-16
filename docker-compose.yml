@@ -43,11 +43,9 @@ services:
     networks:
       - se214
   migrate-up:
-    image: migrate/migrate
+    image: dinhlockt02/se214-migrate
     networks:
       - se214
-    volumes:
-      - ./db/migration:/migrations
     entrypoint: migrate -database "mysql://root:example@tcp(db:3306)/se214?query" -path /migrations up
     depends_on:
       db:

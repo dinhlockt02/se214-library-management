@@ -12,6 +12,13 @@ type SachService struct {
 	dauSachUsecase dausach.DauSachUsecase
 }
 
+func NewSachService(sachRepo repository.SachRepository, dauSachUsecase dausach.DauSachUsecase) *SachService {
+	return &SachService{
+		sachRepo:       sachRepo,
+		dauSachUsecase: dauSachUsecase,
+	}
+}
+
 func (service *SachService) GetDanhSachSach() ([]*entity.Sach, error) {
 	danhSachSach, err := service.sachRepo.GetDanhSachSach()
 	if err != nil {
@@ -35,34 +42,7 @@ func (service *SachService) GetSach(maSach *entity.ID) (*entity.Sach, error) {
 	return sach, nil
 }
 
-func (service *SachService) CreateSach(maDauSach *entity.ID, nhaXuatBan string, triGia uint, namXuatBan uint, ghiChu string) (*entity.Sach, error) {
-	dauSach, err := service.dauSachUsecase.GetDauSach(maDauSach)
-	if err != nil {
-		return nil, err
-	}
-
-	newSach := entity.NewSach(dauSach, nhaXuatBan, triGia, namXuatBan, true, ghiChu)
-
-	if !newSach.IsValid() {
-		return nil, coreerror.NewBadRequestError("Invalid sach", nil)
-	}
-
-	newSach, err = service.sachRepo.CreateSach(newSach)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return newSach, nil
-
-}
-
-func (service *SachService) UpdateSach(maSach *entity.ID, maDauSach *entity.ID, nhaXuatBan string, triGia uint, namXuatBan uint, ghiChu string) (*entity.Sach, error) {
-	dauSach, err := service.dauSachUsecase.GetDauSach(maDauSach)
-
-	if err != nil {
-		return nil, err
-	}
+func (service *SachService) UpdateSach(maSach *entity.ID, nhaXuatBan string, triGia uint, namXuatBan uint, tinhTrang bool, ghiChu string) (*entity.Sach, error) {
 
 	sach, err := service.sachRepo.GetSach(maSach)
 	if err != nil {
@@ -73,11 +53,11 @@ func (service *SachService) UpdateSach(maSach *entity.ID, maDauSach *entity.ID, 
 		return nil, coreerror.NewNotFoundError("Sach not found", nil)
 	}
 
-	sach.DauSach = dauSach
 	sach.NhaXuatBan = nhaXuatBan
 	sach.TriGia = triGia
 	sach.NamXuatBan = namXuatBan
 	sach.GhiChu = ghiChu
+	sach.TinhTrang = tinhTrang
 
 	if !sach.IsValid() {
 		return nil, coreerror.NewBadRequestError("Invalid sach", nil)
@@ -90,9 +70,4 @@ func (service *SachService) UpdateSach(maSach *entity.ID, maDauSach *entity.ID, 
 	}
 
 	return sach, nil
-}
-
-func (service *SachService) RemoveSach(maSach *entity.ID) error {
-	err := service.sachRepo.RemoveSach(maSach)
-	return err
 }

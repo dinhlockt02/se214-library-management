@@ -31,7 +31,7 @@ func (repo *PhieuNhapRepository) GetDanhSachPhieuNhap() (_ []*entity.PhieuNhap, 
 		}
 	}()
 	var danhSachPhieuNhap []*entity.PhieuNhap
-	rows, err := tx.Queryx(`SELECT NgayNhap AS NgayLap, TongTien FROM PhieuNhap`)
+	rows, err := tx.Queryx(`SELECT MaPhieuNhap,  NgayNhap AS NgayLap, TongTien FROM PhieuNhap`)
 	defer func() {
 		_ = rows.Close()
 	}()
@@ -40,22 +40,25 @@ func (repo *PhieuNhapRepository) GetDanhSachPhieuNhap() (_ []*entity.PhieuNhap, 
 	}
 	for rows.Next() {
 		var phieuNhap = entity.PhieuNhap{}
-		var maPhieuNhap *string
-		err = rows.Scan(maPhieuNhap, &phieuNhap)
+		var maPhieuNhap string
+		err = rows.Scan(&maPhieuNhap, &(phieuNhap.NgayLap), &(phieuNhap.TongTien))
 		if err != nil {
 			return nil, coreerror.NewInternalServerError("database error: can't not query phieu nhap", err)
 		}
-		phieuNhap.MaPhieuNhap, err = entity.StringToID(*maPhieuNhap)
+		phieuNhap.MaPhieuNhap, err = entity.StringToID(maPhieuNhap)
 		if err != nil {
 			return nil, coreerror.NewInternalServerError("database error: can't not query phieu nhap", err)
 		}
+		danhSachPhieuNhap = append(danhSachPhieuNhap, &phieuNhap)
 	}
 	for i, _ := range danhSachPhieuNhap {
 		var ctPhieuNhapRow *sqlx.Rows
 		ctPhieuNhapRow, err = tx.Queryx(
 			`SELECT CT.MaSach, DonGia, MaDauSach, NhaXuatBan, TriGia, NamXuatBan, TinhTrang, GhiChu
 	FROM Ct_PhieuNhap CT JOIN Sach S on S.MaSach = CT.MaSach
-	WHERE MaPhieuNhap = ?`, danhSachPhieuNhap[i].MaPhieuNhap)
+	WHERE MaPhieuNhap = ?`,
+			danhSachPhieuNhap[i].MaPhieuNhap,
+		)
 		if err != nil {
 			fmt.Println(err)
 			return nil, coreerror.NewInternalServerError("database error: can't not query chi tiet phieu nhap", err)
@@ -78,7 +81,11 @@ func (repo *PhieuNhapRepository) GetDanhSachPhieuNhap() (_ []*entity.PhieuNhap, 
 				fmt.Println(ct.Sach)
 				return nil, coreerror.NewInternalServerError("database error: can't not execute query", err)
 			}
-			mds, _ := entity.StringToID(maDauSach)
+			var mds *entity.ID
+			mds, err = entity.StringToID(maDauSach)
+			if err != nil {
+				return nil, coreerror.NewInternalServerError("database error: can't not query phieu nhap sach", err)
+			}
 			ct.DauSach = utils.Ptr(entity.DauSach{MaDauSach: mds})
 			ctPhieuNhap = append(ctPhieuNhap, &ct)
 		}

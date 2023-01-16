@@ -1,5 +1,9 @@
 package dto
 
+type UpdatePhieuNhapDto struct {
+	NgayLap string `json:"ngayLap" binding:"required"`
+}
+
 type PhieuNhapDto struct {
 	NgayLap     string           `json:"ngayLap" binding:"required"`
 	CtPhieuNhap []CtPhieuNhapDto `json:"ctPhieuNhap" binding:"required"`

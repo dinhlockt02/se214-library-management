@@ -41,6 +41,7 @@ func StartServer(db *sqlx.DB) {
 	tacGiaUsecase := wireimpl.InitTacGiaUsecase(db)
 	dauSachUsecase := wireimpl.InitDauSachUsecase(db)
 	nhapSachUsecase := wireimpl.InitNhapSachUsecase(db)
+	sachUsecase := wireimpl.InitSachUsecase(db)
 
 	r := gin.Default()
 
@@ -71,5 +72,6 @@ func StartServer(db *sqlx.DB) {
 	handler.MakeTacGiaHandler(r, tacGiaUsecase)
 	handler.MakeDauSachHandler(r, dauSachUsecase)
 	handler.MakePhieuNhapHandler(r, nhapSachUsecase)
+	handler.MakeSachHandler(r, sachUsecase)
 	r.Run(":8080")
 }

@@ -7,7 +7,6 @@ import (
 	coreerror "daijoubuteam.xyz/se214-library-management/core/error"
 	nhapsach "daijoubuteam.xyz/se214-library-management/usecase/nhap_sach"
 	"daijoubuteam.xyz/se214-library-management/utils"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
@@ -79,10 +78,10 @@ func updatePhieuNhap(nhapSachUsecase nhapsach.NhapSachUsecase) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		maPhieuNhap, err := entity.StringToID(context.Param("maPhieuNhap"))
 		if err != nil {
-			context.AbortWithStatus(http.StatusBadRequest)
+			ErrorHandling(context, coreerror.NewBadRequestError("Invalid ma phieu nhap", err))
 			return
 		}
-		var phieuNhapDto dto.PhieuNhapDto
+		var phieuNhapDto dto.UpdatePhieuNhapDto
 		err = context.ShouldBind(&phieuNhapDto)
 		if err != nil {
 			ErrorHandling(context, coreerror.NewBadRequestError("Invalid json data", err))
@@ -90,8 +89,7 @@ func updatePhieuNhap(nhapSachUsecase nhapsach.NhapSachUsecase) gin.HandlerFunc {
 		}
 		ngayLap, err := time.Parse(utils.TimeLayout, phieuNhapDto.NgayLap)
 		if err != nil {
-			fmt.Println(err)
-			context.AbortWithStatus(http.StatusBadRequest)
+			ErrorHandling(context, coreerror.NewBadRequestError("Invalid time format", err))
 			return
 		}
 		phieuNhap, err := nhapSachUsecase.UpdatePhieuNhapSach(maPhieuNhap, &ngayLap)

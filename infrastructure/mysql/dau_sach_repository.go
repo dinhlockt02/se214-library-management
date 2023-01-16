@@ -166,7 +166,10 @@ func (repo *DauSachRepository) getDauSachWithTx(maDauSach *entity.ID, tx *sqlx.T
 		if err != nil {
 			return nil, coreerror.NewInternalServerError("database error: can't not query tac gia", err)
 		}
-		rows.Scan(&maTacGia, &tenTacGia)
+		_ = rows.Scan(&maTacGia, &tenTacGia)
+		if err != nil {
+			return nil, coreerror.NewInternalServerError("database error: can't not query tac gia", err)
+		}
 		mtg, err = entity.StringToID(maTacGia)
 		if err != nil {
 			return nil, coreerror.NewInternalServerError("database error: can't not query tac gia", err)
@@ -215,6 +218,7 @@ func (repo *DauSachRepository) getDauSachWithTx(maDauSach *entity.ID, tx *sqlx.T
 	dauSach.MaDauSach = maDauSach
 	dauSach.TheLoai = danhSachTheLoai
 	dauSach.TacGia = danhSachTacGia
+	fmt.Println("GOES HERE")
 	return &dauSach, nil
 }
 

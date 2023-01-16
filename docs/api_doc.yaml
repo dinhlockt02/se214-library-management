@@ -857,6 +857,90 @@ paths:
           $ref: '#/components/responses/NotFoundError'
         500:
           $ref: '#/components/responses/InternalServerError'
+  /sach:
+    get:
+      summary: Get danh sach sach
+      tags:
+        - Sach
+      responses:
+        200:
+          description: Get danh sach sach successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SachPresenter'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /sach/{maSach}:
+    get:
+      summary: Get sach
+      tags:
+        - Sach
+      parameters:
+        - in: path
+          name: maSach
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Get sach successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SachPresenter'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      summary: Update sach
+      tags:
+        - Sach
+      parameters:
+        - in: path
+          name: maSach
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSachDto'
+      responses:
+        200:
+          description: Update sach successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SachPresenter'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
 components:
   schemas:
     LoginDto:
@@ -1050,6 +1134,21 @@ components:
           type: boolean
         donGia:
           type: integer
+        ghiChu:
+          type: string
+    UpdateSachDto:
+      type: object
+      properties:
+        nhaXuatBan:
+          type: string
+        triGia:
+          type: number
+          minimum: 0
+        namXuatBan:
+          type: integer
+          minimum: 0
+        tinhTrang:
+          type: boolean
         ghiChu:
           type: string
   responses:

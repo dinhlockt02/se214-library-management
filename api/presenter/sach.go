@@ -21,3 +21,11 @@ func NewSachPresenter(sach *entity.Sach) *SachPresenter {
 		TinhTrang:  sach.TinhTrang,
 	}
 }
+
+func NewDanhSachSachPresenter(danhSachSach []*entity.Sach) []*SachPresenter {
+	danhSachSachPresenter := make([]*SachPresenter, len(danhSachSach))
+	for i, _ := range danhSachSach {
+		danhSachSachPresenter[i] = NewSachPresenter(danhSachSach[i])
+	}
+	return danhSachSachPresenter
+}

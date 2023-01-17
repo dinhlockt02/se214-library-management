@@ -7,5 +7,6 @@ import (
 
 type Usecase interface {
 	GetPhieuMuon() ([]*entity.PhieuMuon, error)
+	GetPhieuMuonByDocGia(maDocGia *entity.ID) ([]*entity.PhieuMuon, error)
 	CreatePhieuMuon(ngayMuon *time.Time, maSach *entity.ID, maDocGia *entity.ID) (*entity.PhieuMuon, error)
 }

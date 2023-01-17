@@ -29,6 +29,10 @@ func (s Service) GetPhieuMuon() ([]*entity.PhieuMuon, error) {
 	return s.PhieuMuonRepository.GetDanhSachPhieuMuon()
 }
 
+func (s Service) GetPhieuMuonByDocGia(maDocGia *entity.ID) ([]*entity.PhieuMuon, error) {
+	return s.PhieuMuonRepository.GetPhieuMuonByDocGia(maDocGia)
+}
+
 func (s Service) CreatePhieuMuon(ngayMuon *time.Time, maSach *entity.ID, maDocGia *entity.ID) (*entity.PhieuMuon, error) {
 	var err error
 	var dg *entity.DocGia
@@ -42,6 +46,13 @@ func (s Service) CreatePhieuMuon(ngayMuon *time.Time, maSach *entity.ID, maDocGi
 	if !sa.TinhTrang {
 		return nil, coreerror.NewConflictError("conflict error: sach da duoc muon", nil)
 	}
+	var phieuMuon []*entity.PhieuMuon
+	if phieuMuon, err = s.GetPhieuMuonByDocGia(maDocGia); err != nil {
+		return nil, coreerror.NewInternalServerError("Unknown internal server error", err)
+	} else if len(phieuMuon) >= dg.LoaiDocGia.SoSachToiDaDuocMuon {
+		return nil, coreerror.NewBadRequestError("Maximum phieu muon reached", err)
+	}
+
 	sa.TinhTrang = false
 	return s.PhieuMuonRepository.CreatePhieuMuon(entity.NewPhieuMuon(dg, ngayMuon, sa, nil))
 }

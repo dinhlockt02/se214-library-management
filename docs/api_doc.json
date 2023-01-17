@@ -1507,6 +1507,89 @@
           }
         }
       }
+    },
+    "/phieu-muon": {
+      "get": {
+        "summary": "Get danh sach phieu muon",
+        "tags": [
+          "Phieu muon"
+        ],
+        "responses": {
+          "200": {
+            "description": "Get danh sach phieu muon successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PhieuMuonPresenter"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create phieu muon",
+        "tags": [
+          "Phieu muon"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PhieuMuonDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Get danh sach phieu muon successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PhieuMuonPresenter"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1823,6 +1906,39 @@
           },
           "ghiChu": {
             "type": "string"
+          }
+        }
+      },
+      "PhieuMuonDto": {
+        "type": "object",
+        "properties": {
+          "maDocGia": {
+            "type": "string"
+          },
+          "ngayMuon": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "maSach": {
+            "type": "string"
+          }
+        }
+      },
+      "PhieuMuonPresenter": {
+        "type": "object",
+        "properties": {
+          "maPhieuMuon": {
+            "type": "string"
+          },
+          "docGia": {
+            "$ref": "#/components/schemas/DocGiaPresenter"
+          },
+          "ngayMuon": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sach": {
+            "$ref": "#/components/schemas/SachPresenter"
           }
         }
       }

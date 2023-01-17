@@ -1,0 +1,5 @@
+DELETE FROM PhieuTra;
+DROP TABLE PhieuTra;
+
+DELETE FROM PhieuMuon;
+DROP TABLE PhieuMuon;

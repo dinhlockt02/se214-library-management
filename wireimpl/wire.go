@@ -7,6 +7,7 @@ import (
 	dausach "daijoubuteam.xyz/se214-library-management/usecase/dau_sach"
 	docgia "daijoubuteam.xyz/se214-library-management/usecase/doc_gia"
 	loaidocgia "daijoubuteam.xyz/se214-library-management/usecase/loai_doc_gia"
+	"daijoubuteam.xyz/se214-library-management/usecase/muon_sach"
 	nhapsach "daijoubuteam.xyz/se214-library-management/usecase/nhap_sach"
 	"daijoubuteam.xyz/se214-library-management/usecase/sach"
 	tacgia "daijoubuteam.xyz/se214-library-management/usecase/tac_gia"
@@ -37,6 +38,7 @@ var TacGiaRepositorySet = wire.NewSet(wire.Bind(new(repository.TacGiaRepository)
 var DauSachRepositorySet = wire.NewSet(wire.Bind(new(repository.DauSachRepository), new(*mysql.DauSachRepository)), mysql.NewDauSachRepository)
 var PhieuNhapRepositorySet = wire.NewSet(wire.Bind(new(repository.PhieuNhapRepository), new(*mysql.PhieuNhapRepository)), mysql.NewPhieuNhapRepository)
 var SachRepositorySet = wire.NewSet(wire.Bind(new(repository.SachRepository), new(mysql.SachRepository)), mysql.NewSachRepository)
+var PhieuMuonRepositorySet = wire.NewSet(wire.Bind(new(repository.PhieuMuonRepository), new(mysql.PhieuMuonRepository)), mysql.NewPhieuMuonRepository)
 
 var ThuThuUsecaseSet = wire.NewSet(wire.Bind(new(thuthu.ThuThuUsecase), new(*thuthu.ThuThuService)), thuthu.NewThuThuService, PasswordHasherSet, ThuThuRepositorySet, ThamSoRepositorySet)
 var AuthUsecaseSet = wire.NewSet(wire.Bind(new(auth.AuthUsecase), new(*auth.AuthService)), auth.NewAuthService, ThuThuUsecaseSet, JwtTokenServiceSet)
@@ -47,6 +49,7 @@ var TacGiaUsecaseSet = wire.NewSet(wire.Bind(new(tacgia.TacGiaUsecase), new(*tac
 var DauSachUsecaseSet = wire.NewSet(wire.Bind(new(dausach.DauSachUsecase), new(*dausach.DauSachService)), dausach.NewDauSachService, TacGiaUsecaseSet, TheLoaiUsecaseSet, DauSachRepositorySet)
 var NhapSachUsecaseSet = wire.NewSet(wire.Bind(new(nhapsach.NhapSachUsecase), new(*nhapsach.NhapSachService)), nhapsach.NewNhapSachService, DauSachUsecaseSet, PhieuNhapRepositorySet)
 var SachUsecaseSet = wire.NewSet(wire.Bind(new(sach.SachUsecase), new(*sach.SachService)), sach.NewSachService, DauSachUsecaseSet, SachRepositorySet)
+var PhieuMuonUsecaseSet = wire.NewSet(wire.Bind(new(muon_sach.Usecase), new(*muon_sach.Service)), muon_sach.NewMuonSachService, SachUsecaseSet, PhieuMuonRepositorySet, DocGiaUsecaseSet)
 
 func InitThuThuUsecase(db *sqlx.DB) thuthu.ThuThuUsecase {
 	wire.Build(ThuThuUsecaseSet)
@@ -91,4 +94,9 @@ func InitNhapSachUsecase(db *sqlx.DB) nhapsach.NhapSachUsecase {
 func InitSachUsecase(db *sqlx.DB) sach.SachUsecase {
 	wire.Build(SachUsecaseSet)
 	return &sach.SachService{}
+}
+
+func InitPhieuMuonUsecase(db *sqlx.DB) muon_sach.Usecase {
+	wire.Build(PhieuMuonUsecaseSet)
+	return &muon_sach.Service{}
 }

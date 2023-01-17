@@ -44,11 +44,15 @@ func (repo *DocGiaRepository) GetDocGia(maDocGia *entity.ID) (_ *entity.DocGia, 
 	tx := repo.db.MustBegin()
 	defer func() {
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 		} else {
-			tx.Commit()
+			_ = tx.Commit()
 		}
 	}()
+	return repo.getDocGiaWithTx(tx, maDocGia)
+}
+
+func (repo *DocGiaRepository) getDocGiaWithTx(tx *sqlx.Tx, maDocGia *entity.ID) (*entity.DocGia, error) {
 	stmt, err := tx.Prepare(`
 	SELECT HoTen, NgaySinh, DiaChi, Email, NgayLapThe, NgayHetHan, TongNo, LoaiDocGia.MaLoaiDocGia, TenLoaiDocGia 
 	FROM DocGia 

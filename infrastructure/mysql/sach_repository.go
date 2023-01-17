@@ -90,6 +90,16 @@ func (r SachRepository) GetSach(maSach *entity.ID) (_ *entity.Sach, err error) {
 			_ = tx.Commit()
 		}
 	}()
+
+	var sach *entity.Sach
+	if sach, err = r.getSachWithTx(maSach, tx); err != nil {
+		return nil, err
+	}
+
+	return sach, nil
+}
+
+func (r SachRepository) getSachWithTx(maSach *entity.ID, tx *sqlx.Tx) (_ *entity.Sach, err error) {
 	var sach *entity.Sach
 	row := tx.QueryRowx(
 		`SELECT S.MaDauSach, 
@@ -137,8 +147,7 @@ func (r SachRepository) GetSach(maSach *entity.ID) (_ *entity.Sach, err error) {
 		GhiChu:     ghiChu,
 	}
 	sach.DauSach, err = NewDauSachRepository(r.DB).getDauSachWithTx(sach.DauSach.MaDauSach, tx)
-
-	return sach, nil
+	return sach, err
 }
 
 func (r SachRepository) UpdateSach(sach *entity.Sach) (_ *entity.Sach, err error) {

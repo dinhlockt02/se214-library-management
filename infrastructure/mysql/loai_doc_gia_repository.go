@@ -3,6 +3,7 @@ package mysql
 import (
 	"daijoubuteam.xyz/se214-library-management/core/entity"
 	coreerror "daijoubuteam.xyz/se214-library-management/core/error"
+	"fmt"
 	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"reflect"
@@ -28,8 +29,8 @@ func (repo *LoaiDocGiaRepository) CreateLoaiDocGia(loaiDocGia *entity.LoaiDocGia
 		}
 	}()
 
-	exec := `INSERT INTO LoaiDocGia (MaLoaiDocGia, TenLoaiDocGia, SoSachToiDaDuocMuon) VALUES (? , ?, ?);`
-	_, err = tx.Exec(exec, loaiDocGia.MaLoaiDocGia.String(), loaiDocGia.TenLoaiDocGia, loaiDocGia.SoSachToiDaDuocMuon)
+	exec := `INSERT INTO LoaiDocGia (MaLoaiDocGia, TenLoaiDocGia, SoSachToiDaDuocMuon, ThoiGianMuonToiDa, TienPhatTheoNgay) VALUES (? , ?, ?, ?, ?);`
+	_, err = tx.Exec(exec, loaiDocGia.MaLoaiDocGia.String(), loaiDocGia.TenLoaiDocGia, loaiDocGia.SoSachToiDaDuocMuon, loaiDocGia.ThoiGianMuonToiDa, loaiDocGia.TienPhatTheoNgay)
 	if err != nil {
 		return nil, coreerror.NewInternalServerError("database error: insert new loai doc gia failed", err)
 	}
@@ -46,7 +47,7 @@ func (repo *LoaiDocGiaRepository) GetLoaiDocGia(maLoaiDocGia *entity.ID) (_ *ent
 		}
 	}()
 
-	stmt, err := tx.Prepare("SELECT MaLoaiDocGia, TenLoaiDocGia, SoSachToiDaDuocMuon FROM LoaiDocGia WHERE MaLoaiDocGia = ?")
+	stmt, err := tx.Prepare("SELECT MaLoaiDocGia, TenLoaiDocGia, SoSachToiDaDuocMuon, TienPhatTheoNgay, ThoiGianMuonToiDa FROM LoaiDocGia WHERE MaLoaiDocGia = ?")
 	if err != nil {
 		return nil, coreerror.NewInternalServerError("database error: can't not prepare query", err)
 	}
@@ -87,7 +88,7 @@ func (repo *LoaiDocGiaRepository) GetDanhSachLoaiDocGia() (_ []*entity.LoaiDocGi
 			tx.Commit()
 		}
 	}()
-	stmt, err := tx.Prepare("SELECT MaLoaiDocGia, TenLoaiDocGia, SoSachToiDaDuocMuon FROM LoaiDocGia")
+	stmt, err := tx.Prepare("SELECT MaLoaiDocGia, TenLoaiDocGia, SoSachToiDaDuocMuon, TienPhatTheoNgay, ThoiGianMuonToiDa FROM LoaiDocGia")
 	if err != nil {
 		return nil, coreerror.NewInternalServerError("database error: can't not prepare query", err)
 	}
@@ -114,6 +115,7 @@ func (repo *LoaiDocGiaRepository) GetDanhSachLoaiDocGia() (_ []*entity.LoaiDocGi
 		}
 		loaiDocGia.MaLoaiDocGia, err = entity.StringToID(maLoaiDocGia)
 		if err != nil {
+			fmt.Println(maLoaiDocGia)
 			return danhSachLoaiDocGia, coreerror.NewInternalServerError("database error: scan rows failed", err)
 		}
 		danhSachLoaiDocGia = append(danhSachLoaiDocGia, loaiDocGia)
@@ -131,8 +133,8 @@ func (repo *LoaiDocGiaRepository) UpdateLoaiDocGia(loaiDocGia *entity.LoaiDocGia
 		}
 	}()
 
-	exec := `UPDATE LoaiDocGia SET TenLoaiDocGia = ?, SoSachToiDaDuocMuon = ? WHERE MaLoaiDocGia = ?;`
-	_, err = tx.Exec(exec, loaiDocGia.TenLoaiDocGia, loaiDocGia.SoSachToiDaDuocMuon, loaiDocGia.MaLoaiDocGia.String())
+	exec := `UPDATE LoaiDocGia SET TenLoaiDocGia = ?, SoSachToiDaDuocMuon = ?, ThoiGianMuonToiDa = ?, TienPhatTheoNgay = ? WHERE MaLoaiDocGia = ?;`
+	_, err = tx.Exec(exec, loaiDocGia.TenLoaiDocGia, loaiDocGia.SoSachToiDaDuocMuon, loaiDocGia.ThoiGianMuonToiDa, loaiDocGia.TienPhatTheoNgay, loaiDocGia.MaLoaiDocGia.String())
 	if err != nil {
 		return nil, coreerror.NewInternalServerError("database error: insert new loai doc gia failed", err)
 	}

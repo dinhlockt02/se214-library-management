@@ -3,6 +3,7 @@ package mysql
 import (
 	"daijoubuteam.xyz/se214-library-management/core/entity"
 	coreerror "daijoubuteam.xyz/se214-library-management/core/error"
+	"database/sql"
 	"github.com/jmoiron/sqlx"
 	"time"
 )
@@ -47,7 +48,7 @@ func (r PhieuMuonRepository) GetDanhSachPhieuMuon() (_ []*entity.PhieuMuon, err 
 		if maSach, err = entity.StringToID(ms); err != nil {
 			return nil, coreerror.NewInternalServerError("database error: can't not query phieu muon", err)
 		}
-		phieuMuon := entity.NewPhieuMuon(&entity.DocGia{MaDocGia: maDocGia}, &ngayMuon, &entity.Sach{MaSach: maSach}, nil)
+		phieuMuon := entity.NewPhieuMuon(&entity.DocGia{MaDocGia: maDocGia}, &ngayMuon, &entity.Sach{MaSach: maSach})
 		phieuMuon.MaPhieuMuon = maPhieuMuon
 		danhSachPhieuMuon = append(danhSachPhieuMuon, phieuMuon)
 	}
@@ -99,7 +100,7 @@ func (r PhieuMuonRepository) GetPhieuMuonByDocGia(maDocGia *entity.ID) (_ []*ent
 		if maSach, err = entity.StringToID(ms); err != nil {
 			return nil, coreerror.NewInternalServerError("database error: can't not query phieu muon", err)
 		}
-		phieuMuon := entity.NewPhieuMuon(&entity.DocGia{MaDocGia: maDocGia}, &ngayMuon, &entity.Sach{MaSach: maSach}, nil)
+		phieuMuon := entity.NewPhieuMuon(&entity.DocGia{MaDocGia: maDocGia}, &ngayMuon, &entity.Sach{MaSach: maSach})
 		phieuMuon.MaPhieuMuon = maPhieuMuon
 		danhSachPhieuMuon = append(danhSachPhieuMuon, phieuMuon)
 	}
@@ -139,6 +140,49 @@ func (r PhieuMuonRepository) CreatePhieuMuon(phieuMuon *entity.PhieuMuon) (_ *en
 		return nil, coreerror.NewInternalServerError("database error: create phieu muon failed", err)
 	}
 
+	return phieuMuon, nil
+}
+
+func (r PhieuMuonRepository) GetPhieuMuonByMaSach(maSach *entity.ID) (_ *entity.PhieuMuon, err error) {
+	tx := r.DB.MustBegin()
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback()
+		} else {
+			_ = tx.Commit()
+		}
+	}()
+
+	row := tx.QueryRowx(
+		`SELECT MaPhieuMuon, MaDocGia, NgayMuon FROM PhieuMuon WHERE MaPhieuMuon NOT IN (
+    			SELECT MaPhieuMuon FROM PhieuTra
+			) AND MaSach = ?`,
+		maSach.String(),
+	)
+	var mpm, mdg string
+	var ngayMuon time.Time
+	err = row.Scan(&mpm, &mdg, &ngayMuon)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, coreerror.NewNotFoundError("phieu muon not found", err)
+		}
+		return nil, coreerror.NewInternalServerError("database error: can't not query phieu muon", err)
+	}
+	var maPhieuMuon, maDocGia *entity.ID
+	if maPhieuMuon, err = entity.StringToID(mpm); err != nil {
+		return nil, coreerror.NewInternalServerError("database error: can't not query phieu muon", err)
+	}
+	if maDocGia, err = entity.StringToID(mdg); err != nil {
+		return nil, coreerror.NewInternalServerError("database error: can't not query phieu muon", err)
+	}
+	phieuMuon := entity.NewPhieuMuon(&entity.DocGia{MaDocGia: maDocGia}, &ngayMuon, &entity.Sach{MaSach: maSach})
+	phieuMuon.MaPhieuMuon = maPhieuMuon
+	if phieuMuon.Sach, err = NewSachRepository(r.DB).getSachWithTx(phieuMuon.Sach.MaSach, tx); err != nil {
+		return nil, err
+	}
+	if phieuMuon.DocGia, err = NewDocGiaRepository(r.DB).getDocGiaWithTx(tx, phieuMuon.DocGia.MaDocGia); err != nil {
+		return nil, err
+	}
 	return phieuMuon, nil
 }
 

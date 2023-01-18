@@ -3,14 +3,20 @@ package presenter
 import "daijoubuteam.xyz/se214-library-management/core/entity"
 
 type LoaiDocGiaPresenter struct {
-	MaLoaiDocGia  string `json:"maLoaiDocGia" binding:"required"`
-	TenLoaiDocGia string `json:"tenLoaiDocGia" binding:"required"`
+	MaLoaiDocGia        string `json:"maLoaiDocGia"`
+	TenLoaiDocGia       string `json:"tenLoaiDocGia"`
+	SoSachToiDaDuocMuon int    `json:"soSachToiDaDuocMuon"`
+	TienPhatTheoNgay    uint   `json:"tienPhatTheoNgay"`
+	ThoiGianMuonToiDa   uint   `json:"thoiGianMuonToiDa"`
 }
 
 func NewLoaiDocGiaPresenter(loaiDocGia *entity.LoaiDocGia) *LoaiDocGiaPresenter {
 	return &LoaiDocGiaPresenter{
-		MaLoaiDocGia:  loaiDocGia.MaLoaiDocGia.String(),
-		TenLoaiDocGia: loaiDocGia.TenLoaiDocGia,
+		MaLoaiDocGia:        loaiDocGia.MaLoaiDocGia.String(),
+		TenLoaiDocGia:       loaiDocGia.TenLoaiDocGia,
+		SoSachToiDaDuocMuon: loaiDocGia.SoSachToiDaDuocMuon,
+		TienPhatTheoNgay:    loaiDocGia.TienPhatTheoNgay,
+		ThoiGianMuonToiDa:   loaiDocGia.ThoiGianMuonToiDa,
 	}
 }
 

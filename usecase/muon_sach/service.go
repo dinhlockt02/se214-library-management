@@ -33,6 +33,14 @@ func (s Service) GetPhieuMuonByDocGia(maDocGia *entity.ID) ([]*entity.PhieuMuon,
 	return s.PhieuMuonRepository.GetPhieuMuonByDocGia(maDocGia)
 }
 
+func (s Service) GetPhieuMuonByMaSach(maSach *entity.ID) (*entity.PhieuMuon, error) {
+	if rs, err := s.PhieuMuonRepository.GetPhieuMuonByMaSach(maSach); err != nil {
+		return nil, err
+	} else {
+		return rs, nil
+	}
+}
+
 func (s Service) CreatePhieuMuon(ngayMuon *time.Time, maSach *entity.ID, maDocGia *entity.ID) (*entity.PhieuMuon, error) {
 	var err error
 	var dg *entity.DocGia
@@ -54,5 +62,5 @@ func (s Service) CreatePhieuMuon(ngayMuon *time.Time, maSach *entity.ID, maDocGi
 	}
 
 	sa.TinhTrang = false
-	return s.PhieuMuonRepository.CreatePhieuMuon(entity.NewPhieuMuon(dg, ngayMuon, sa, nil))
+	return s.PhieuMuonRepository.CreatePhieuMuon(entity.NewPhieuMuon(dg, ngayMuon, sa))
 }

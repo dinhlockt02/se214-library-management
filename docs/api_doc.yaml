@@ -976,13 +976,65 @@ paths:
               $ref: '#/components/schemas/PhieuMuonDto'
       responses:
         201:
-          description: Get danh sach phieu muon successful
+          description: Create phieu muon successful
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/PhieuMuonPresenter'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /phieu-tra:
+    get:
+      summary: Get danh sach phieu tra
+      tags:
+        - Phieu tra
+      responses:
+        200:
+          description: Get danh sach phieu tra successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PhieuTraPresenter'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: Create phieu tra
+      tags:
+        - Phieu tra
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PhieuTraDto'
+      responses:
+        201:
+          description: Create phieu tra successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PhieuTraPresenter'
         400:
           $ref: '#/components/responses/BadRequestError'
         401:
@@ -1017,12 +1069,20 @@ components:
           type: string
         soSachToiDaDuocMuon:
           type: integer
+        tienPhatTheoNgay:
+          type: integer
+        thoiGianMuonToiDa:
+          type: integer
     PutLoaiDocGiaDto:
       type: object
       properties:
         tenLoaiDocGia:
           type: string
         soSachToiDaDuocMuon:
+          type: integer
+        tienPhatTheoNgay:
+          type: integer
+        thoiGianMuonToiDa:
           type: integer
     LoaiDocGiaPresenter:
       type: object
@@ -1032,6 +1092,10 @@ components:
         tenLoaiDocGia:
           type: string
         soSachToiDaDuocMuon:
+          type: integer
+        tienPhatTheoNgay:
+          type: integer
+        thoiGianMuonToiDa:
           type: integer
     DocGiaDto:
       type: object
@@ -1225,6 +1289,28 @@ components:
           format: date-time
         sach:
           $ref: '#/components/schemas/SachPresenter'
+    PhieuTraDto:
+      type: object
+      properties:
+        maSach:
+          type: string
+        ghiChu:
+          type: string
+        ngayTra:
+          type: string
+          format: date-time
+    PhieuTraPresenter:
+      type: object
+      properties:
+        tienPhat:
+          type: number
+        ghiChu:
+          type: string
+        ngayTra:
+          type: string
+          format: date-time
+        phieuMuon:
+          $ref: '#/components/schemas/PhieuMuonPresenter'
   responses:
     BadRequestError:
       description: provide bad request

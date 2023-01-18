@@ -22,6 +22,7 @@ import (
 	"daijoubuteam.xyz/se214-library-management/usecase/tac_gia"
 	"daijoubuteam.xyz/se214-library-management/usecase/the_loai"
 	"daijoubuteam.xyz/se214-library-management/usecase/thu_thu"
+	"daijoubuteam.xyz/se214-library-management/usecase/tra_sach"
 	"github.com/google/wire"
 	"github.com/jmoiron/sqlx"
 )
@@ -127,6 +128,27 @@ func InitPhieuMuonUsecase(db *sqlx.DB) muon_sach.Usecase {
 	return muon_sachService
 }
 
+func InitPhieuTraUsecase(db *sqlx.DB) tra_sach.Usecase {
+	phieuTraRepository := mysql.NewPhieuTraRepository(db)
+	sachRepository := mysql.NewSachRepository(db)
+	dauSachRepository := mysql.NewDauSachRepository(db)
+	tacGiaRepository := mysql.NewTacGiaRepository(db)
+	tacGiaService := tacgia.NewTacGiaService(tacGiaRepository)
+	theLoaiRepository := mysql.NewTheLoaiRepository(db)
+	theLoaiService := theloai.NewTheLoaiService(theLoaiRepository)
+	dauSachService := dausach.NewDauSachService(dauSachRepository, tacGiaService, theLoaiService)
+	sachService := sach.NewSachService(sachRepository, dauSachService)
+	phieuMuonRepository := mysql.NewPhieuMuonRepository(db)
+	docGiaRepository := mysql.NewDocGiaRepository(db)
+	loaiDocGiaRepository := mysql.NewLoaiDocGiaRepository(db)
+	loaiDocGiaService := loaidocgia.NewLoaiDocGiaService(loaiDocGiaRepository)
+	thamSoRepository := mysql.NewThamSoRepository(db)
+	docGiaService := docgia.NewDocGiaService(docGiaRepository, loaiDocGiaService, thamSoRepository)
+	muon_sachService := muon_sach.NewMuonSachService(sachService, phieuMuonRepository, docGiaService)
+	tra_sachService := tra_sach.NewTraSachService(phieuTraRepository, muon_sachService)
+	return tra_sachService
+}
+
 // wire.go:
 
 var PasswordHasherSet = wire.NewSet(wire.Bind(new(coreservice.PasswordHasher), new(*service.BcryptPasswordHasher)), service.NewBcryptPasswordHasher)
@@ -153,6 +175,8 @@ var SachRepositorySet = wire.NewSet(wire.Bind(new(repository.SachRepository), ne
 
 var PhieuMuonRepositorySet = wire.NewSet(wire.Bind(new(repository.PhieuMuonRepository), new(mysql.PhieuMuonRepository)), mysql.NewPhieuMuonRepository)
 
+var PhieuTraRepositorySet = wire.NewSet(wire.Bind(new(repository.PhieuTraRepository), new(mysql.PhieuTraRepository)), mysql.NewPhieuTraRepository)
+
 var ThuThuUsecaseSet = wire.NewSet(wire.Bind(new(thuthu.ThuThuUsecase), new(*thuthu.ThuThuService)), thuthu.NewThuThuService, PasswordHasherSet, ThuThuRepositorySet, ThamSoRepositorySet)
 
 var AuthUsecaseSet = wire.NewSet(wire.Bind(new(auth.AuthUsecase), new(*auth.AuthService)), auth.NewAuthService, ThuThuUsecaseSet, JwtTokenServiceSet)
@@ -172,3 +196,5 @@ var NhapSachUsecaseSet = wire.NewSet(wire.Bind(new(nhapsach.NhapSachUsecase), ne
 var SachUsecaseSet = wire.NewSet(wire.Bind(new(sach.SachUsecase), new(*sach.SachService)), sach.NewSachService, DauSachUsecaseSet, SachRepositorySet)
 
 var PhieuMuonUsecaseSet = wire.NewSet(wire.Bind(new(muon_sach.Usecase), new(*muon_sach.Service)), muon_sach.NewMuonSachService, SachUsecaseSet, PhieuMuonRepositorySet, DocGiaUsecaseSet)
+
+var PhieuTraUsecaseSet = wire.NewSet(wire.Bind(new(tra_sach.Usecase), new(*tra_sach.Service)), tra_sach.NewTraSachService, PhieuMuonUsecaseSet, PhieuTraRepositorySet)

@@ -125,6 +125,9 @@ func (r SachRepository) getSachWithTx(maSach *entity.ID, tx *sqlx.Tx) (_ *entity
 	)
 	err = row.Scan(&maDauSach, &nhaXuatBan, &triGia, &namXuatban, &tinhTrang, &ghiChu)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, coreerror.NewNotFoundError("sach not found", err)
+		}
 		return nil, coreerror.NewInternalServerError("database error: can't not query sach", err)
 	}
 	var mds *entity.ID

@@ -54,7 +54,7 @@ func (repo *DocGiaRepository) GetDocGia(maDocGia *entity.ID) (_ *entity.DocGia, 
 
 func (repo *DocGiaRepository) getDocGiaWithTx(tx *sqlx.Tx, maDocGia *entity.ID) (*entity.DocGia, error) {
 	stmt, err := tx.Prepare(`
-	SELECT HoTen, NgaySinh, DiaChi, Email, NgayLapThe, NgayHetHan, TongNo, LoaiDocGia.MaLoaiDocGia, TenLoaiDocGia 
+	SELECT HoTen, NgaySinh, DiaChi, Email, NgayLapThe, NgayHetHan, TongNo, LoaiDocGia.MaLoaiDocGia, TenLoaiDocGia, SoSachToiDaDuocMuon, TienPhatTheoNgay, ThoiGianMuonToiDa
 	FROM DocGia 
 	INNER JOIN LoaiDocGia ON DocGia.MaLoaiDocGia = LoaiDocGia.MaLoaiDocGia
 	WHERE MaDocGia = ?;
@@ -69,7 +69,8 @@ func (repo *DocGiaRepository) getDocGiaWithTx(tx *sqlx.Tx, maDocGia *entity.ID) 
 	err = row.Scan(&(docGia.HoTen), &(docGia.NgaySinh),
 		&(docGia.DiaChi), &(docGia.Email), &(docGia.NgayLapThe),
 		&(docGia.NgayHetHan), &(docGia.TongNo), &maLoaiDocGiaDB,
-		&(docGia.LoaiDocGia.TenLoaiDocGia))
+		&(docGia.LoaiDocGia.TenLoaiDocGia), &(docGia.LoaiDocGia.SoSachToiDaDuocMuon),
+		&(docGia.LoaiDocGia.TienPhatTheoNgay), &(docGia.LoaiDocGia.ThoiGianMuonToiDa))
 	if err == sql.ErrNoRows {
 		return nil, coreerror.NewNotFoundError("doc gia not found", err)
 	} else if err != nil {
@@ -95,7 +96,7 @@ func (repo *DocGiaRepository) GetDanhSachDocGia() (_ []*entity.DocGia, err error
 	}()
 
 	stmt, err := tx.Prepare(`
-		SELECT MaDocGia, HoTen, NgaySinh, DiaChi, Email, NgayLapThe, NgayHetHan, TongNo, LoaiDocGia.MaLoaiDocGia, TenLoaiDocGia 
+		SELECT MaDocGia, HoTen, NgaySinh, DiaChi, Email, NgayLapThe, NgayHetHan, TongNo, LoaiDocGia.MaLoaiDocGia, TenLoaiDocGia , SoSachToiDaDuocMuon, TienPhatTheoNgay, ThoiGianMuonToiDa
 	FROM DocGia 
 	INNER JOIN LoaiDocGia ON DocGia.MaLoaiDocGia = LoaiDocGia.MaLoaiDocGia
 `)
@@ -117,7 +118,8 @@ func (repo *DocGiaRepository) GetDanhSachDocGia() (_ []*entity.DocGia, err error
 		err = rows.Scan(&maDocGiaDB, &(docGia.HoTen), &(docGia.NgaySinh),
 			&(docGia.DiaChi), &(docGia.Email), &(docGia.NgayLapThe),
 			&(docGia.NgayHetHan), &(docGia.TongNo), &maLoaiDocGiaDB,
-			&(docGia.LoaiDocGia.TenLoaiDocGia))
+			&(docGia.LoaiDocGia.TenLoaiDocGia), &(docGia.LoaiDocGia.SoSachToiDaDuocMuon),
+			&(docGia.LoaiDocGia.TienPhatTheoNgay), &(docGia.LoaiDocGia.ThoiGianMuonToiDa))
 		if err == sql.ErrNoRows {
 			return nil, coreerror.NewNotFoundError("doc gia not found", err)
 		} else if err != nil {

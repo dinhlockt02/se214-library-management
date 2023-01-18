@@ -1,0 +1,5 @@
+ALTER TABLE LoaiDocGia
+DROP COLUMN ThoiGianMuonToiDa;
+
+ALTER TABLE LoaiDocGia
+DROP COLUMN TienPhatTheoNgay;

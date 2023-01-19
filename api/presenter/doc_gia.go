@@ -29,7 +29,7 @@ func NewDanhSachDocGiaPresenter(danhSachDocGia []*entity.DocGia) []*DocGiaPresen
 
 func NewDocGiaPresenter(docGia *entity.DocGia) *DocGiaPresenter {
 	return &DocGiaPresenter{
-		MaDocGia:   docGia.MaDocGia.String(),
+		MaDocGia:   docGia.MaDocGia,
 		HoTen:      docGia.HoTen,
 		LoaiDocGia: NewLoaiDocGiaPresenter(docGia.LoaiDocGia),
 		NgaySinh:   (*utils.JSONTime)(docGia.NgaySinh),

@@ -29,7 +29,7 @@ func (s Service) GetPhieuMuon() ([]*entity.PhieuMuon, error) {
 	return s.PhieuMuonRepository.GetDanhSachPhieuMuon()
 }
 
-func (s Service) GetPhieuMuonByDocGia(maDocGia *entity.ID) ([]*entity.PhieuMuon, error) {
+func (s Service) GetPhieuMuonByDocGia(maDocGia string) ([]*entity.PhieuMuon, error) {
 	return s.PhieuMuonRepository.GetPhieuMuonByDocGia(maDocGia)
 }
 
@@ -41,7 +41,7 @@ func (s Service) GetPhieuMuonByMaSach(maSach *entity.ID) (*entity.PhieuMuon, err
 	}
 }
 
-func (s Service) CreatePhieuMuon(ngayMuon *time.Time, maSach *entity.ID, maDocGia *entity.ID) (*entity.PhieuMuon, error) {
+func (s Service) CreatePhieuMuon(ngayMuon *time.Time, maSach *entity.ID, maDocGia string) (*entity.PhieuMuon, error) {
 	var err error
 	var dg *entity.DocGia
 	if dg, err = s.DocGiaUsecase.GetDocGia(maDocGia); err != nil {

@@ -37,12 +37,9 @@ func createPhieuMuon(usecase muon_sach.Usecase) gin.HandlerFunc {
 		if maSach, err = entity.StringToID(phieuMuonDto.MaSach); err != nil {
 			ErrorHandling(context, coreerror.NewBadRequestError("Invalid ma sach", err))
 		}
-		var maDocGia *entity.ID
-		if maDocGia, err = entity.StringToID(phieuMuonDto.MaDocGia); err != nil {
-			ErrorHandling(context, coreerror.NewBadRequestError("Invalid ma doc gia", err))
-		}
+
 		var phieuMuon *entity.PhieuMuon
-		if phieuMuon, err = usecase.CreatePhieuMuon(&ngayMuon, maSach, maDocGia); ErrorHandling(context, err) {
+		if phieuMuon, err = usecase.CreatePhieuMuon(&ngayMuon, maSach, phieuMuonDto.MaDocGia); ErrorHandling(context, err) {
 			return
 		}
 		context.JSON(http.StatusCreated, presenter.NewPhieuMuonPresenter(phieuMuon))

@@ -1100,6 +1100,8 @@ components:
     DocGiaDto:
       type: object
       properties:
+        maDocGia:
+          type: string
         hoTen:
           type: string
         maLoaiDocGia:

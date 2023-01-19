@@ -6,6 +6,6 @@ import (
 
 type PhieuTraRepository interface {
 	GetDanhSachPhieuTra() ([]*entity.PhieuTra, error)
-	GetPhieuTraByDocGia(maDocGia *entity.ID) ([]*entity.PhieuTra, error)
+	GetPhieuTraByDocGia(maDocGia string) ([]*entity.PhieuTra, error)
 	CreatePhieuTra(phieuTra *entity.PhieuTra) (*entity.PhieuTra, error)
 }

@@ -9,7 +9,7 @@ import (
 )
 
 type DocGia struct {
-	MaDocGia   *ID
+	MaDocGia   string
 	HoTen      string
 	LoaiDocGia *LoaiDocGia
 	NgaySinh   *time.Time
@@ -20,10 +20,9 @@ type DocGia struct {
 	TongNo     uint
 }
 
-func NewDocGia(hoTen string, loaiDocGia *LoaiDocGia, ngaySinh *time.Time, diaChi string, email string, ngayLapThe *time.Time, ngayHetHan *time.Time) *DocGia {
-	newId := NewID()
+func NewDocGia(maDocGia string, hoTen string, loaiDocGia *LoaiDocGia, ngaySinh *time.Time, diaChi string, email string, ngayLapThe *time.Time, ngayHetHan *time.Time) *DocGia {
 	return &DocGia{
-		MaDocGia:   &newId,
+		MaDocGia:   maDocGia,
 		HoTen:      hoTen,
 		LoaiDocGia: loaiDocGia,
 		NgaySinh:   ngaySinh,
@@ -36,9 +35,6 @@ func NewDocGia(hoTen string, loaiDocGia *LoaiDocGia, ngaySinh *time.Time, diaChi
 }
 
 func (docGia *DocGia) IsValid(tuoiToiDa uint, tuoiToiThieu uint, thoiHanTheMonth uint) (bool, error) {
-	if docGia.MaDocGia == nil {
-		return false, coreerror.NewBadRequestError("ma doc gia is nil", nil)
-	}
 	if docGia.LoaiDocGia == nil {
 		return false, coreerror.NewBadRequestError("loai doc gia is nil", nil)
 	}

@@ -32,7 +32,7 @@ func (repo *DocGiaRepository) CreateDocGia(docGia *entity.DocGia) (_ *entity.Doc
 	INSERT INTO DocGia (MaDocGia, HoTen, MaLoaiDocGia, NgaySinh, DiaChi, Email, NgayLapThe, NgayHetHan, TongNo) 
 	VALUES (?, ?, ?, ? , ?, ?, ?, ?, ?)
 	`
-	_, err = tx.Exec(exec, docGia.MaDocGia.String(), docGia.HoTen, docGia.LoaiDocGia.MaLoaiDocGia.String(), docGia.NgaySinh, docGia.DiaChi, docGia.Email, docGia.NgayLapThe, docGia.NgayHetHan, docGia.TongNo)
+	_, err = tx.Exec(exec, docGia.MaDocGia, docGia.HoTen, docGia.LoaiDocGia.MaLoaiDocGia.String(), docGia.NgaySinh, docGia.DiaChi, docGia.Email, docGia.NgayLapThe, docGia.NgayHetHan, docGia.TongNo)
 
 	if err != nil {
 		return nil, coreerror.NewInternalServerError("database error: insert new doc gia failed", err)
@@ -40,7 +40,7 @@ func (repo *DocGiaRepository) CreateDocGia(docGia *entity.DocGia) (_ *entity.Doc
 	return docGia, nil
 }
 
-func (repo *DocGiaRepository) GetDocGia(maDocGia *entity.ID) (_ *entity.DocGia, err error) {
+func (repo *DocGiaRepository) GetDocGia(maDocGia string) (_ *entity.DocGia, err error) {
 	tx := repo.db.MustBegin()
 	defer func() {
 		if err != nil {
@@ -52,7 +52,7 @@ func (repo *DocGiaRepository) GetDocGia(maDocGia *entity.ID) (_ *entity.DocGia, 
 	return repo.getDocGiaWithTx(tx, maDocGia)
 }
 
-func (repo *DocGiaRepository) getDocGiaWithTx(tx *sqlx.Tx, maDocGia *entity.ID) (*entity.DocGia, error) {
+func (repo *DocGiaRepository) getDocGiaWithTx(tx *sqlx.Tx, maDocGia string) (*entity.DocGia, error) {
 	stmt, err := tx.Prepare(`
 	SELECT HoTen, NgaySinh, DiaChi, Email, NgayLapThe, NgayHetHan, TongNo, LoaiDocGia.MaLoaiDocGia, TenLoaiDocGia, SoSachToiDaDuocMuon, TienPhatTheoNgay, ThoiGianMuonToiDa
 	FROM DocGia 
@@ -63,7 +63,7 @@ func (repo *DocGiaRepository) getDocGiaWithTx(tx *sqlx.Tx, maDocGia *entity.ID) 
 	if err != nil {
 		return nil, coreerror.NewInternalServerError("database error: can't not prepare query", err)
 	}
-	row := stmt.QueryRow(maDocGia.String())
+	row := stmt.QueryRow(maDocGia)
 	docGia := &entity.DocGia{LoaiDocGia: &entity.LoaiDocGia{}}
 	var maLoaiDocGiaDB string = ""
 	err = row.Scan(&(docGia.HoTen), &(docGia.NgaySinh),
@@ -114,8 +114,8 @@ func (repo *DocGiaRepository) GetDanhSachDocGia() (_ []*entity.DocGia, err error
 	for rows.Next() {
 		docGia := &entity.DocGia{LoaiDocGia: &entity.LoaiDocGia{}}
 		var maLoaiDocGiaDB string = ""
-		var maDocGiaDB string = ""
-		err = rows.Scan(&maDocGiaDB, &(docGia.HoTen), &(docGia.NgaySinh),
+
+		err = rows.Scan(&(docGia.MaDocGia), &(docGia.HoTen), &(docGia.NgaySinh),
 			&(docGia.DiaChi), &(docGia.Email), &(docGia.NgayLapThe),
 			&(docGia.NgayHetHan), &(docGia.TongNo), &maLoaiDocGiaDB,
 			&(docGia.LoaiDocGia.TenLoaiDocGia), &(docGia.LoaiDocGia.SoSachToiDaDuocMuon),
@@ -126,13 +126,11 @@ func (repo *DocGiaRepository) GetDanhSachDocGia() (_ []*entity.DocGia, err error
 			fmt.Println(err)
 			return nil, coreerror.NewInternalServerError("scan query failed", err)
 		}
-		maLoaiDocGia, err := entity.StringToID(maLoaiDocGiaDB)
-		maDocGia, err := entity.StringToID(maDocGiaDB)
-		if err != nil {
-			return nil, coreerror.NewInternalServerError("database error: can't not convert from string to id", err)
+		var maLoaiDocGia *entity.ID
+		if maLoaiDocGia, err = entity.StringToID(maLoaiDocGiaDB); err != nil {
+			return nil, err
 		}
 		docGia.LoaiDocGia.MaLoaiDocGia = maLoaiDocGia
-		docGia.MaDocGia = maDocGia
 		danhSachDocGia = append(danhSachDocGia, docGia)
 	}
 	return danhSachDocGia, nil
@@ -152,14 +150,14 @@ func (repo *DocGiaRepository) UpdateDocGia(docGia *entity.DocGia) (_ *entity.Doc
 	SET HoTen = ?, MaLoaiDocGia = ?, NgaySinh = ?, DiaChi = ?, Email = ?, NgayLapThe = ?, NgayHetHan = ?, TongNo = ?
 	WHERE MaDocGia = ?
 	`
-	_, err = tx.Exec(exec, docGia.HoTen, docGia.LoaiDocGia.MaLoaiDocGia.String(), docGia.NgaySinh, docGia.DiaChi, docGia.Email, docGia.NgayLapThe, docGia.NgayHetHan, docGia.TongNo, docGia.MaDocGia.String())
+	_, err = tx.Exec(exec, docGia.HoTen, docGia.LoaiDocGia.MaLoaiDocGia.String(), docGia.NgaySinh, docGia.DiaChi, docGia.Email, docGia.NgayLapThe, docGia.NgayHetHan, docGia.TongNo, docGia.MaDocGia)
 	if err != nil {
 		return nil, coreerror.NewInternalServerError("database error: update doc gia failed", err)
 	}
 	return docGia, nil
 }
 
-func (repo *DocGiaRepository) RemoveDocGia(maDocGia *entity.ID) (err error) {
+func (repo *DocGiaRepository) RemoveDocGia(maDocGia string) (err error) {
 	tx := repo.db.MustBegin()
 	defer func() {
 		if err != nil {
@@ -173,7 +171,7 @@ func (repo *DocGiaRepository) RemoveDocGia(maDocGia *entity.ID) (err error) {
 	FROM DocGia
 	WHERE MaDocGia = ?
 	`
-	_, err = tx.Exec(exec, maDocGia.String())
+	_, err = tx.Exec(exec, maDocGia)
 	if err != nil {
 		if driverError, ok := err.(*mysql.MySQLError); ok {
 			return DriverErrorHandling(driverError)

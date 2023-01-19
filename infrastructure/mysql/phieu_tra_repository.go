@@ -45,12 +45,8 @@ func (r PhieuTraRepository) GetDanhSachPhieuTra() (_ []*entity.PhieuTra, err err
 		if maSach, err = entity.StringToID(ms); err != nil {
 			return nil, coreerror.NewInternalServerError("databaser error: can't not query database", err)
 		}
-		var maDocGia *entity.ID
-		if maDocGia, err = entity.StringToID(mdg); err != nil {
-			return nil, coreerror.NewInternalServerError("databaser error: can't not query database", err)
-		}
 		phieuTra.MaPhieuMuon = maPhieuMuon
-		phieuTra.MaDocGia = maDocGia
+		phieuTra.MaDocGia = mdg
 		phieuTra.MaSach = maSach
 		danhSachPhieuTra = append(danhSachPhieuTra, phieuTra)
 	}
@@ -65,7 +61,7 @@ func (r PhieuTraRepository) GetDanhSachPhieuTra() (_ []*entity.PhieuTra, err err
 	return danhSachPhieuTra, nil
 }
 
-func (r PhieuTraRepository) GetPhieuTraByDocGia(maDocGia *entity.ID) (_ []*entity.PhieuTra, err error) {
+func (r PhieuTraRepository) GetPhieuTraByDocGia(maDocGia string) (_ []*entity.PhieuTra, err error) {
 	tx := r.MustBegin()
 	defer func() {
 		if err != nil {
@@ -78,7 +74,7 @@ func (r PhieuTraRepository) GetPhieuTraByDocGia(maDocGia *entity.ID) (_ []*entit
 	if rows, err = tx.Queryx(
 		`SELECT PM.MaPhieuMuon, TienPhat, NgayTra, GhiChu, MaDocGia, MaSach
 				FROM PhieuTra PT JOIN PhieuMuon PM ON PM.MaPhieuMuon = PT.MaPhieuMuon
-				WHERE MaDocGia = ?`, maDocGia.String()); err != nil {
+				WHERE MaDocGia = ?`, maDocGia); err != nil {
 		return nil, coreerror.NewInternalServerError("databaser error: can't not query database", err)
 	}
 	defer rows.Close()

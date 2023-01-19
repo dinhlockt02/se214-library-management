@@ -23,11 +23,8 @@ func getDanhSachDocGia(usecase docgia.DocGiaUsecase) gin.HandlerFunc {
 
 func deleteDocGia(usecase docgia.DocGiaUsecase) gin.HandlerFunc {
 	return func(context *gin.Context) {
-		maDocGia, err := entity.StringToID(context.Param("maDocGia"))
-		if ErrorHandling(context, err) {
-			return
-		}
-		err = usecase.RemoveDocGia(maDocGia)
+		maDocGia := context.Param("maDocGia")
+		err := usecase.RemoveDocGia(maDocGia)
 		if ErrorHandling(context, err) {
 			return
 		}
@@ -37,10 +34,7 @@ func deleteDocGia(usecase docgia.DocGiaUsecase) gin.HandlerFunc {
 
 func getDocGia(usecase docgia.DocGiaUsecase) gin.HandlerFunc {
 	return func(context *gin.Context) {
-		maDocGia, err := entity.StringToID(context.Param("maDocGia"))
-		if ErrorHandling(context, err) {
-			return
-		}
+		maDocGia := context.Param("maDocGia")
 		docGia, err := usecase.GetDocGia(maDocGia)
 		if ErrorHandling(context, err) {
 			return
@@ -68,7 +62,7 @@ func createDocGia(usecase docgia.DocGiaUsecase) gin.HandlerFunc {
 			context.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
-		docGia, err := usecase.CreateDocGia(docGiaDto.HoTen, maLoaiDocGia, &ngaySinh, docGiaDto.DiaChi, docGiaDto.Email, &ngayLapThe)
+		docGia, err := usecase.CreateDocGia(docGiaDto.MaDocGia, docGiaDto.HoTen, maLoaiDocGia, &ngaySinh, docGiaDto.DiaChi, docGiaDto.Email, &ngayLapThe)
 		if ErrorHandling(context, err) {
 			return
 		}
@@ -84,10 +78,7 @@ func updateDocGia(usecase docgia.DocGiaUsecase) gin.HandlerFunc {
 			context.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
-		maDocGia, err := entity.StringToID(context.Param("maDocGia"))
-		if ErrorHandling(context, err) {
-			return
-		}
+		maDocGia := context.Param("maDocGia")
 		maLoaiDocGia, err := entity.StringToID(docGiaDto.MaLoaiDocGia)
 		if ErrorHandling(context, err) {
 			return

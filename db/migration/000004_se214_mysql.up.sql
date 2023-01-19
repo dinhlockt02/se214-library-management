@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS DocGia (
     Email VARCHAR(255),
     NgayLapThe DATE,
     NgayHetHan DATE,
-    TongNo INT UNSIGNED,
+    TongNo INT,
     CONSTRAINT DocGia_FK_MaLoaiDocGia FOREIGN KEY (MaLoaiDocGia) REFERENCES LoaiDocGia(MaLoaiDocGia),
     CONSTRAINT NgayLapThe_CK_NgayHetHan CHECK ( DocGia.NgayLapThe < DocGia.NgayHetHan )
 );

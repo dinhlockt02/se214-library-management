@@ -17,7 +17,7 @@ type DocGia struct {
 	Email      string
 	NgayLapThe *time.Time
 	NgayHetHan *time.Time
-	TongNo     uint
+	TongNo     int
 }
 
 func NewDocGia(maDocGia string, hoTen string, loaiDocGia *LoaiDocGia, ngaySinh *time.Time, diaChi string, email string, ngayLapThe *time.Time, ngayHetHan *time.Time) *DocGia {

@@ -15,7 +15,7 @@ type DocGiaPresenter struct {
 	Email      string               `json:"email" binding:"required"`
 	NgayLapThe *time.Time           `json:"ngayLapThe" binding:"required"`
 	NgayHetHan *time.Time           `json:"ngayHetHan" binding:"required"`
-	TongNo     uint                 `json:"tongNo" binding:"required"`
+	TongNo     int                  `json:"tongNo" binding:"required"`
 }
 
 func NewDanhSachDocGiaPresenter(danhSachDocGia []*entity.DocGia) []*DocGiaPresenter {

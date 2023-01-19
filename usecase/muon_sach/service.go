@@ -47,6 +47,9 @@ func (s Service) CreatePhieuMuon(ngayMuon *time.Time, maSach *entity.ID, maDocGi
 	if dg, err = s.DocGiaUsecase.GetDocGia(maDocGia); err != nil {
 		return nil, err
 	}
+	if dg.TongNo > 0 {
+		return nil, coreerror.NewBadRequestError("doc gia co so no lon hon 0", nil)
+	}
 	var sa *entity.Sach
 	if sa, err = s.SachUsecase.GetSach(maSach); err != nil {
 		return nil, err

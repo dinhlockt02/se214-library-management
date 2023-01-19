@@ -1673,6 +1673,101 @@
           }
         }
       }
+    },
+    "/phieu-thu-tien": {
+      "post": {
+        "summary": "Create phieu thu tien",
+        "tags": [
+          "Phieu thu tien"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PhieuThuTienDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Create phieu thu tien successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PhieuThuTienPresenter"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/phieu-thu-tien/{maDocGia}": {
+      "get": {
+        "summary": "Get danh sach phieu thu tien by ma doc gia",
+        "tags": [
+          "Phieu thu tien"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "name": "maDocGia",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get danh sach phieu thu tien successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PhieuThuTienPresenter"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2076,6 +2171,45 @@
           },
           "phieuMuon": {
             "$ref": "#/components/schemas/PhieuMuonPresenter"
+          }
+        }
+      },
+      "PhieuThuTienDto": {
+        "type": "object",
+        "properties": {
+          "maDocGia": {
+            "type": "string"
+          },
+          "soTienThu": {
+            "type": "integer"
+          },
+          "ngayThu": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "PhieuThuTienPresenter": {
+        "type": "object",
+        "properties": {
+          "maPhieuThu": {
+            "type": "string"
+          },
+          "docGia": {
+            "$ref": "#/components/schemas/DocGiaPresenter"
+          },
+          "ngayThu": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "tongNo": {
+            "type": "number"
+          },
+          "soTienThu": {
+            "type": "number"
+          },
+          "conLai": {
+            "type": "number"
           }
         }
       }

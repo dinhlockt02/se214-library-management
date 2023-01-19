@@ -28,7 +28,7 @@ func CreatePhieuThuTien(thuTienUsecase thu_tien.Usecase) gin.HandlerFunc {
 		if ErrorHandling(context, err) {
 			return
 		}
-		context.JSON(http.StatusOK, presenter.NewPhieuThuTienPresenter(phieuThuTien))
+		context.JSON(http.StatusCreated, presenter.NewPhieuThuTienPresenter(phieuThuTien))
 	}
 }
 

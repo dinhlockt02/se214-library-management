@@ -47,7 +47,19 @@ func createPhieuMuon(usecase muon_sach.Usecase) gin.HandlerFunc {
 	}
 }
 
+func getDanhSachPhieuMuonByDocGia(muonSachUsecase muon_sach.Usecase) gin.HandlerFunc {
+	return func(context *gin.Context) {
+		maDocGia := context.Param("maDocGia")
+		if danhSachPhieuMuon, err := muonSachUsecase.GetPhieuMuonByDocGia(maDocGia); ErrorHandling(context, err) {
+		} else {
+			context.JSONP(http.StatusOK, presenter.NewDanhSachPhieuMuonPresenter(danhSachPhieuMuon))
+		}
+		return
+	}
+}
+
 func MakePhieuMuonHandler(r *gin.Engine, muonSachUsecase muon_sach.Usecase) {
 	r.GET("/phieu-muon", getDanhSachPhieuMuon(muonSachUsecase))
+	r.GET("/phieu-muon/:maDocGia", getDanhSachPhieuMuonByDocGia(muonSachUsecase))
 	r.POST("/phieu-muon", createPhieuMuon(muonSachUsecase))
 }

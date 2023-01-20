@@ -1591,6 +1591,54 @@
         }
       }
     },
+    "/phieu-muon/{maDocGia}": {
+      "get": {
+        "summary": "Get danh sach phieu muon by ma doc gia",
+        "tags": [
+          "Phieu muon"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "maDocGia",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get danh sach phieu muon successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PhieuMuonPresenter"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
     "/phieu-tra": {
       "get": {
         "summary": "Get danh sach phieu tra",

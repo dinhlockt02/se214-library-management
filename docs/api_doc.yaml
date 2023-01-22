@@ -1134,7 +1134,67 @@ paths:
           $ref: '#/components/responses/NotFoundError'
         500:
           $ref: '#/components/responses/InternalServerError'
-
+  /report/{year}:
+    get:
+      summary: Get report by year
+      tags:
+        - Report
+      parameters:
+        - in: path
+          schema:
+            type: integer
+          name: year
+          required: true
+      responses:
+        200:
+          description: Get report by year successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/YearReportTheLoai'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /report/{year}/{month}:
+    get:
+      summary: Get report by month
+      tags:
+        - Report
+      parameters:
+        - in: path
+          schema:
+            type: integer
+          name: year
+          required: true
+        - in: path
+          schema:
+            type: integer
+          name: month
+          required: true
+      responses:
+        200:
+          description: Get report by month successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonthReportTheLoai'
+        400:
+          $ref: '#/components/responses/BadRequestError'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/ForbiddenError'
+        404:
+          $ref: '#/components/responses/NotFoundError'
+        500:
+          $ref: '#/components/responses/InternalServerError'
 components:
   schemas:
     LoginDto:
@@ -1429,6 +1489,35 @@ components:
           type: number
         conLai:
           type: number
+    ReportTheLoai:
+      type: object
+      properties:
+        maTheLoai:
+          type: string
+        tenTheLoai:
+          type: string
+        soLuotMuon:
+          type: integer
+    MonthReportTheLoai:
+      type: object
+      properties:
+        chiTiet:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportTheLoai'
+        thang:
+          type: integer
+        nam:
+          type: integer
+    YearReportTheLoai:
+      type: object
+      properties:
+        chiTiet:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportTheLoai'
+        nam:
+          type: integer
   responses:
     BadRequestError:
       description: provide bad request

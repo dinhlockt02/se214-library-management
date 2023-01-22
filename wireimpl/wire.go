@@ -4,6 +4,7 @@
 package wireimpl
 
 import (
+	"daijoubuteam.xyz/se214-library-management/usecase"
 	dausach "daijoubuteam.xyz/se214-library-management/usecase/dau_sach"
 	docgia "daijoubuteam.xyz/se214-library-management/usecase/doc_gia"
 	loaidocgia "daijoubuteam.xyz/se214-library-management/usecase/loai_doc_gia"
@@ -43,6 +44,7 @@ var SachRepositorySet = wire.NewSet(wire.Bind(new(repository.SachRepository), ne
 var PhieuMuonRepositorySet = wire.NewSet(wire.Bind(new(repository.PhieuMuonRepository), new(mysql.PhieuMuonRepository)), mysql.NewPhieuMuonRepository)
 var PhieuTraRepositorySet = wire.NewSet(wire.Bind(new(repository.PhieuTraRepository), new(mysql.PhieuTraRepository)), mysql.NewPhieuTraRepository)
 var PhieuThuTienRepositorySet = wire.NewSet(wire.Bind(new(repository.PhieuThuTienRepository), new(mysql.PhieuThuTienRepository)), mysql.NewPhieuThuTienRepository)
+var ReportRepositorySet = wire.NewSet(wire.Bind(new(repository.ReportRepository), new(mysql.ReportRepository)), mysql.NewReportRepository)
 
 var ThuThuUsecaseSet = wire.NewSet(wire.Bind(new(thuthu.ThuThuUsecase), new(*thuthu.ThuThuService)), thuthu.NewThuThuService, PasswordHasherSet, ThuThuRepositorySet, ThamSoRepositorySet)
 var AuthUsecaseSet = wire.NewSet(wire.Bind(new(auth.AuthUsecase), new(*auth.AuthService)), auth.NewAuthService, ThuThuUsecaseSet, JwtTokenServiceSet)
@@ -56,6 +58,7 @@ var SachUsecaseSet = wire.NewSet(wire.Bind(new(sach.SachUsecase), new(*sach.Sach
 var PhieuMuonUsecaseSet = wire.NewSet(wire.Bind(new(muon_sach.Usecase), new(*muon_sach.Service)), muon_sach.NewMuonSachService, SachUsecaseSet, PhieuMuonRepositorySet, DocGiaUsecaseSet)
 var PhieuTraUsecaseSet = wire.NewSet(wire.Bind(new(tra_sach.Usecase), new(*tra_sach.Service)), tra_sach.NewTraSachService, PhieuMuonUsecaseSet, PhieuTraRepositorySet)
 var PhieuThuTienUsecaseSet = wire.NewSet(wire.Bind(new(thu_tien.Usecase), new(thu_tien.Service)), thu_tien.NewThuTienService, PhieuThuTienRepositorySet, DocGiaUsecaseSet)
+var ReportUsecaseSet = wire.NewSet(usecase.NewReportService, ReportRepositorySet)
 
 func InitThuThuUsecase(db *sqlx.DB) thuthu.ThuThuUsecase {
 	wire.Build(ThuThuUsecaseSet)
@@ -115,4 +118,9 @@ func InitPhieuTraUsecase(db *sqlx.DB) tra_sach.Usecase {
 func InitPhieuThuTienUsecase(db *sqlx.DB) thu_tien.Usecase {
 	wire.Build(PhieuThuTienUsecaseSet)
 	return &thu_tien.Service{}
+}
+
+func InitReportUsecase(db *sqlx.DB) usecase.ReportUsecase {
+	wire.Build(ReportUsecaseSet)
+	return usecase.ReportService{}
 }

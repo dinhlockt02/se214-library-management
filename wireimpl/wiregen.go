@@ -12,6 +12,7 @@ import (
 	"daijoubuteam.xyz/se214-library-management/core/service"
 	"daijoubuteam.xyz/se214-library-management/infrastructure/mysql"
 	"daijoubuteam.xyz/se214-library-management/infrastructure/service"
+	"daijoubuteam.xyz/se214-library-management/usecase"
 	"daijoubuteam.xyz/se214-library-management/usecase/auth"
 	"daijoubuteam.xyz/se214-library-management/usecase/dau_sach"
 	"daijoubuteam.xyz/se214-library-management/usecase/doc_gia"
@@ -161,6 +162,12 @@ func InitPhieuThuTienUsecase(db *sqlx.DB) thu_tien.Usecase {
 	return thu_tienService
 }
 
+func InitReportUsecase(db *sqlx.DB) usecase.ReportUsecase {
+	reportRepository := mysql.NewReportRepository(db)
+	reportUsecase := usecase.NewReportService(reportRepository)
+	return reportUsecase
+}
+
 // wire.go:
 
 var PasswordHasherSet = wire.NewSet(wire.Bind(new(coreservice.PasswordHasher), new(*service.BcryptPasswordHasher)), service.NewBcryptPasswordHasher)
@@ -191,6 +198,8 @@ var PhieuTraRepositorySet = wire.NewSet(wire.Bind(new(repository.PhieuTraReposit
 
 var PhieuThuTienRepositorySet = wire.NewSet(wire.Bind(new(repository.PhieuThuTienRepository), new(mysql.PhieuThuTienRepository)), mysql.NewPhieuThuTienRepository)
 
+var ReportRepositorySet = wire.NewSet(wire.Bind(new(repository.ReportRepository), new(mysql.ReportRepository)), mysql.NewReportRepository)
+
 var ThuThuUsecaseSet = wire.NewSet(wire.Bind(new(thuthu.ThuThuUsecase), new(*thuthu.ThuThuService)), thuthu.NewThuThuService, PasswordHasherSet, ThuThuRepositorySet, ThamSoRepositorySet)
 
 var AuthUsecaseSet = wire.NewSet(wire.Bind(new(auth.AuthUsecase), new(*auth.AuthService)), auth.NewAuthService, ThuThuUsecaseSet, JwtTokenServiceSet)
@@ -214,3 +223,5 @@ var PhieuMuonUsecaseSet = wire.NewSet(wire.Bind(new(muon_sach.Usecase), new(*muo
 var PhieuTraUsecaseSet = wire.NewSet(wire.Bind(new(tra_sach.Usecase), new(*tra_sach.Service)), tra_sach.NewTraSachService, PhieuMuonUsecaseSet, PhieuTraRepositorySet)
 
 var PhieuThuTienUsecaseSet = wire.NewSet(wire.Bind(new(thu_tien.Usecase), new(thu_tien.Service)), thu_tien.NewThuTienService, PhieuThuTienRepositorySet, DocGiaUsecaseSet)
+
+var ReportUsecaseSet = wire.NewSet(usecase.NewReportService, ReportRepositorySet)

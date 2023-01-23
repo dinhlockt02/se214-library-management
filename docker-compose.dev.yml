@@ -12,6 +12,7 @@ services:
       - se214
     env_file:
       - example.env
+      - sendgrid.env
     depends_on:
       - db
       - adminer

@@ -1,8 +1,8 @@
 package mysql
 
 import (
-	"daijoubuteam.xyz/se214-library-management/utils"
 	"database/sql"
+	"fmt"
 	"reflect"
 
 	"daijoubuteam.xyz/se214-library-management/core/entity"
@@ -70,9 +70,9 @@ func (r *ThuThuRepository) GetThuThu(maThuThu *entity.ID) (_ *entity.ThuThu, err
 	tx := r.db.MustBegin()
 	defer func() {
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 		} else {
-			tx.Commit()
+			_ = tx.Commit()
 		}
 	}()
 	stmt, err := tx.Prepare(`
@@ -80,7 +80,6 @@ func (r *ThuThuRepository) GetThuThu(maThuThu *entity.ID) (_ *entity.ThuThu, err
 		FROM ThuThu 
 		WHERE MaThuThu = ?
 	`)
-
 	if err != nil {
 		return nil, coreerror.NewInternalServerError("database error: prepare query failed", err)
 	}
@@ -91,17 +90,21 @@ func (r *ThuThuRepository) GetThuThu(maThuThu *entity.ID) (_ *entity.ThuThu, err
 	} else if err != nil {
 		return nil, coreerror.NewInternalServerError("database error: query failed", err)
 	}
+
 	thuThu := &entity.ThuThu{}
-	s := reflect.ValueOf(thuThu).Elem()
-	numCols := s.NumField()
-	columns := make([]interface{}, numCols)
-	for i := 1; i < numCols; i++ {
-		field := s.Field(i)
-		columns[i] = field.Addr().Interface()
-	}
-	columns[0] = utils.Ptr("")
-	err = row.Scan(columns...)
+	err = row.Scan(
+		&(thuThu.Name),
+		&(thuThu.NgaySinh),
+		&(thuThu.Email),
+		&(thuThu.PhoneNumber),
+		&(thuThu.Password),
+		&(thuThu.Status),
+		&(thuThu.IsAdminRole))
 	if err != nil {
+		fmt.Println(err)
+		if err == sql.ErrNoRows {
+			return nil, coreerror.NewNotFoundError("thu thu not found", err)
+		}
 		return nil, coreerror.NewInternalServerError("database error: can not scan row", err)
 	}
 	thuThu.MaThuThu = maThuThu
@@ -128,7 +131,8 @@ func (r *ThuThuRepository) CreateThuThu(thuThu *entity.ThuThu) (_ *entity.ThuThu
 	return thuThu, nil
 }
 func (r *ThuThuRepository) UpdateThuThu(thuThu *entity.ThuThu) (*entity.ThuThu, error) {
-	panic("not implemented")
+	_, err := r.db.Exec(`UPDATE ThuThu SET Password = ? WHERE MaThuThu = ?`, thuThu.Password, thuThu.MaThuThu)
+	return thuThu, err
 }
 func (r *ThuThuRepository) GetThuThuByEmail(email string) (_ *entity.ThuThu, err error) {
 	tx := r.db.MustBegin()

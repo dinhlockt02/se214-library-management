@@ -8,8 +8,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 	"github.com/spf13/cobra"
+	"math/rand"
 	"net/http"
 	"os"
+	"time"
 )
 
 func ServerCommand(db *sqlx.DB) *cobra.Command {
@@ -33,6 +35,7 @@ func StartServerCommand(db *sqlx.DB) *cobra.Command {
 }
 
 func StartServer(db *sqlx.DB) {
+	rand.Seed(time.Now().UnixNano())
 
 	authUsecase := wireimpl.InitAuthUsecase(db)
 	loaiDocGiaUsecase := wireimpl.InitLoaiDocGiaUsecase(db)

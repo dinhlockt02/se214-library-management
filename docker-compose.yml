@@ -9,6 +9,7 @@ services:
         condition: service_healthy
     env_file:
       - example.env
+      - sendgrid.env
   db:
     image: mysql
     restart: always

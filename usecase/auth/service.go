@@ -31,24 +31,24 @@ func NewAuthService(
 	}
 }
 
-func (service *AuthService) Login(email string, password string) (*string, error) {
+func (service *AuthService) Login(email string, password string) (*string, *string, error) {
 
 	thuThu, err := service.thuThuUsecase.GetThuThuByEmail(email)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	if isPasswordMatch, err := service.passwordHasher.VerifyPassword(password, thuThu.Password); !isPasswordMatch {
-		return nil, coreerror.NewBadRequestError("invalid email or password", err)
+		return nil, nil, coreerror.NewBadRequestError("invalid email or password", err)
 	}
 
 	token, err := service.jwtTokenService.Encode(thuThu.MaThuThu)
 
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-
-	return &token, nil
+	maThuThu := thuThu.MaThuThu.String()
+	return &token, &maThuThu, nil
 }
 
 func (service *AuthService) VerifyToken(token string) (*entity.ThuThu, error) {

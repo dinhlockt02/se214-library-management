@@ -49,6 +49,7 @@ func StartServer(db *sqlx.DB) {
 	phieuTraUsecase := wireimpl.InitPhieuTraUsecase(db)
 	phieuThuTienUsecase := wireimpl.InitPhieuThuTienUsecase(db)
 	reportUsecase := wireimpl.InitReportUsecase(db)
+	thuThuUsecase := wireimpl.InitThuThuUsecase(db)
 
 	r := gin.Default()
 
@@ -84,5 +85,6 @@ func StartServer(db *sqlx.DB) {
 	handler.MakePhieuTraHandler(r, phieuTraUsecase)
 	handler.MakePhieuThuTienHandler(r, phieuThuTienUsecase)
 	handler.MakeReportHandler(r, reportUsecase)
+	handler.MakeThuThuHandler(r, thuThuUsecase)
 	r.Run(":8080")
 }

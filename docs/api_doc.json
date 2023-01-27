@@ -33,7 +33,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/LoginPresenter"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/LoginPresenter"
+                    }
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "maThuThu": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
@@ -2003,6 +2013,103 @@
           }
         }
       }
+    },
+    "/thuthu/{maThuThu}": {
+      "get": {
+        "summary": "Get thu thu by ma thu thu",
+        "tags": [
+          "Thu Thu"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "name": "maThuThu",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get thu thu successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThuThuPresenter"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update thu thu by ma thu thu",
+        "tags": [
+          "Thu Thu"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "name": "maThuThu",
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ThuThuDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Get thu thu successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThuThuPresenter"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestError"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2490,6 +2597,45 @@
           },
           "nam": {
             "type": "integer"
+          }
+        }
+      },
+      "ThuThuDto": {
+        "type": "object",
+        "properties": {
+          "hoTen": {
+            "type": "string"
+          },
+          "ngaySinh": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "email": {
+            "type": "string"
+          },
+          "soDienThoai": {
+            "type": "string"
+          }
+        }
+      },
+      "ThuThuPresenter": {
+        "type": "object",
+        "properties": {
+          "maThuThu": {
+            "type": "string"
+          },
+          "hoTen": {
+            "type": "string"
+          },
+          "ngaySinh": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "email": {
+            "type": "string"
+          },
+          "soDienThoai": {
+            "type": "string"
           }
         }
       }

@@ -10,7 +10,7 @@ func Login(db *sqlx.DB, email string, password string) {
 
 	authSerivce := wireimpl.InitAuthUsecase(db)
 
-	token, err := authSerivce.Login(email, password)
+	token, _, err := authSerivce.Login(email, password)
 	if err != nil {
 		fmt.Println(err)
 	}

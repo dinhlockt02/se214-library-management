@@ -16,12 +16,13 @@ func login(service auth.AuthUsecase) gin.HandlerFunc {
 		if err != nil {
 			context.AbortWithStatus(http.StatusBadRequest)
 		}
-		token, err := service.Login(loginDto.Email, loginDto.Password)
+		token, maThuThu, err := service.Login(loginDto.Email, loginDto.Password)
 		if ErrorHandling(context, err) {
 			return
 		}
 		context.JSON(http.StatusOK, &presenter.LoginPresenter{
-			Token: *token,
+			Token:    *token,
+			MaThuThu: *maThuThu,
 		})
 	}
 }

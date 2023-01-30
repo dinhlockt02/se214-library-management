@@ -135,7 +135,7 @@ func (r PhieuTraRepository) CreatePhieuTra(phieuTra *entity.PhieuTra) (_ *entity
 		return nil, coreerror.NewInternalServerError("database error: can't not update database", err)
 	}
 	if phieuTra.TienPhat > 0 {
-		_, err = tx.Exec(`UPDATE DocGia SET TongNo = ? WHERE MaDocGia = ?`, phieuTra.DocGia.TongNo+int(phieuTra.TienPhat), phieuTra.MaDocGia)
+		_, err = tx.Exec(`UPDATE DocGia SET TongNo = ? WHERE MaDocGia = ?`, phieuTra.DocGia.TongNo, phieuTra.MaDocGia)
 		if err != nil {
 			fmt.Println(err)
 			return nil, coreerror.NewInternalServerError("database error: can't not update database", err)

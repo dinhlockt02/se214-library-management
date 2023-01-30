@@ -30,7 +30,7 @@ func (s *Service) CreatePhieuTra(maSach *entity.ID, ghiChu string, ngayTra *time
 	if uint(diff) > phieuMuon.LoaiDocGia.ThoiGianMuonToiDa {
 		tienPhat = (uint(diff) - phieuMuon.LoaiDocGia.ThoiGianMuonToiDa) * phieuMuon.LoaiDocGia.TienPhatTheoNgay
 	}
-	phieuMuon.DocGia.TongNo -= int(tienPhat)
+	phieuMuon.DocGia.TongNo += int(tienPhat)
 	return s.repo.CreatePhieuTra(&entity.PhieuTra{
 		TienPhat:  tienPhat,
 		NgayTra:   ngayTra,

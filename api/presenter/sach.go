@@ -9,6 +9,7 @@ type SachPresenter struct {
 	TriGia     uint   `json:"triGia" binding:"required"`
 	NamXuatBan uint   `json:"namXuatBan" binding:"required"`
 	TinhTrang  bool   `json:"tinhTrang" binding:"required"`
+	GhiChu     string `json:"ghiChu"`
 }
 
 func NewSachPresenter(sach *entity.Sach) *SachPresenter {
@@ -19,6 +20,7 @@ func NewSachPresenter(sach *entity.Sach) *SachPresenter {
 		TriGia:     sach.TriGia,
 		NamXuatBan: sach.NamXuatBan,
 		TinhTrang:  sach.TinhTrang,
+		GhiChu:     sach.GhiChu,
 	}
 }
 

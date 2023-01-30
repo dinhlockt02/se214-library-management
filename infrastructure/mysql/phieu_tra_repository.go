@@ -3,6 +3,7 @@ package mysql
 import (
 	"daijoubuteam.xyz/se214-library-management/core/entity"
 	coreerror "daijoubuteam.xyz/se214-library-management/core/error"
+	"fmt"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -30,7 +31,7 @@ func (r PhieuTraRepository) GetDanhSachPhieuTra() (_ []*entity.PhieuTra, err err
 	defer rows.Close()
 	var danhSachPhieuTra []*entity.PhieuTra
 	for rows.Next() {
-		var phieuTra = &entity.PhieuTra{PhieuMuon: &entity.PhieuMuon{}}
+		var phieuTra = &entity.PhieuTra{PhieuMuon: &entity.PhieuMuon{DocGia: &entity.DocGia{}, Sach: &entity.Sach{}}}
 		var mpm string
 		var ms string
 		var mdg string
@@ -41,14 +42,18 @@ func (r PhieuTraRepository) GetDanhSachPhieuTra() (_ []*entity.PhieuTra, err err
 		if maPhieuMuon, err = entity.StringToID(mpm); err != nil {
 			return nil, coreerror.NewInternalServerError("databaser error: can't not query database", err)
 		}
+
 		var maSach *entity.ID
 		if maSach, err = entity.StringToID(ms); err != nil {
 			return nil, coreerror.NewInternalServerError("databaser error: can't not query database", err)
 		}
+
 		phieuTra.MaPhieuMuon = maPhieuMuon
-		phieuTra.MaDocGia = mdg
+		phieuTra.PhieuMuon.DocGia.MaDocGia = mdg
 		phieuTra.MaSach = maSach
+
 		danhSachPhieuTra = append(danhSachPhieuTra, phieuTra)
+
 	}
 	for i, _ := range danhSachPhieuTra {
 		if danhSachPhieuTra[i].Sach, err = NewSachRepository(r.DB).getSachWithTx(danhSachPhieuTra[i].MaSach, tx); err != nil {
@@ -123,11 +128,18 @@ func (r PhieuTraRepository) CreatePhieuTra(phieuTra *entity.PhieuTra) (_ *entity
 
 	_, err = tx.Exec(`INSERT INTO PhieuTra(MaPhieuMuon, TienPhat, NgayTra, GhiChu) VALUES (?, ?, ?, ?)`, phieuTra.MaPhieuMuon, phieuTra.TienPhat, phieuTra.NgayTra, phieuTra.GhiChu)
 	if err != nil {
-		return nil, coreerror.NewInternalServerError("databaser error: can't not insert into database", err)
+		return nil, coreerror.NewInternalServerError("database error: can't not insert into database", err)
 	}
 	_, err = tx.Exec(`UPDATE Sach SET TinhTrang = TRUE WHERE MaSach = ?`, phieuTra.MaSach.String())
 	if err != nil {
-		return nil, coreerror.NewInternalServerError("databaser error: can't not update database", err)
+		return nil, coreerror.NewInternalServerError("database error: can't not update database", err)
+	}
+	if phieuTra.TienPhat > 0 {
+		_, err = tx.Exec(`UPDATE DocGia SET TongNo = ? WHERE MaDocGia = ?`, phieuTra.DocGia.TongNo+int(phieuTra.TienPhat), phieuTra.MaDocGia)
+		if err != nil {
+			fmt.Println(err)
+			return nil, coreerror.NewInternalServerError("database error: can't not update database", err)
+		}
 	}
 	return phieuTra, nil
 }

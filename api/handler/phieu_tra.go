@@ -20,7 +20,6 @@ func MakePhieuTraHandler(r *gin.Engine, traSachUsecase tra_sach.Usecase) {
 func getDanhSachPhieuTra(traSachUsecase tra_sach.Usecase) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		var err error
-
 		var phieuTra []*entity.PhieuTra
 		if phieuTra, err = traSachUsecase.GetPhieuTra(); err != nil {
 			ErrorHandling(context, err)

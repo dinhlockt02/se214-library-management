@@ -131,7 +131,14 @@ func (r *ThuThuRepository) CreateThuThu(thuThu *entity.ThuThu) (_ *entity.ThuThu
 	return thuThu, nil
 }
 func (r *ThuThuRepository) UpdateThuThu(thuThu *entity.ThuThu) (*entity.ThuThu, error) {
-	_, err := r.db.Exec(`UPDATE ThuThu SET Password = ? WHERE MaThuThu = ?`, thuThu.Password, thuThu.MaThuThu)
+	_, err := r.db.Exec(`
+UPDATE ThuThu 
+SET Password = ?,
+    Name = ?,
+    NgaySinh = ?,
+    Email = ?,
+    PhoneNumber = ?
+WHERE MaThuThu = ?`, thuThu.Password, thuThu.Name, thuThu.NgaySinh, thuThu.Email, thuThu.PhoneNumber, thuThu.MaThuThu)
 	return thuThu, err
 }
 func (r *ThuThuRepository) GetThuThuByEmail(email string) (_ *entity.ThuThu, err error) {

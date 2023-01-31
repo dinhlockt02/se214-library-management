@@ -110,7 +110,7 @@ func (repo *PhieuNhapRepository) GetPhieuNhap(maPhieuNhap *entity.ID) (_ *entity
 		}
 	}()
 	var phieuNhap = entity.PhieuNhap{}
-	tx.QueryRowx(`SELECT NgayNhap AS NgayLap, TongTien FROM PhieuNhap WHERE MaPhieuNhap = ?`).StructScan(phieuNhap)
+	err = tx.QueryRowx(`SELECT NgayNhap AS NgayLap, TongTien FROM PhieuNhap WHERE MaPhieuNhap = ?`, maPhieuNhap).Scan(&(phieuNhap.NgayLap), &(phieuNhap.TongTien))
 	phieuNhap.MaPhieuNhap = maPhieuNhap
 	ctPhieuNhapRow, err := tx.Queryx(
 		`SELECT CT.MaSach, DonGia, MaDauSach, NhaXuatBan, TriGia, NamXuatBan, TinhTrang, GhiChu

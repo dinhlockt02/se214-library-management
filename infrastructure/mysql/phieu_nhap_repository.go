@@ -294,6 +294,9 @@ func (repo *PhieuNhapRepository) RemovePhieuNhap(maPhieuNhap *entity.ID) (err er
 		)
 		_, err = tx.Exec(tx.Rebind(query), args...)
 		if err != nil {
+			if driverError, ok := err.(*mysql.MySQLError); ok {
+				return DriverErrorHandling(driverError)
+			}
 			return coreerror.NewInternalServerError("database error: can't not delete sach", err)
 		}
 	}

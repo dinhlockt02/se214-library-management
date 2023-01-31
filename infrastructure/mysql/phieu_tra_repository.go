@@ -25,7 +25,7 @@ func (r PhieuTraRepository) GetDanhSachPhieuTra() (_ []*entity.PhieuTra, err err
 		}
 	}()
 	var rows *sqlx.Rows
-	if rows, err = tx.Queryx(`SELECT PM.MaPhieuMuon, TienPhat, NgayTra, GhiChu, MaDocGia, MaSach FROM PhieuTra PT JOIN PhieuMuon PM on PM.MaPhieuMuon = PT.MaPhieuMuon`); err != nil {
+	if rows, err = tx.Queryx(`SELECT PM.MaPhieuMuon, TienPhat, NgayTra, GhiChu, MaDocGia, MaSach, NgayMuon FROM PhieuTra PT JOIN PhieuMuon PM on PM.MaPhieuMuon = PT.MaPhieuMuon`); err != nil {
 		return nil, coreerror.NewInternalServerError("databaser error: can't not query database", err)
 	}
 	defer rows.Close()
@@ -35,7 +35,7 @@ func (r PhieuTraRepository) GetDanhSachPhieuTra() (_ []*entity.PhieuTra, err err
 		var mpm string
 		var ms string
 		var mdg string
-		if err = rows.Scan(&mpm, &(phieuTra.TienPhat), &(phieuTra.NgayTra), &(phieuTra.GhiChu), &mdg, &ms); err != nil {
+		if err = rows.Scan(&mpm, &(phieuTra.TienPhat), &(phieuTra.NgayTra), &(phieuTra.GhiChu), &mdg, &ms, &(phieuTra.NgayMuon)); err != nil {
 			return nil, coreerror.NewInternalServerError("databaser error: can't not query database", err)
 		}
 		var maPhieuMuon *entity.ID

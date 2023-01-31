@@ -111,6 +111,9 @@ func (repo *PhieuNhapRepository) GetPhieuNhap(maPhieuNhap *entity.ID) (_ *entity
 	}()
 	var phieuNhap = entity.PhieuNhap{}
 	err = tx.QueryRowx(`SELECT NgayNhap AS NgayLap, TongTien FROM PhieuNhap WHERE MaPhieuNhap = ?`, maPhieuNhap).Scan(&(phieuNhap.NgayLap), &(phieuNhap.TongTien))
+	if err != nil {
+		return nil, err
+	}
 	phieuNhap.MaPhieuNhap = maPhieuNhap
 	ctPhieuNhapRow, err := tx.Queryx(
 		`SELECT CT.MaSach, DonGia, MaDauSach, NhaXuatBan, TriGia, NamXuatBan, TinhTrang, GhiChu

@@ -112,7 +112,7 @@ func (repo *PhieuNhapRepository) GetPhieuNhap(maPhieuNhap *entity.ID) (_ *entity
 	var phieuNhap = entity.PhieuNhap{}
 	err = tx.QueryRowx(`SELECT NgayNhap AS NgayLap, TongTien FROM PhieuNhap WHERE MaPhieuNhap = ?`, maPhieuNhap).Scan(&(phieuNhap.NgayLap), &(phieuNhap.TongTien))
 	if err != nil {
-		return nil, err
+		return nil, coreerror.NewInternalServerError("database error: can't not query phieu nhap", err)
 	}
 	phieuNhap.MaPhieuNhap = maPhieuNhap
 	ctPhieuNhapRow, err := tx.Queryx(

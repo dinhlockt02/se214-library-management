@@ -3,7 +3,8 @@ CREATE TABLE PhieuMuon (
     MaDocGia VARCHAR(255),
     MaSach VARCHAR(255),
     NgayMuon DATE,
-    CONSTRAINT PhieuMuon_FK_DocGia FOREIGN KEY (MaDocGia) REFERENCES DocGia(MaDocGia)
+    CONSTRAINT PhieuMuon_FK_DocGia FOREIGN KEY (MaDocGia) REFERENCES DocGia(MaDocGia),
+    CONSTRAINT PhieuMuon_FK_Sach FOREIGN KEY (MaSach) REFERENCES Sach(MaSach)
 );
 
 CREATE TABLE PhieuTra (
